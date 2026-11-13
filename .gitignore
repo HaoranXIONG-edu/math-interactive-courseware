@@ -1,0 +1,29 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python cache & virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+.venv*/
+env/
+venv/
+ENV/
+
+# Intermediate unpack & cache folders
+**/docx_unpacked/
+**/__pycache__/
+*.tmp
+*.log
+
+# Sensitive student paper assets & large demo clips
+courseware_assets/

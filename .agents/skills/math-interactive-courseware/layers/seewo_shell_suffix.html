@@ -1,0 +1,1674 @@
+const COURSE_RAW_TITLE = "2.2.2 反比例函数的图象（2）";
+function formatCourseTitleHTML(rawTitle) {
+  return String(rawTitle || '').replace(/([0-9]+(?:\.[0-9]+)*)|([A-Za-z]+)/g, (m, numPart, alphaPart) => {
+    if (numPart) return `<span class="num">${numPart}</span>`;
+    return `<i class="m">${alphaPart}</i>`;
+  });
+}
+const DEFAULT_LESSON_PHASES = [
+  ['① 情境引入', '核心面积激活'],
+  ['② 新知探究', '核心问题深度探究'],
+  ['③ 新知应用', '典例剖析与变式'],
+  ['④ 分层训练', '综合实战与小结']
+];
+const PHASES_BY_LESSON = {
+  1: window.COURSEWARE_PHASES || DEFAULT_LESSON_PHASES,
+  2: window.COURSEWARE_PHASES || DEFAULT_LESSON_PHASES,
+  3: window.COURSEWARE_PHASES || DEFAULT_LESSON_PHASES
+};
+const PHASES = PHASES_BY_LESSON[1];
+function phaseOf(s){
+  if (typeof s.phase === 'number') return s.phase;
+  if (s.section && (s.section.startsWith('随堂演练') || s.section.startsWith('全课总结') || s.section.startsWith('分层训练') || s.section.startsWith('课堂小结'))) return 3;
+  if (s.section && (s.section.startsWith('真题精讲') || s.section.startsWith('新知应用'))) return 2;
+  if (s.cover || (s.section && (s.section.startsWith('专题导览') || s.section.startsWith('考前必背') || s.section.startsWith('情境引入')))) return 0;
+  return 1;
+}
+function getPhasePair(s){
+  const list = window.COURSEWARE_PHASES || PHASES_BY_LESSON[s.lesson] || DEFAULT_LESSON_PHASES;
+  return list[phaseOf(s)] || list[0];
+}
+const LECTURE_TABS = window.COURSEWARE_LECTURE_TABS || [
+  [1, formatCourseTitleHTML(window.COURSEWARE_TITLE || COURSE_RAW_TITLE)]
+];
+const flowbar = s => {
+  const phases = window.COURSEWARE_PHASES || PHASES_BY_LESSON[s.lesson] || DEFAULT_LESSON_PHASES;
+  const curPhase = phaseOf(s);
+  const brandLabel = window.COURSEWARE_BRAND || '章节课题';
+  const lecBtns = LECTURE_TABS.map(([num, label]) =>
+    `<button type="button" class="flow-lec-btn ${s.lesson===num?'active':''}" data-chapter="${num}" title="返回本课首页">${label}</button>`
+  ).join('');
+  const phaseBtns = phases.map((p, i) =>
+    `<button type="button" class="flow-phase-btn ${curPhase===i?'active':''}" data-phase="${i}" aria-current="${curPhase===i?'step':'false'}"><b>${p[0]}</b><span>${p[1]}</span></button>`
+  ).join('');
+  return `<nav class="flowbar" aria-label="课堂教学四环节导航"><div class="flow-lectures"><span class="flow-brand">${brandLabel}</span>${lecBtns}</div><div class="flow-phases">${phaseBtns}</div></nav>`;
+};
+function eyebrowBar(s){
+  const curPhase = phaseOf(s);
+  const peers = [];
+  slides.forEach((v, idx) => {
+    if (v.lesson === s.lesson && phaseOf(v) === curPhase) {
+      peers.push({ idx, tag: v.navTag || v.section || ('页' + (idx + 1)) });
+    }
+  });
+  if (peers.length <= 1) return `<div class="eyebrow"></div>`;
+  const pillsHTML = peers.map(p =>
+    `<button type="button" class="subnav-pill ${p.idx===index?'active':''}" data-jump="${p.idx}">${p.tag}</button>`
+  ).join('');
+  return `<div class="eyebrow"><div class="eyebrow-pills">${pillsHTML}</div></div>`;
+}
+let index=0,simState={},raf=0,playing=false,currentSimType=null;
+const $=s=>document.querySelector(s);
+const fmt=(v,n=2)=>Number(v).toFixed(n);
+function slider(key,label,min,max,value,step=1,unit=''){
+  if (simState[key] === undefined) simState[key]=value;
+  const plain = String(label).replace(/<[^>]*>/g, '');
+  const curVal = simState[key];
+  const numVal = Number(curVal);
+  const dispVal = (!isNaN(numVal) && !Number.isInteger(numVal)) ? numVal.toFixed(2) : curVal;
+  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${curVal}" step="${step}" aria-label="${plain}"><output data-value="${key}">${dispVal}${unit}</output></label>`;
+}
+function select(key,label,options,value){
+  if (simState[key] === undefined) simState[key]=value;
+  const plain = String(label).replace(/<[^>]*>/g, '');
+  return `<label class="control select"><span>${label}</span><select data-key="${key}" aria-label="${plain}">${options.map(o=>`<option value="${o[0]}" ${String(o[0])===String(simState[key])?'selected':''}>${o[1]}</option>`).join('')}</select></label>`;
+}
+function actions(items, activeKey){
+  const cur = activeKey || simState.action || 'm0';
+  return `<div class="actions">${items.map(([k,t])=>`<button type="button" data-action="${k}" class="${cur===k?'active-act':''}">${t}</button>`).join('')}</div>`;
+}
+function modeButtons(key, curVal, items){
+  if (curVal !== undefined) simState[key] = curVal;
+  else if (simState[key] === undefined && items && items.length) simState[key] = items[0][0];
+  const active = curVal !== undefined ? curVal : simState[key];
+  return `<div class="actions">${items.map(([v, label, syncStep]) => `<button type="button" data-mode-key="${key}" data-mode-val="${v}" ${syncStep !== undefined ? `data-sync-step="${syncStep}"` : ''} class="${String(active) === String(v) ? 'active-act' : ''}">${label}</button>`).join('')}</div>`;
+}
+window.slider = slider;
+window.select = select;
+window.actions = actions;
+window.modeButtons = modeButtons;
+
+// ================= 分步渐进式探索全局组件（去AI化、1对1精准点按引擎） =================
+window._blockSeq = 0;
+window._cellSeq = 0;
+window._blockMinSteps = {};
+
+function activeRoot() {
+  return document.getElementById('content') || document;
+}
+
+function hasAnyManual(st) {
+  if (!st) return false;
+  return Boolean(
+    (st.manualBlocks && Object.keys(st.manualBlocks).length) ||
+    (st.manualCells && Object.keys(st.manualCells).length) ||
+    (st.manualNotes && Object.keys(st.manualNotes).length) ||
+    (st.manualProbNodes && Object.keys(st.manualProbNodes).length)
+  );
+}
+
+function clearManualOverrides(st) {
+  if (!st) return;
+  st.manualBlocks = {};
+  st.manualCells = {};
+  st.manualNotes = {};
+  st.manualProbNodes = {};
+  st.manualOverrides = {};
+}
+const isManualOverride = window.isManualOverride;
+const setManualOverride = window.setManualOverride;
+
+function normalizeSvgMathInRoot(root) {
+  if (!root) return;
+  root.querySelectorAll('svg text').forEach(textEl => {
+    if (textEl.children.length > 0) return;
+    const raw = textEl.textContent || '';
+    if (!raw.trim()) return;
+    const fs = parseFloat(textEl.getAttribute('font-size') || '14') || 14;
+    textEl.setAttribute('font-style', 'normal');
+    textEl.setAttribute('font-family', "'Times New Roman', 'Songti SC', 'SimSun', serif");
+    textEl.innerHTML = window.svgAutoFormatText(raw, fs);
+  });
+  root.querySelectorAll('[data-ans]').forEach(el => {
+    const ans = el.getAttribute('data-ans') || '';
+    if (ans.includes('△') && !ans.includes('tri-sym')) {
+      el.setAttribute('data-ans', ans.replace(/△/g, "<span class='tri-sym'>△</span>"));
+    }
+  });
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue || !node.nodeValue.includes('△')) return NodeFilter.FILTER_REJECT;
+      const p = node.parentElement;
+      if (!p) return NodeFilter.FILTER_REJECT;
+      if (p.classList && p.classList.contains('tri-sym')) return NodeFilter.FILTER_REJECT;
+      if (p.closest('script, style')) return NodeFilter.FILTER_REJECT;
+      if (p.closest('svg') && !p.closest('foreignObject')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const textNodes = [];
+  let cur;
+  while ((cur = walker.nextNode())) textNodes.push(cur);
+  textNodes.forEach(tn => {
+    const frag = document.createDocumentFragment();
+    const parts = tn.nodeValue.split('△');
+    parts.forEach((part, idx) => {
+      if (part) frag.appendChild(document.createTextNode(part));
+      if (idx < parts.length - 1) {
+        const sp = document.createElement('span');
+        sp.className = 'tri-sym';
+        sp.textContent = '△';
+        frag.appendChild(sp);
+      }
+    });
+    tn.parentNode.replaceChild(frag, tn);
+  });
+  root.querySelectorAll('sub, sup').forEach(subEl => {
+    const p = subEl.parentElement;
+    if (!p || p.dataset.nowrapSub === '1' || p.classList.contains('screen-blank')) return;
+    const prev = subEl.previousElementSibling;
+    if (prev && prev.nextSibling === subEl && (prev.tagName === 'I' || prev.classList.contains('m') || prev.classList.contains('num'))) {
+      const wrap = document.createElement('span');
+      wrap.dataset.nowrapSub = '1';
+      wrap.style.whiteSpace = 'nowrap';
+      p.insertBefore(wrap, prev);
+      wrap.appendChild(prev);
+      wrap.appendChild(subEl);
+      if (wrap.nextSibling && wrap.nextSibling.nodeType === 1 && (wrap.nextSibling.tagName === 'SUP' || wrap.nextSibling.tagName === 'SUB')) {
+        wrap.appendChild(wrap.nextSibling);
+      }
+    }
+  });
+}
+
+function runSimFn(fn, state, isInit) {
+  if (!fn) return;
+  window._blockSeq = 0;
+  window._cellSeq = 0;
+  window._blockMinSteps = {};
+  if (typeof fn === 'function') {
+    fn(state, isInit);
+  } else if (fn && typeof fn.render === 'function') {
+    if (isInit && typeof fn.init === 'function') fn.init(state);
+    fn.render(state);
+  }
+  normalizeSvgMathInRoot(activeRoot());
+}
+
+function stepBar(step, maxStep = 3) {
+  const s = Math.min(maxStep, Math.max(0, Number(step || 0)));
+  const canReset = s > 0 || hasAnyManual(simState);
+  const hasLab = Boolean(activeRoot() && activeRoot().querySelector('.screen-lab'));
+  const isZoomed = document.body.classList.contains('canvas-zoom-mode');
+  const dots = Array.from({ length: maxStep }, (_, i) => {
+    const idx = i + 1;
+    const cls = idx === s ? 'current' : (idx < s ? 'done' : '');
+    return `<button type="button" class="step-dot-pill ${cls}" data-jump-step="${idx}" title="点击跳转至步骤 ${idx}">${idx}</button>`;
+  }).join('');
+  const hintTxt = s >= maxStep ? '✓ 已全部展开（答案已同步填入题干）' : '点击下方步骤卡片或按空格键逐步展开';
+  const zoomBtnHTML = (hasLab && isZoomed)
+    ? `<button type="button" class="step-btn zoom" onclick="window.toggleCanvasZoom(event)">🗗 退出全屏</button>`
+    : '';
+  return `<div class="step-ctrl-bar ${hasLab ? 'has-zoom' : ''}" data-max-step="${maxStep}">
+    <div class="step-progress-group">
+      <span class="step-hint-label">💡 推导进度</span>
+      ${dots}
+      <span class="step-sub-hint">${hintTxt}</span>
+    </div>
+    <div class="step-ghost-actions">
+      <button type="button" class="step-btn prev" data-action="prevStep" ${s <= 0 ? 'disabled' : ''}>◀ 上一步</button>
+      <button type="button" class="step-btn next" data-action="nextStep" ${s >= maxStep ? 'disabled' : ''}>下一步 ▸</button>
+      <button type="button" class="step-btn all" data-action="completeTable" ${s >= maxStep ? 'disabled' : ''}>全部展开</button>
+      <button type="button" class="step-btn rst" data-action="reset" ${!canReset ? 'disabled' : ''}>↺ 重置</button>
+      ${zoomBtnHTML}
+    </div>
+  </div>`;
+}
+
+function stageBlock(minStep, currentStep, html, label) {
+  const bIdx = window._blockSeq++;
+  window._blockMinSteps[bIdx] = Number(minStep || 1);
+  const isManual = Boolean(simState && simState.manualBlocks && simState.manualBlocks[bIdx]);
+  if (isManual || Number(currentStep || 0) >= minStep) {
+    return `<div class="thm-stage-reveal" data-bidx="${bIdx}">${html}</div>`;
+  }
+  return `<div class="thm-stage-locked" data-bidx="${bIdx}" style="display:none!important"></div>`;
+}
+
+function cellReveal(minStep, currentStep, html, mask = '?') {
+  const cIdx = window._cellSeq++;
+  const isManual = Boolean(simState && simState.manualCells && simState.manualCells[cIdx]);
+  if (isManual || Number(currentStep || 0) >= minStep) {
+    return html;
+  }
+  return `<span class="cell-mask-badge" data-cidx="${cIdx}" onclick="window.unlockSingleCell(${cIdx}, event)">${mask}</span>`;
+}
+
+window.unlockSingleBlock = function(bIdx, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (!currentSimType || !ALL_SIMS[currentSimType]) return;
+  if (!simState.manualBlocks) simState.manualBlocks = {};
+  simState.manualBlocks[bIdx] = true;
+  runSimFn(ALL_SIMS[currentSimType], simState, false);
+  syncSlideProgression(simState);
+  bindSimControls(currentSimType);
+};
+
+window.unlockSingleCell = function(cIdx, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (!currentSimType || !ALL_SIMS[currentSimType]) return;
+  if (!simState.manualCells) simState.manualCells = {};
+  simState.manualCells[cIdx] = true;
+  runSimFn(ALL_SIMS[currentSimType], simState, false);
+  syncSlideProgression(simState);
+  bindSimControls(currentSimType);
+};
+
+window.advanceSimStep = function(targetStep) {
+  if (!currentSimType || !ALL_SIMS[currentSimType]) return;
+  simState.step = Math.max(Number(simState.step || 0), Number(targetStep || 1));
+  simState.manualOverrides = {};
+  runSimFn(ALL_SIMS[currentSimType], simState, false);
+  syncSlideProgression(simState);
+  bindSimControls(currentSimType);
+};
+
+// 同步右侧笔记步骤、题干填空与结论框（严格限定在 #content 内，避免翻页动画残留节点干扰）
+function syncSlideProgression(state) {
+  const root = activeRoot();
+  let highestManual = 0;
+  if (state && state.manualNotes) {
+    Object.keys(state.manualNotes).forEach(k => {
+      if (state.manualNotes[k]) highestManual = Math.max(highestManual, Number(k) + 1);
+    });
+  }
+  const s = Math.max(Number(state.step || 0), highestManual);
+  const barEl = root.querySelector('.step-ctrl-bar');
+  const noteSteps = root.querySelectorAll('.screen-notes > .step, .screen-notes .step');
+  const maxStep = barEl ? Number(barEl.dataset.maxStep || Math.max(3, noteSteps.length)) : Math.max(3, noteSteps.length);
+
+  // 0. 定理页画布顶部对齐，避免分步展开时上下跳动
+  const canvasInner = root.querySelector('.screen-canvas > div');
+  if (canvasInner && canvasInner.style && canvasInner.style.justifyContent === 'center') {
+    canvasInner.style.justifyContent = 'flex-start';
+    canvasInner.style.paddingTop = '8px';
+  }
+
+  // 1. 同步题干中的 .screen-blank 填空与选择题括号答案
+  const allBlanks = root.querySelectorAll('.screen-stem .screen-blank[data-ans]');
+  const totalBlanks = allBlanks.length;
+  allBlanks.forEach((blank, idx) => {
+    const unlockAt = blank.dataset.step
+      ? Number(blank.dataset.step)
+      : (totalBlanks <= 1 ? maxStep : Math.max(1, Math.ceil((idx + 1) * maxStep / totalBlanks)));
+    if (s >= unlockAt) {
+      blank.innerHTML = blank.dataset.ans;
+      blank.classList.add('filled');
+    } else if (!blank.dataset.manualFill) {
+      blank.innerHTML = '';
+      blank.classList.remove('filled');
+    }
+  });
+
+  // 2. 同步右侧 .screen-notes > .step（保留真实知识点标题，支持直接点击步骤卡片推进步骤与动态图，支持单卡片多子步 data-step-start/end 与 .step-sub-part）
+  let foundNextLocked = false;
+  noteSteps.forEach((stepEl, idx) => {
+    const startS = Number(stepEl.dataset.stepStart || (idx + 1));
+    const endS = Number(stepEl.dataset.stepEnd || startS);
+    const isManualNote = Boolean(state.manualNotes && state.manualNotes[idx]);
+    const spanEl = stepEl.querySelector('span');
+    const rawTxt = spanEl ? spanEl.textContent.trim() : '';
+    const topicTitle = /[:：]/.test(rawTxt) ? rawTxt.split(/[:：]/)[0].trim() : `步骤 ${idx + 1}`;
+    stepEl.querySelectorAll('.step-sub-part[data-sub-step]').forEach(part => {
+      const subReq = Number(part.dataset.subStep || endS);
+      if (s >= subReq) {
+        part.classList.remove('sub-step-locked');
+      } else {
+        part.classList.add('sub-step-locked');
+        if (!part.dataset.subHint) {
+          part.dataset.subHint = '点击继续展开下一空 ▸';
+        }
+      }
+    });
+    if (isManualNote || s >= startS) {
+      stepEl.classList.remove('step-locked', 'step-next-up');
+      stepEl.classList.toggle('step-active', (s >= startS && s <= endS) || isManualNote);
+      stepEl.dataset.lockMsg = `${topicTitle}`;
+      if (s >= startS && s < endS) {
+        foundNextLocked = true;
+      }
+    } else {
+      stepEl.classList.add('step-locked');
+      stepEl.classList.remove('step-active');
+      if (!foundNextLocked) {
+        foundNextLocked = true;
+        stepEl.classList.add('step-next-up');
+        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开下一步 ▸`;
+      } else {
+        stepEl.classList.remove('step-next-up');
+        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开 ▸`;
+      }
+    }
+    stepEl.onclick = e => {
+      if (e && e.stopPropagation) e.stopPropagation();
+      const curS = Number(state.step || 0);
+      if (curS < startS) {
+        state.step = startS;
+      } else if (curS >= startS && curS < endS) {
+        state.step = curS + 1;
+      } else {
+        state.step = startS;
+      }
+      state.manualOverrides = {};
+      if (state.manualNotes) {
+        Object.keys(state.manualNotes).forEach(k => {
+          if (Number(k) > idx) delete state.manualNotes[k];
+        });
+      }
+      if (currentSimType && ALL_SIMS[currentSimType]) {
+        runSimFn(ALL_SIMS[currentSimType], state, false);
+      }
+      syncSlideProgression(state);
+      if (currentSimType) bindSimControls(currentSimType);
+    };
+  });
+  normalizeSvgMathInRoot(root);
+
+  // 3. 同步底部结论框 .answer 与自动视口滚动对齐
+  const ansBox = root.querySelector('.screen-notes .answer');
+  const revBtn = root.querySelector('.screen-notes [data-reveal]');
+  if (ansBox) {
+    if (s >= maxStep) {
+      ansBox.hidden = false;
+      if (revBtn) revBtn.setAttribute('aria-expanded', 'true');
+    } else if (s === 0 && !hasAnyManual(state)) {
+      ansBox.hidden = true;
+      if (revBtn) revBtn.setAttribute('aria-expanded', 'false');
+    }
+  }
+  const sn = root.querySelector('.screen-notes');
+  if (sn) {
+    if ((s === 0 && !hasAnyManual(state)) || maxStep <= 2) {
+      sn.scrollTop = 0;
+    } else {
+      const activeEl = sn.querySelector('.step.step-active');
+      if (activeEl && sn.scrollHeight > sn.clientHeight + 4) {
+        const elBottom = activeEl.offsetTop + activeEl.offsetHeight;
+        if (elBottom > sn.scrollTop + sn.clientHeight) {
+          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 8);
+        } else if (activeEl.offsetTop < sn.scrollTop) {
+          sn.scrollTop = Math.max(0, activeEl.offsetTop - 8);
+        }
+      }
+    }
+  }
+}
+
+window.unlockCond = function(el) {
+  el.classList.toggle('unlocked');
+};
+window.revealCloze = function(el) {
+  el.classList.toggle('revealed');
+};
+document.addEventListener('click', e => {
+  const blank = e.target.closest('.screen-blank[data-ans]');
+  if (blank) {
+    const isFilled = blank.classList.toggle('filled');
+    blank.dataset.manualFill = isFilled ? '1' : '';
+    blank.innerHTML = isFilled ? blank.dataset.ans : '';
+    return;
+  }
+  const chip = e.target.closest('.cond-chip');
+  if (chip && !chip.hasAttribute('onclick')) chip.classList.toggle('unlocked');
+  const cloze = e.target.closest('.cloze');
+  if (cloze && !cloze.hasAttribute('onclick')) cloze.classList.toggle('revealed');
+});
+
+window.revealAllClozeInSlide = function(btn) {
+  if (currentSimType && ALL_SIMS[currentSimType]) {
+    const root = activeRoot();
+    const barEl = root.querySelector('.step-ctrl-bar');
+    const maxStep = barEl ? Number(barEl.dataset.maxStep || 3) : 3;
+    if (Number(simState.step || 0) < maxStep) {
+      simState.step = maxStep;
+    } else {
+      simState.step = 0;
+      clearManualOverrides(simState);
+    }
+    runSimFn(ALL_SIMS[currentSimType], simState, false);
+    syncSlideProgression(simState);
+    bindSimControls(currentSimType);
+    return;
+  }
+};
+
+function fmtBadgeText(str) {
+  return String(str || '').replace(/\s+/g, '').replace(/([0-9A-Za-z·]+)/g, '<span class="num">$1</span>');
+}
+
+function isPureTitleBar(el) {
+  if (!el || el.tagName !== 'DIV') return false;
+  const st = (el.getAttribute && el.getAttribute('style')) || '';
+  if (/display\s*:\s*(?:grid|flex)/i.test(st)) return false;
+  const hasBlockChild = Array.from(el.children || []).some(c => ['DIV', 'TABLE', 'UL', 'OL'].includes(c.tagName));
+  if (hasBlockChild) return false;
+  const txt = (el.textContent || '').trim();
+  return txt.endsWith('：') || txt.endsWith(':') || txt.length <= 42;
+}
+
+function getAtomicProbNodes(vb) {
+  if (!vb) return [];
+  const firstEl = vb.firstElementChild;
+  if (!firstEl) return [];
+  if (firstEl.tagName === 'TABLE') {
+    const rows = [];
+    if (firstEl.querySelector('tbody')) rows.push(...Array.from(firstEl.querySelector('tbody').children));
+    if (firstEl.querySelector('tfoot')) rows.push(...Array.from(firstEl.querySelector('tfoot').children));
+    return rows;
+  }
+  const topChildren = (firstEl.children && firstEl.children.length >= 2)
+    ? Array.from(firstEl.children)
+    : (vb.children.length >= 2 ? Array.from(vb.children) : [firstEl]);
+  const nodes = [];
+
+  function collectFromBlock(ch) {
+    if (!ch) return;
+    const st = (ch.getAttribute && ch.getAttribute('style')) || '';
+    if (ch.tagName === 'TABLE') {
+      if (ch.querySelector('tbody')) nodes.push(...Array.from(ch.querySelector('tbody').children));
+      if (ch.querySelector('tfoot')) nodes.push(...Array.from(ch.querySelector('tfoot').children));
+      return;
+    }
+    if (ch.children && ch.children.length >= 2 && /display\s*:\s*grid/i.test(st)) {
+      Array.from(ch.children).forEach(col => nodes.push(col));
+      return;
+    }
+    // 若容器内部嵌套了 grid 或 table（例如：顶部一行小标题 + 中间4列胶囊网格 + 底部汇总行），保持顶部标题常驻可见，仅将其中的网格卡片与汇总行拆为独立可点单元
+    const innerKids = Array.from(ch.children || []);
+    const hasNestedGridOrTable = innerKids.some(k => {
+      const kst = (k.getAttribute && k.getAttribute('style')) || '';
+      return k.tagName === 'TABLE' || (/display\s*:\s*grid/i.test(kst) && k.children.length >= 2);
+    });
+    if (hasNestedGridOrTable && innerKids.length >= 2) {
+      innerKids.forEach((k, kIdx) => {
+        if (kIdx === 0 && isPureTitleBar(k)) {
+          return; // 保持分区小标题常驻可见，不遮罩
+        }
+        collectFromBlock(k);
+      });
+      return;
+    }
+    nodes.push(ch);
+  }
+
+  topChildren.forEach((ch, idx) => {
+    if (idx === 0 && isPureTitleBar(ch) && topChildren.length >= 2) {
+      return;
+    }
+    collectFromBlock(ch);
+  });
+  return nodes;
+}
+
+function extractCleanNodeLabel(node, idx) {
+  if (!node) return `步骤 ${idx + 1}`;
+  const firstChild = node.firstElementChild;
+  const hasBlockFirst = firstChild && ['DIV', 'P', 'H3', 'H4', 'HEADER'].includes(firstChild.tagName);
+  let raw = (hasBlockFirst ? firstChild.textContent : node.textContent) || '';
+  raw = raw.replace(/\s+/g, ' ').trim();
+  raw = raw.replace(/^[✓✗✔✘•·]+\s*/, '').replace(/[（(](?:正确|错误|已配平|缺\d+)[)）]/g, '').trim();
+  if (hasBlockFirst && firstChild.querySelector && firstChild.querySelector('sup') && /^[0-9]+$/.test(raw) && raw.length <= 3) {
+    const clone = firstChild.cloneNode(true);
+    clone.querySelectorAll('sup, sub').forEach(el => el.remove());
+    const baseText = (clone.textContent || raw[0]).trim();
+    return `质因数 ${baseText}  ·  展开 ▸`;
+  }
+  const colonIdx = raw.search(/[：:]/);
+  const eqIdx = raw.indexOf('=');
+  if (colonIdx > 0 && (eqIdx < 0 || colonIdx < eqIdx)) {
+    const parts = raw.split(/[：:]/);
+    const left = parts[0].trim();
+    const right = (parts[1] || '').trim();
+    if (left.length >= 2 && left.length <= 18) {
+      raw = (left.startsWith('筛网') && right) ? `${left}（${right.split(/[（(，,]/)[0]}）` : left;
+    }
+  } else if (eqIdx > 0) {
+    const lhs = raw.split('=')[0].trim();
+    if (lhs.length >= 2 && lhs.length <= 24) raw = lhs;
+  } else if (raw.includes('⇒')) {
+    const lhs = raw.split('⇒')[0].trim();
+    if (lhs.length >= 2) raw = lhs;
+  }
+  if (raw.length > 22) raw = raw.slice(0, 20) + '…';
+  return raw ? `${raw}  ·  展开 ▸` : `模块 ${idx + 1}  ·  展开 ▸`;
+}
+
+const PROBLEM_SIMS = {};
+
+// 将 unit1_slides.js / unit2_slides.js / unit3_slides.js 中的 26 道例题与随堂演练转换为分步渐进式互动页
+function convertProblemToPPTSlide(p, probIdx) {
+  const letters = 'ABCDEF';
+  const normOpts = (p.options || []).map((o, idx) => {
+    if (typeof o === 'string') {
+      const m = o.match(/^\(([A-F])\)\s*(.*)$/);
+      return m ? { label: m[1], text: m[2] } : { label: letters[idx] || '?', text: o };
+    }
+    return { label: o.label || letters[idx], text: o.text || o.html || '' };
+  });
+  const correctIdx = Math.max(0, normOpts.findIndex(o => o.label === p.answer));
+  const isPrac = (p.subType === 'practice' || (p.badge && p.badge.startsWith('练')));
+  const phase = isPrac ? 3 : 2;
+  const srcFormatted = fmtBadgeText(p.source || p.badge);
+  const badgeFormatted = fmtBadgeText(p.badge);
+  const section = isPrac ? `随堂演练 · 实战冲刺（${srcFormatted}）` : `真题精讲 · 典例剖析（${srcFormatted}）`;
+  const cleanTitle = p.title || `${badgeFormatted} · 真题精讲`;
+  const simName = `probSim_${probIdx}`;
+
+  const hasLongOpt = normOpts.some(o => String(o.text || '').replace(/<[^>]*>/g, '').trim().length > 9);
+  const quizHTML = `<div class="quiz prob-quiz-grid ${hasLongOpt ? 'quiz-3col' : ''}" data-correct="${correctIdx}">${normOpts.map((o, i) => `<button type="button" class="option" data-option="${i}"><b>${o.label}</b><span>${o.text}</span></button>`).join('')}</div><div class="feedback" aria-live="polite" data-explain="✅正确答案：${p.answer}。"></div>`;
+
+  const stepsHTML = (p.steps || []).map((st, idx) => `
+    <div class="prob-step-card step-locked" data-step-idx="${idx + 1}" style="border-left-color:${st.tagColor || '#304580'}">
+      <div class="prob-step-head">
+        <span class="prob-step-tag" style="background:${st.tagColor || '#304580'}">${st.tag || ('步骤'+(idx+1))}</span>
+        <span class="prob-step-title">${st.title || ''}</span>
+      </div>
+      <div class="prob-step-math">${st.mathHTML || st.descHTML || ''}</div>
+    </div>
+  `).join('');
+
+  const cleanSummary = (p.summaryHTML || '').replace(/^\s*(?:<(?:b|strong)>)?\s*核心心法[：:]?\s*(?:<\/(?:b|strong)>)?\s*/i, '');
+  const cleanVisTitle = (p.visualTitle || '解题图解').replace(/^直观图解[：:]\s*/, '');
+
+  const html = `
+    <div class="screen-page lab-visible">
+      <div class="screen-stem">
+        <p><span class="prob-badge ${isPrac ? 'practice' : ''}">${badgeFormatted}</span><span class="prob-source">【${srcFormatted}】</span>${p.stemHTML}</p>
+      </div>
+      <div class="screen-lower">
+        <div class="screen-media">
+          <div class="prob-visual-card">
+            <div class="prob-visual-head">
+              <span>📊 ${cleanVisTitle}</span>
+            </div>
+            <div class="prob-visual-body" id="probVisualBody">${p.visualHTML || ''}</div>
+            ${cleanSummary ? `<div class="prob-summary-box" id="probSummaryBox" style="display:none;">💡<b>方法总结：</b>${cleanSummary}</div>` : ''}
+          </div>
+        </div>
+        <div class="screen-notes">
+          <div id="controls" class="controls"></div>
+          ${quizHTML}
+          ${stepsHTML}
+        </div>
+      </div>
+    </div>
+  `;
+
+  PROBLEM_SIMS[simName] = function(state, isInit) {
+    if (isInit) {
+      state.step = 0;
+      clearManualOverrides(state);
+    }
+    const root = activeRoot();
+    const step = Number(state.step || 0);
+    const vb = root.querySelector('#probVisualBody');
+    const sb = root.querySelector('#probSummaryBox');
+
+    const stageNodes = getAtomicProbNodes(vb);
+    const totalNodes = stageNodes.length;
+    const totalSteps = (p.steps || []).length;
+    const dynMaxStep = Math.max(2, totalSteps, totalNodes);
+
+    const controls = root.querySelector('#controls');
+    if (controls) {
+      controls.innerHTML = stepBar(step, dynMaxStep);
+    }
+
+    const stemChips = Array.from(root.querySelectorAll('.screen-stem .cond-chip'));
+    if (step > 0) {
+      stemChips.forEach(c => c.classList.add('unlocked'));
+    }
+
+    // 左侧解题示意图：保留分区标题与表头，每个具体分栏原位1对1简洁遮罩
+    if (vb && totalNodes >= 1) {
+      vb.style.display = 'flex';
+      stageNodes.forEach((node, idx) => {
+        const isUnlocked = Boolean(
+          (state.manualProbNodes && state.manualProbNodes[idx]) ||
+          step >= idx + 1 ||
+          step >= dynMaxStep
+        );
+        node.classList.remove('stage-node-hidden');
+        if (node.tagName === 'TR') {
+          node.classList.toggle('prob-tr-masked', !isUnlocked);
+        } else {
+          node.classList.toggle('prob-node-masked', !isUnlocked);
+          if (!node.dataset.lockLabel) {
+            node.dataset.lockLabel = extractCleanNodeLabel(node, idx);
+          }
+        }
+        node.onclick = e => {
+          if (node.classList.contains('prob-node-masked') || node.classList.contains('prob-tr-masked')) {
+            e.stopPropagation();
+            if (!state.manualProbNodes) state.manualProbNodes = {};
+            state.manualProbNodes[idx] = true;
+            runSimFn(PROBLEM_SIMS[simName], state, false);
+            syncSlideProgression(state);
+            bindSimControls(simName);
+          }
+        };
+      });
+    }
+
+    if (sb) {
+      sb.style.display = step >= dynMaxStep ? 'block' : 'none';
+    }
+
+    // 全部展开或推演至最后一步时，自动在选项栏高亮正确选项；重置时恢复初始态
+    const quizBox = root.querySelector('.prob-quiz-grid');
+    const fbBox = root.querySelector('.screen-notes .feedback');
+    if (quizBox) {
+      if (step >= dynMaxStep) {
+        const rightOpt = quizBox.querySelector(`[data-option="${correctIdx}"]`);
+        if (rightOpt) rightOpt.classList.add('correct');
+      } else if (step === 0 && !hasAnyManual(state)) {
+        quizBox.querySelectorAll('.option').forEach(el => el.classList.remove('correct', 'wrong'));
+        if (fbBox) fbBox.textContent = '';
+      }
+    }
+
+    // 同步右侧 .prob-step-card 分步推导卡片（未展开时点击展开卡片，已展开时再次点击直接揭晓卡片内的蓝色算式）
+    const stepCards = root.querySelectorAll('.screen-notes .prob-step-card');
+    let foundNextProbLocked = false;
+    stepCards.forEach((card, idx) => {
+      const reqStep = totalSteps > 0 ? Math.max(1, Math.round((idx + 1) * dynMaxStep / totalSteps)) : (idx + 1);
+      const isManualCard = Boolean(state.manualNotes && state.manualNotes[idx]);
+      if (isManualCard || step >= idx + 1 || step >= dynMaxStep) {
+        card.classList.remove('step-locked', 'step-next-up');
+        card.querySelectorAll('.cloze').forEach(c => {
+          if (step >= dynMaxStep) {
+            c.classList.add('revealed');
+          }
+        });
+      } else {
+        card.classList.add('step-locked');
+        if (!foundNextProbLocked) {
+          foundNextProbLocked = true;
+          card.classList.add('step-next-up');
+        } else {
+          card.classList.remove('step-next-up');
+        }
+        card.querySelectorAll('.cloze').forEach(c => c.classList.remove('revealed'));
+      }
+      card.onclick = e => {
+        if (card.classList.contains('step-locked')) {
+          e.stopPropagation();
+          state.step = Math.max(Number(state.step || 0), reqStep);
+          if (!state.manualNotes) state.manualNotes = {};
+          state.manualNotes[idx] = true;
+          runSimFn(PROBLEM_SIMS[simName], state, false);
+          syncSlideProgression(state);
+          bindSimControls(simName);
+        } else if (!e.target.closest('.cloze')) {
+          card.querySelectorAll('.cloze').forEach(c => c.classList.add('revealed'));
+        }
+      };
+    });
+  };
+
+  return {
+    lesson: p.unit || 1,
+    phase: phase,
+    navTag: badgeFormatted,
+    section: section,
+    title: cleanTitle,
+    cover: false,
+    sim: simName,
+    html: html
+  };
+}
+
+let globalProbCounter = 1;
+const u1Probs = (window.UNIT1_SLIDES || []).filter(s => s.stemHTML).map(p => convertProblemToPPTSlide(p, globalProbCounter++));
+const u2Probs = (window.UNIT2_SLIDES || []).filter(s => s.stemHTML).map(p => convertProblemToPPTSlide(p, globalProbCounter++));
+const u3Probs = (window.UNIT3_SLIDES || []).filter(s => s.stemHTML).map(p => convertProblemToPPTSlide(p, globalProbCounter++));
+
+const slides = [
+  ...(window.UNIT1_THEOREM_SLIDES || []),
+  ...u1Probs,
+  ...(window.UNIT2_THEOREM_SLIDES || []),
+  ...u2Probs,
+  ...(window.UNIT3_THEOREM_SLIDES || []),
+  ...u3Probs,
+  ...(window.UNIT3_SUMMARY_SLIDE ? [window.UNIT3_SUMMARY_SLIDE] : [])
+];
+
+const ALL_SIMS = Object.assign(
+  {},
+  window.UNIT1_SIMS || {},
+  window.UNIT2_SIMS || {},
+  window.UNIT3_SIMS || {},
+  PROBLEM_SIMS
+);
+
+function initSim(type){
+  currentSimType = type;
+  simState = { step: 0, mode: 0, action: 'm0', manualBlocks: {}, manualCells: {}, manualNotes: {}, manualProbNodes: {}, manualOverrides: {} };
+  const fn = ALL_SIMS[type];
+  if (!fn) return;
+  runSimFn(fn, simState, true);
+  syncSlideProgression(simState);
+  bindSimControls(type);
+}
+
+function bindSimControls(type){
+  const fn = ALL_SIMS[type];
+  if (!fn) return;
+  const root = activeRoot();
+  const ctrlBox = root.querySelector('#controls');
+  if (!ctrlBox) return;
+
+  ctrlBox.querySelectorAll('input[type="range"]').forEach(inp => {
+    inp.oninput = e => {
+      const k = e.target.dataset.key;
+      simState[k] = isNaN(+e.target.value) ? e.target.value : +e.target.value;
+      if (typeof setManualOverride === 'function') setManualOverride(simState, k);
+      const out = ctrlBox.querySelector(`output[data-value="${k}"]`);
+      if (out) {
+        const nv = Number(e.target.value);
+        out.textContent = (!isNaN(nv) && !Number.isInteger(nv)) ? nv.toFixed(2) : e.target.value;
+      }
+      // 拖动滑块时屏蔽 controls.innerHTML 重建，保持滑块焦点不断连
+      Object.defineProperty(ctrlBox, 'innerHTML', {
+        configurable: true,
+        get() { return ''; },
+        set() {}
+      });
+      try {
+        runSimFn(fn, simState, false);
+      } finally {
+        delete ctrlBox.innerHTML;
+      }
+    };
+    inp.onchange = () => {
+      runSimFn(fn, simState, false);
+      syncSlideProgression(simState);
+      bindSimControls(type);
+    };
+  });
+
+  ctrlBox.querySelectorAll('select').forEach(sel => {
+    sel.onchange = e => {
+      const k = e.target.dataset.key;
+      simState[k] = e.target.value;
+      if (typeof setManualOverride === 'function') setManualOverride(simState, k);
+      runSimFn(fn, simState, false);
+      syncSlideProgression(simState);
+      bindSimControls(type);
+    };
+  });
+
+  ctrlBox.querySelectorAll('[data-jump-step]').forEach(dot => {
+    dot.onclick = e => {
+      e.stopPropagation();
+      const targetS = Number(dot.dataset.jumpStep || 1);
+      simState.step = targetS;
+      simState.manualOverrides = {};
+      if (simState.manualNotes) {
+        Object.keys(simState.manualNotes).forEach(k => {
+          if (Number(k) + 1 > targetS) delete simState.manualNotes[k];
+        });
+      }
+      runSimFn(fn, simState, false);
+      syncSlideProgression(simState);
+      bindSimControls(type);
+    };
+  });
+
+  ctrlBox.querySelectorAll('[data-mode-key]').forEach(mBtn => {
+    mBtn.onclick = e => {
+      e.stopPropagation();
+      const k = mBtn.dataset.modeKey;
+      const v = mBtn.dataset.modeVal;
+      simState[k] = (typeof simState[k] === 'number') ? (isNaN(+v) ? v : +v) : v;
+      if (mBtn.dataset.syncStep !== undefined) {
+        simState.step = Math.max(Number(simState.step || 0), Number(mBtn.dataset.syncStep));
+      }
+      if (typeof setManualOverride === 'function') setManualOverride(simState, k);
+      runSimFn(fn, simState, false);
+      syncSlideProgression(simState);
+      bindSimControls(type);
+    };
+  });
+
+  const actBtns = ctrlBox.querySelectorAll('[data-action]');
+  actBtns.forEach(btn => {
+    const act = btn.dataset.action;
+    if (/^m\d+$/.test(act)) {
+      btn.classList.toggle('active-act', act === (simState.action || 'm0'));
+    }
+    btn.onclick = e => {
+      e.stopPropagation();
+      const barEl = ctrlBox.querySelector('.step-ctrl-bar');
+      const maxStep = barEl ? Number(barEl.dataset.maxStep || 3) : 3;
+      if (act === 'nextStep') {
+        let nextS = Math.min(maxStep, Number(simState.step || 0) + 1);
+        while (nextS < maxStep) {
+          const bKeys = Object.keys(window._blockMinSteps || {}).filter(k => window._blockMinSteps[k] === nextS);
+          const allBManual = bKeys.length > 0 && bKeys.every(k => simState.manualBlocks && simState.manualBlocks[k]);
+          const pManual = Boolean(simState.manualProbNodes && simState.manualProbNodes[nextS - 1]);
+          if (allBManual || pManual) {
+            nextS++;
+          } else {
+            break;
+          }
+        }
+        simState.step = nextS;
+        simState.manualOverrides = {};
+      } else if (act === 'prevStep') {
+        const prevS = Math.max(0, Number(simState.step || 0) - 1);
+        simState.step = prevS;
+        simState.manualOverrides = {};
+        if (simState.manualBlocks) {
+          Object.keys(simState.manualBlocks).forEach(k => {
+            if ((window._blockMinSteps[k] || 99) > prevS) delete simState.manualBlocks[k];
+          });
+        }
+        if (simState.manualProbNodes) {
+          Object.keys(simState.manualProbNodes).forEach(k => {
+            if (Number(k) + 1 > prevS) delete simState.manualProbNodes[k];
+          });
+        }
+        if (simState.manualNotes) {
+          Object.keys(simState.manualNotes).forEach(k => {
+            if (Number(k) + 1 > prevS) delete simState.manualNotes[k];
+          });
+        }
+      } else if (act === 'completeTable') {
+        simState.step = maxStep;
+        simState.manualOverrides = {};
+      } else if (act === 'reset') {
+        simState.step = 0;
+        clearManualOverrides(simState);
+        root.querySelectorAll('.screen-stem .screen-blank').forEach(b => { b.dataset.manualFill = ''; });
+      } else {
+        simState.action = act;
+      }
+      runSimFn(fn, simState, false);
+      syncSlideProgression(simState);
+      bindSimControls(type);
+    };
+  });
+}
+
+function setupScreen(){
+  const root = activeRoot();
+  const controls = root.querySelector('#controls'), notes = root.querySelector('.screen-notes');
+  if(controls&&notes&&controls.parentElement!==notes)notes.prepend(controls);
+  root.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{
+    const lab=b.dataset.view==='lab';
+    if(root.querySelector('.screen-source'))root.querySelector('.screen-source').hidden=lab;
+    if(root.querySelector('.screen-lab'))root.querySelector('.screen-lab').hidden=!lab;
+    root.querySelectorAll('[data-view]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    root.querySelector('.screen-page')?.classList.toggle('lab-visible',lab);
+    fitContent();
+  });
+  if(root.querySelector('.screen-lab')&&!root.querySelector('.screen-lab').hidden)root.querySelector('.screen-page')?.classList.add('lab-visible');
+
+  // ================= 函数图象画布全屏放大按钮注入与快捷键绑定 =================
+  window.updateCanvasZoomBtnUI = function() {
+    const isZoomed = document.body.classList.contains("canvas-zoom-mode");
+    document.querySelectorAll(".step-btn.zoom").forEach(b => {
+      b.innerHTML = isZoomed ? "🗗 退出全屏" : "🔍 放大图象";
+    });
+    document.querySelectorAll(".canvas-zoom-btn").forEach(btn => {
+      btn.innerHTML = isZoomed
+        ? "<svg viewBox=\"0 0 24 24\"><path d=\"M8 3v3a2 2 0 0 1-2 2H3\"/><path d=\"M21 8h-3a2 2 0 0 1-2-2V3\"/><path d=\"M3 16h3a2 2 0 0 1 2 2v3\"/><path d=\"M16 21v-3a2 2 0 0 1 2-2h3\"/></svg><span>退出全屏图象 (ESC)</span>"
+        : "<svg viewBox=\"0 0 24 24\"><path d=\"M15 3h6v6\"/><path d=\"M9 21H3v-6\"/><path d=\"M21 3l-7 7\"/><path d=\"M3 21l7-7\"/></svg><span>全屏放大图象</span>";
+      btn.title = isZoomed ? "点击退出函数图象全屏模式（快捷键 ESC 或 Z）" : "将函数图象画布全屏放大展示，保留滑块与分步交互（快捷键 Z 或双击画布）";
+    });
+  };
+  window.toggleCanvasZoom = function(e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const root = activeRoot();
+    if (!root || !root.querySelector(".screen-lab")) return;
+    document.body.classList.toggle("canvas-zoom-mode");
+    window.updateCanvasZoomBtnUI();
+  };
+  const labEl = root.querySelector(".screen-lab");
+  if (labEl && !labEl.querySelector(".canvas-zoom-btn")) {
+    const zBtn = document.createElement("button");
+    zBtn.type = "button";
+    zBtn.className = "canvas-zoom-btn";
+    zBtn.onclick = window.toggleCanvasZoom;
+    labEl.prepend(zBtn);
+    window.updateCanvasZoomBtnUI();
+    const visEl = labEl.querySelector(".visual");
+    if (visEl && !visEl.dataset.dblZoomBound) {
+      visEl.dataset.dblZoomBound = "1";
+      visEl.addEventListener("dblclick", (ev) => {
+        if (typeof penOn !== "undefined" && penOn) return;
+        if (ev.target.closest("button, input, select")) return;
+        window.toggleCanvasZoom(ev);
+      });
+    }
+  } else if (!labEl && document.body.classList.contains("canvas-zoom-mode")) {
+    document.body.classList.remove("canvas-zoom-mode");
+  }
+
+  const fsBtn = document.getElementById('fontScaleBtn');
+  if (fsBtn && !fsBtn.dataset.bound) {
+    fsBtn.dataset.bound = '1';
+    const modes = [
+      ['normal', '🔍 字号：大屏标准'],
+      ['large', '🔍 字号：加大 112%'],
+      ['xlarge', '🔍 字号：特大 124%']
+    ];
+    let mIdx = 0;
+    fsBtn.onclick = (e) => {
+      e.stopPropagation();
+      mIdx = (mIdx + 1) % modes.length;
+      document.body.dataset.fontScale = modes[mIdx][0];
+      fsBtn.textContent = modes[mIdx][1];
+    };
+  }
+  const penBtn = document.getElementById('pen');
+  if (penBtn && !penBtn.dataset.styled) {
+    penBtn.dataset.styled = '1';
+    if (!penOn) penBtn.textContent = '✏️ 批注';
+    // 将批注工具栏内部所有按钮升级为极简大图标（含全新设计的斜角块状橡皮擦与鼠标穿透模式）
+    const tb = document.getElementById('inkToolbar');
+    if (tb && !tb.dataset.iconified) {
+      tb.dataset.iconified = '1';
+      const toolGrp = tb.querySelector('.ink-group');
+      if (toolGrp && !toolGrp.querySelector('[data-ink-tool="cursor"]')) {
+        const curBtn = document.createElement('button');
+        curBtn.type = 'button';
+        curBtn.dataset.inkTool = 'cursor';
+        curBtn.title = '手指触控操作课件（保留批注栏）';
+        curBtn.setAttribute('aria-label', '触控操作课件');
+        curBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>';
+        toolGrp.prepend(curBtn);
+      }
+      const caretSvg = '<svg class="ink-tool-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg><span class="ink-tool-color-bar"></span>';
+      if (toolGrp && !toolGrp.querySelector('[data-ink-tool="shape"]')) {
+        const shapeBtn = document.createElement('button');
+        shapeBtn.type = 'button';
+        shapeBtn.dataset.inkTool = 'shape';
+        shapeBtn.title = '几何作图工具（坐标系 / 数轴 / 三角形 / 圆等）';
+        shapeBtn.setAttribute('aria-label', '几何作图工具');
+        const erBtn = toolGrp.querySelector('[data-ink-tool="eraser"]');
+        if (erBtn) toolGrp.insertBefore(shapeBtn, erBtn);
+        else toolGrp.appendChild(shapeBtn);
+      }
+      const iconMap = {
+        '[data-ink-tool="pen"]': ['画笔（点击展开粗细与调色二级菜单）', '<svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>' + caretSvg],
+        '[data-ink-tool="highlight"]': ['荧光笔（点击展开粗细与调色二级菜单）', '<svg viewBox="0 0 24 24"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/><path d="m18 8 4 4"/></svg>' + caretSvg],
+        '[data-ink-tool="shape"]': ['几何作图工具（点击选择坐标系 / 数轴 / 三角形 / 圆等，在黑板上拖拽作图）', '<svg viewBox="0 0 24 24"><path d="M10.5 3.5 3 16h15Z"/><circle cx="17" cy="15.5" r="4.5"/></svg>' + caretSvg],
+        '[data-ink-tool="eraser"]': ['橡皮擦', '<svg viewBox="0 0 24 24"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>'],
+        '#inkUndo': ['撤销 (Ctrl+Z)', '<svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>'],
+        '#inkRedo': ['重做 (Ctrl+Y)', '<svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/></svg>'],
+        '#inkClear': ['清空本页批注', '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>'],
+        '#inkFold': ['收起为悬浮球', '<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>'],
+        '#inkExit': ['退出批注', '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>']
+      };
+      Object.entries(iconMap).forEach(([sel, [tip, svg]]) => {
+        const el = tb.querySelector(sel);
+        if (el) {
+          el.title = tip;
+          el.setAttribute('aria-label', tip);
+          el.innerHTML = svg;
+        }
+      });
+      // Goodnotes 风格二级菜单：含几何图形选择区 + 虚线/粗细区 + 6色球/自定义色
+      const palette = tb.querySelector('.ink-palette');
+      if (palette && !tb.querySelector('#inkSubMenu')) {
+        const subMenu = document.createElement('div');
+        subMenu.id = 'inkSubMenu';
+        subMenu.setAttribute('role', 'group');
+        subMenu.setAttribute('aria-label', '几何图形、笔迹粗细与颜色二级菜单');
+
+        const shapeBox = document.createElement('div');
+        shapeBox.className = 'ink-shape-presets';
+        shapeBox.innerHTML = `
+          <button type="button" class="ink-shape-btn selected" data-ink-shape="axes" title="平面直角坐标系 xOy（拖拽生成）" aria-label="平面直角坐标系">
+            <svg viewBox="0 0 24 24"><line x1="2" y1="12" x2="21" y2="12"/><polyline points="17 8.5 21 12 17 15.5"/><line x1="12" y1="22" x2="12" y2="3"/><polyline points="8.5 7 12 3 15.5 7"/></svg>
+          </button>
+          <button type="button" class="ink-shape-btn" data-ink-shape="numberline" title="数轴（带原点0与刻度，拖拽生成）" aria-label="数轴">
+            <svg viewBox="0 0 24 24"><line x1="2" y1="13" x2="21" y2="13"/><polyline points="17 9 21 13 17 17"/><line x1="6" y1="9.5" x2="6" y2="16.5"/><line x1="11.5" y1="8" x2="11.5" y2="18"/><line x1="16.5" y1="9.5" x2="16.5" y2="16.5"/></svg>
+          </button>
+          <button type="button" class="ink-shape-btn" data-ink-shape="triangle" title="三角形 △（拖拽生成）" aria-label="三角形">
+            <svg viewBox="0 0 24 24"><polygon points="12 4 3.5 19.5 20.5 19.5"/></svg>
+          </button>
+          <button type="button" class="ink-shape-btn" data-ink-shape="rttriangle" title="直角三角形 Rt△（自动带直角符号∟）" aria-label="直角三角形">
+            <svg viewBox="0 0 24 24"><polygon points="4.5 4.5 4.5 19.5 20 19.5"/><polyline points="4.5 15 9 15 9 19.5"/></svg>
+          </button>
+          <button type="button" class="ink-shape-btn" data-ink-shape="circle" title="圆 / 椭圆 ○（拖拽生成）" aria-label="圆">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>
+          </button>
+          <button type="button" class="ink-shape-btn" data-ink-shape="rect" title="矩形 / 正方形 □（拖拽生成）" aria-label="矩形">
+            <svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="13" rx="1.5"/></svg>
+          </button>
+          <button type="button" class="ink-shape-btn" data-ink-shape="line" title="直线段 / 辅助线（配合虚线可画虚线辅助线）" aria-label="直线段">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="19" x2="20" y2="5"/><circle cx="4" cy="19" r="1.6" fill="currentColor"/><circle cx="20" cy="5" r="1.6" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="ink-shape-btn" data-ink-shape="arrow" title="射线 / 指向箭头" aria-label="单向箭头">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="19" x2="20" y2="5"/><polyline points="13 5 20 5 20 12"/></svg>
+          </button>
+        `;
+
+        const strokeBox = document.createElement('div');
+        strokeBox.className = 'ink-stroke-presets';
+        strokeBox.innerHTML = `
+          <button type="button" class="ink-stroke-btn" data-ink-dash="1" title="虚线批注 / 几何虚线辅助线" aria-label="虚线">
+            <svg viewBox="0 0 32 16"><line x1="2" y1="8" x2="8" y2="8" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><line x1="13" y1="8" x2="19" y2="8" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><line x1="24" y1="8" x2="30" y2="8" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="ink-stroke-btn" data-ink-size="2.5" title="细线条 (2.5px)" aria-label="细线条">
+            <svg viewBox="0 0 32 16"><line x1="4" y1="8" x2="28" y2="8" stroke="currentColor" stroke-width="2.0" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="ink-stroke-btn selected" data-ink-size="5.5" title="标准线条 (5.5px)" aria-label="标准线条">
+            <svg viewBox="0 0 32 16"><line x1="4" y1="8" x2="28" y2="8" stroke="currentColor" stroke-width="4.6" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="ink-stroke-btn" data-ink-size="11" title="粗线条 (11px)" aria-label="粗线条">
+            <svg viewBox="0 0 32 16"><line x1="5" y1="8" x2="27" y2="8" stroke="currentColor" stroke-width="8.4" stroke-linecap="round"/></svg>
+          </button>
+        `;
+
+        const divider = document.createElement('div');
+        divider.className = 'ink-sub-divider';
+
+        const plusBtn = document.createElement('button');
+        plusBtn.type = 'button';
+        plusBtn.className = 'ink-custom-plus';
+        plusBtn.title = '自定义更多颜色';
+        plusBtn.setAttribute('aria-label', '自定义颜色');
+        plusBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+        plusBtn.onclick = (ev) => {
+          ev.stopPropagation();
+          document.getElementById('inkCustomColor')?.click();
+        };
+        palette.appendChild(plusBtn);
+
+        palette.parentNode.insertBefore(subMenu, palette);
+        subMenu.appendChild(shapeBox);
+        subMenu.appendChild(strokeBox);
+        subMenu.appendChild(divider);
+        subMenu.appendChild(palette);
+
+        document.addEventListener('pointerdown', (ev) => {
+          if (!tb.contains(ev.target)) {
+            subMenu.classList.remove('palette-open');
+          }
+        });
+      }
+      if (!window.inkToolProfiles) {
+        window.inkToolProfiles = {
+          pen: { color: '#d94040', size: 5.5, dashed: false },
+          highlight: { color: '#e29a19', size: 5.5, dashed: false },
+          shape: { color: '#384d8f', size: 2.5, dashed: false, shapeType: 'axes' }
+        };
+      }
+      window.syncSubMenuDock = () => {
+        if (!tb.dataset.recentered && !tb.hidden && tb.offsetWidth > 0) {
+          tb.dataset.recentered = '1';
+          tb.style.left = Math.round((window.innerWidth - tb.offsetWidth) / 2) + 'px';
+        }
+        const subMenu = document.getElementById('inkSubMenu');
+        const activeDrawTool = ['pen', 'highlight', 'shape'].includes(inkSettings.tool) ? inkSettings.tool : 'pen';
+        if (subMenu) {
+          subMenu.classList.toggle('shape-mode', activeDrawTool === 'shape');
+        }
+        // 同步一级菜单画笔、荧光笔与几何工具底部的指示条（颜色、粗细、虚实）
+        ['pen', 'highlight', 'shape'].forEach(tName => {
+          const prof = window.inkToolProfiles[tName];
+          const tBtn = tb.querySelector(`[data-ink-tool="${tName}"]`);
+          const bar = tBtn?.querySelector('.ink-tool-color-bar');
+          if (bar && prof) {
+            bar.style.setProperty('--tool-color', prof.color);
+            const bh = prof.size <= 3.5 ? '2.5px' : (prof.size >= 8 ? '7px' : '4.5px');
+            bar.style.setProperty('--bar-h', bh);
+            bar.style.height = bh;
+            bar.style.backgroundColor = prof.color;
+            bar.classList.toggle('is-dashed', Boolean(prof.dashed));
+          }
+        });
+        // 同步二级菜单内的几何图形、粗细、虚线、颜色球高亮状态
+        tb.querySelectorAll('[data-ink-shape]').forEach(b => {
+          b.classList.toggle('selected', b.dataset.inkShape === (inkSettings.shapeType || 'axes'));
+        });
+        tb.querySelectorAll('[data-ink-size]').forEach(b => {
+          b.classList.toggle('selected', +b.dataset.inkSize === +inkSettings.size);
+        });
+        const dashBtn = tb.querySelector('[data-ink-dash]');
+        if (dashBtn) dashBtn.classList.toggle('selected', Boolean(inkSettings.dashed));
+        tb.querySelectorAll('[data-ink-color]').forEach(b => {
+          const act = b.dataset.inkColor?.toLowerCase() === String(inkSettings.color).toLowerCase();
+          b.classList.toggle('selected', act);
+          b.setAttribute('aria-pressed', String(act));
+        });
+        tb.style.setProperty('--active-ink', inkSettings.color);
+        // 动态计算二级菜单底部三角箭头位置，使其精准对准当前一级菜单按钮正中央并无缝对接
+        if (subMenu && subMenu.classList.contains('palette-open')) {
+          const targetBtn = tb.querySelector(`[data-ink-tool="${activeDrawTool}"]`);
+          if (targetBtn) {
+            const btnR = targetBtn.getBoundingClientRect();
+            const subR = subMenu.getBoundingClientRect();
+            if (subR.width > 0) {
+              const arrowX = Math.max(28, Math.min(subR.width - 28, (btnR.left + btnR.width / 2) - subR.left));
+              subMenu.style.setProperty('--dock-arrow-x', Math.round(arrowX) + 'px');
+            }
+          }
+        }
+      };
+      const customInp = document.getElementById('inkCustomColor');
+      if (customInp && !customInp.dataset.boundSync) {
+        customInp.dataset.boundSync = '1';
+        customInp.addEventListener('input', (e) => {
+          inkSettings.color = e.target.value;
+          const drawTool = ['pen', 'highlight', 'shape'].includes(inkSettings.tool) ? inkSettings.tool : 'pen';
+          if (!['pen', 'highlight', 'shape'].includes(inkSettings.tool)) inkSettings.tool = 'pen';
+          window.inkToolProfiles[drawTool].color = inkSettings.color;
+          updateInkTools();
+          window.syncSubMenuDock();
+        });
+      }
+      tb.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('button');
+        if (!btn) return;
+        const subMenu = document.getElementById('inkSubMenu');
+        const activeDrawTool = ['pen', 'highlight', 'shape'].includes(inkSettings.tool) ? inkSettings.tool : 'pen';
+        if (btn.dataset.inkShape) {
+          ev.stopPropagation();
+          inkSettings.tool = 'shape';
+          inkSettings.shapeType = btn.dataset.inkShape;
+          window.inkToolProfiles.shape.shapeType = inkSettings.shapeType;
+          document.getElementById('penLayer')?.classList.toggle('enabled', penOn);
+          updateInkTools();
+          window.syncSubMenuDock();
+          return;
+        }
+        if (btn.dataset.inkDash) {
+          ev.stopPropagation();
+          if (!['pen', 'highlight', 'shape'].includes(inkSettings.tool)) inkSettings.tool = activeDrawTool;
+          inkSettings.dashed = !inkSettings.dashed;
+          window.inkToolProfiles[inkSettings.tool].dashed = inkSettings.dashed;
+          document.getElementById('penLayer')?.classList.toggle('enabled', penOn);
+          updateInkTools();
+          window.syncSubMenuDock();
+          return;
+        }
+        if (btn.dataset.inkSize) {
+          ev.stopPropagation();
+          if (!['pen', 'highlight', 'shape'].includes(inkSettings.tool)) inkSettings.tool = activeDrawTool;
+          inkSettings.size = +btn.dataset.inkSize;
+          window.inkToolProfiles[inkSettings.tool].size = inkSettings.size;
+          document.getElementById('penLayer')?.classList.toggle('enabled', penOn);
+          updateInkTools();
+          window.syncSubMenuDock();
+          return;
+        }
+        if (btn.dataset.inkTool) {
+          const tool = btn.dataset.inkTool;
+          const isCursor = tool === 'cursor';
+          document.getElementById('penLayer')?.classList.toggle('enabled', penOn && !isCursor);
+          if (tool === 'pen' || tool === 'highlight' || tool === 'shape') {
+            const prof = window.inkToolProfiles[tool];
+            if (prof) {
+              inkSettings.color = prof.color;
+              inkSettings.size = prof.size;
+              inkSettings.dashed = prof.dashed;
+              if (prof.shapeType) inkSettings.shapeType = prof.shapeType;
+            }
+            if (tb.dataset.lastOpenTool === tool && subMenu?.classList.contains('palette-open')) {
+              subMenu.classList.remove('palette-open');
+            } else {
+              subMenu?.classList.add('palette-open');
+            }
+            tb.dataset.lastOpenTool = tool;
+            updateInkTools();
+            requestAnimationFrame(() => window.syncSubMenuDock());
+          } else {
+            subMenu?.classList.remove('palette-open');
+            tb.dataset.lastOpenTool = tool;
+          }
+          window.syncSubMenuDock();
+        } else if (btn.dataset.inkColor) {
+          if (!['pen', 'highlight', 'shape'].includes(inkSettings.tool)) {
+            inkSettings.tool = 'pen';
+          }
+          window.inkToolProfiles[inkSettings.tool].color = inkSettings.color;
+          document.getElementById('penLayer')?.classList.toggle('enabled', penOn);
+          updateInkTools();
+          window.syncSubMenuDock();
+        }
+      });
+      window.syncSubMenuDock();
+      requestAnimationFrame(() => window.syncSubMenuDock());
+    }
+  }
+  const tocBtn = document.getElementById('toc');
+  if (tocBtn && !tocBtn.dataset.styled) {
+    tocBtn.dataset.styled = '1';
+    tocBtn.textContent = '📑 目录';
+  }
+  let pLeft = document.getElementById('edgePaddlePrev');
+  let pRight = document.getElementById('edgePaddleNext');
+  if (!pLeft) {
+    pLeft = document.createElement('button');
+    pLeft.id = 'edgePaddlePrev';
+    pLeft.type = 'button';
+    pLeft.className = 'edge-nav-paddle left';
+    pLeft.title = '上一页 (PageUp / ←)';
+    pLeft.setAttribute('aria-label', '上一页');
+    pLeft.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>';
+    pLeft.onclick = (e) => { e.stopPropagation(); go(index - 1); };
+    document.body.appendChild(pLeft);
+  }
+  if (!pRight) {
+    pRight = document.createElement('button');
+    pRight.id = 'edgePaddleNext';
+    pRight.type = 'button';
+    pRight.className = 'edge-nav-paddle right';
+    pRight.title = '下一页 (PageDown / →)';
+    pRight.setAttribute('aria-label', '下一页');
+    pRight.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>';
+    pRight.onclick = (e) => { e.stopPropagation(); go(index + 1); };
+    document.body.appendChild(pRight);
+  }
+  pLeft.disabled = (index === 0);
+  pRight.disabled = (index === slides.length - 1);
+  fitContent();
+}
+
+function render(){cancelAnimationFrame(raf);playing=false;const s=slides[index];const courseFormatted=formatCourseTitleHTML(window.COURSEWARE_TITLE||COURSE_RAW_TITLE);$('#content').innerHTML=`<section class="slide ${s.cover?'cover':''}">${flowbar(s)}${s.cover?'':`<div class="slide-head-bar"><h2>${s.title}</h2>${eyebrowBar(s)}</div>`}<div class="slide-body">${s.html}</div><div class="subfoot"><span>${courseFormatted} · ${getPhasePair(s)[0]}</span><span>${String(index+1).padStart(2,'0')} / ${slides.length}</span></div></section>`;$('#pageCount').textContent=`${index+1} / ${slides.length}`;$('#slideTitle').innerHTML=`${getPhasePair(s)[0]} · ${s.title}`;$('#prev').disabled=index===0;$('#next').disabled=index===slides.length-1;$('#progress').style.width=((index+1)/slides.length*100)+'%';document.querySelectorAll('[data-chapter]').forEach(b=>b.classList.toggle('active',+b.dataset.chapter===s.lesson));if(s.sim)initSim(s.sim);else normalizeSvgMathInRoot(activeRoot());setupScreen();fitContent();restoreInk();$('#viewport').scrollTop=0;location.hash='slide-'+(index+1);}
+function fitContent(){const b=$('.slide-body');if(b)b.style.transform='none';}
+
+function go(n){transitionNavigate(n)}
+function chapter(n){go(slides.findIndex(s=>s.lesson===n))}
+function size(){if(innerWidth<=700){const b=$('.slide-body');if(b)b.style.transform='none';return;}const w=innerWidth,h=$('#viewport').clientHeight;$('#stage').style.transform=`scale(${Math.min(w/1600,h/900)})`;fitContent()}
+$('#closeImage').onclick=()=>$('#imageDialog').close();$('#imageDialog').addEventListener('click',e=>{if(e.target===$('#imageDialog'))$('#imageDialog').close()});
+$('#prev').onclick=()=>go(index-1);$('#next').onclick=()=>go(index+1);
+document.addEventListener('click',e=>{if(e.target.tagName==='IMG'&&e.target.closest('.slide')){const picture=document.querySelector('#largeImage');picture.src=e.target.src;picture.alt=e.target.alt;$('#imageDialog').showModal();return;}const b=e.target.closest('button');if(!b)return;if(b.dataset.phase!==undefined){const phase=+b.dataset.phase;const found=slides.findIndex(v=>v.lesson===slides[index].lesson&&phaseOf(v)===phase);if(found>=0)go(found);return;}if(b.dataset.chapter)chapter(+b.dataset.chapter);if(b.dataset.jump)go(+b.dataset.jump);if(b.hasAttribute('data-reveal')){const a=b.nextElementSibling,opening=a.hidden;document.querySelectorAll('.answer').forEach(el=>el.hidden=true);document.querySelectorAll('[data-reveal]').forEach(el=>el.setAttribute('aria-expanded','false'));a.hidden=!opening;b.setAttribute('aria-expanded',String(opening));fitContent()}if(b.dataset.option!==undefined){const q=b.closest('.quiz'),correct=+q.dataset.correct,pick=+b.dataset.option;q.querySelectorAll('button').forEach(el=>el.classList.remove('correct','wrong'));b.classList.add(pick===correct?'correct':'wrong');q.nextElementSibling.textContent=pick===correct?q.nextElementSibling.dataset.explain:'再想一想：先检查光线特点和题目条件。';fitContent();}if(b.dataset.tree!==undefined){const ok=b.dataset.tree==='3';$('#treeFeedback').textContent=ok?'正确。D 中影子同向，高树的影子更长，比例与高度一致。':'请再比较：影子是否同向？高树是否对应更长的影子？';b.style.borderColor=ok?'#15927f':'#d99a76';fitContent();}});
+$('#toc').onclick=()=>{const list=$('#tocList');list.innerHTML=slides.map((s,i)=>{const ph=phaseOf(s);const prevPh=i>0?phaseOf(slides[i-1]):-1;const pair=getPhasePair(s);const hdr=(i===0||ph!==prevPh)?`<div class="toc-group-header"><span>${pair[0]} · ${pair[1]}</span><small style="font-size:13.5px;color:#475569;font-weight:600">点击词条直接跳转</small></div>`:'';return `${hdr}<button data-toc="${i}" class="${i===index?'current':''}"><span class="toc-idx">${String(i+1).padStart(2,'0')}</span><span class="toc-title-wrap">${s.title}</span><small class="phase-label">${s.navTag||pair[0]}</small></button>`;}).join('');$('#tocDialog').showModal();requestAnimationFrame(()=>list.querySelector('.current')?.scrollIntoView({block:'nearest'}))};$('#closeToc').onclick=()=>$('#tocDialog').close();$('#tocList').onclick=e=>{const b=e.target.closest('[data-toc]');if(b){go(+b.dataset.toc);$('#tocDialog').close()}};
+$('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch(e){toast('可使用浏览器的 F11 键进入全屏')}};
+function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',2500)}
+
+let penOn=false,drawing=false;
+const INK_STAGE_W=1600,INK_STAGE_H=900,INK_DPR=Math.min(window.devicePixelRatio||1,2);
+const canvas=$('#penLayer'),ctx=canvas.getContext('2d',{desynchronized:true});
+const inkBase=document.createElement('canvas'),inkStroke=document.createElement('canvas');
+canvas.width=inkBase.width=inkStroke.width=INK_STAGE_W*INK_DPR;
+canvas.height=inkBase.height=inkStroke.height=INK_STAGE_H*INK_DPR;
+const baseCtx=inkBase.getContext('2d'),strokeCtx=inkStroke.getContext('2d');
+[ctx,baseCtx,strokeCtx].forEach(c=>{c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high'});
+const inkSettings={color:'#d94040',size:5.5,tool:'pen',dashed:false,shapeType:'axes'};
+const inkPages=new Map();let activeStroke=null,activePointer=null,inkFrame=0;
+function inkPage(){if(!inkPages.has(index))inkPages.set(index,{strokes:[],undo:[],redo:[]});return inkPages.get(index)}
+function inkSnapshot(){const p=inkPage();p.undo.push(p.strokes.slice());if(p.undo.length>100)p.undo.shift();p.redo=[]}
+function inkPoint(e){
+ const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*INK_STAGE_W/r.width,y=(e.clientY-r.top)*INK_STAGE_H/r.height;
+ const tool=activeStroke?.tool||inkSettings.tool,size=activeStroke?.size||inkSettings.size;
+ const width=tool==='eraser'?size*5.2:tool==='highlight'?size*4.2:size;
+ return {x,y,w:width};
+}
+function drawInkArrowHead(c,tx,ty,ang,sz){
+ c.save();c.setLineDash([]);c.beginPath();
+ c.moveTo(tx,ty);c.lineTo(tx-sz*Math.cos(ang-Math.PI/6),ty-sz*Math.sin(ang-Math.PI/6));
+ c.moveTo(tx,ty);c.lineTo(tx-sz*Math.cos(ang+Math.PI/6),ty-sz*Math.sin(ang+Math.PI/6));
+ c.stroke();c.restore();
+}
+function traceShapePath(c,stroke,w,dashed){
+ const pts=stroke.points;if(!pts||!pts.length)return;
+ const p1=pts[0],p2=pts[pts.length-1];
+ const x1=p1.x,y1=p1.y,x2=p2.x,y2=p2.y,dx=x2-x1,dy=y2-y1,dist=Math.hypot(dx,dy);
+ const st=stroke.shapeType||'axes';
+ c.lineCap='round';c.lineJoin='round';c.lineWidth=w;
+ c.setLineDash(dashed?[w*2.2,w*1.8]:[]);
+ if(st==='line'){
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+ }else if(st==='arrow'){
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+  if(dist>8)drawInkArrowHead(c,x2,y2,Math.atan2(dy,dx),Math.max(13,w*2.8));
+ }else if(st==='triangle'){
+  c.beginPath();c.moveTo((x1+x2)/2,y1);c.lineTo(x1,y2);c.lineTo(x2,y2);c.closePath();c.stroke();
+ }else if(st==='rttriangle'){
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x1,y2);c.lineTo(x2,y2);c.closePath();c.stroke();
+  if(Math.abs(dx)>24&&Math.abs(dy)>24){
+   const sq=Math.min(18,Math.abs(dx)*.26,Math.abs(dy)*.26),sx=dx>=0?1:-1,sy=dy>=0?-1:1;
+   c.save();c.setLineDash([]);c.lineWidth=Math.max(2,w*.68);
+   c.beginPath();c.moveTo(x1+sx*sq,y2);c.lineTo(x1+sx*sq,y2+sy*sq);c.lineTo(x1,y2+sy*sq);c.stroke();c.restore();
+  }
+ }else if(st==='rect'){
+  c.beginPath();c.rect(Math.min(x1,x2),Math.min(y1,y2),Math.abs(dx),Math.abs(dy));c.stroke();
+ }else if(st==='circle'){
+  const cx=(x1+x2)/2,cy=(y1+y2)/2;let rx=Math.abs(dx)/2,ry=Math.abs(dy)/2;
+  if(rx>8&&ry>8&&Math.abs(rx-ry)/Math.max(rx,ry)<.22)rx=ry=(rx+ry)/2;
+  c.beginPath();c.ellipse(cx,cy,Math.max(1,rx),Math.max(1,ry),0,0,Math.PI*2);c.stroke();
+ }else if(st==='numberline'){
+  const minX=Math.min(x1,x2),maxX=Math.max(x1,x2),ny=y2,len=maxX-minX;
+  c.beginPath();c.moveTo(minX,ny);c.lineTo(maxX,ny);c.stroke();
+  if(len>24){
+   drawInkArrowHead(c,maxX,ny,0,Math.max(13,w*2.6));
+   const midX=(minX+maxX)/2,step=Math.max(44,Math.round(len/6));
+   c.save();c.setLineDash([]);c.lineWidth=Math.max(2,w*.72);
+   c.font='600 19px "Times New Roman", serif';c.textAlign='center';c.textBaseline='top';
+   const maxK=Math.floor((len/2-22)/step);
+   for(let k=-maxK;k<=maxK;k++){
+    const tx=midX+k*step,th=k===0?11:7;
+    c.beginPath();c.moveTo(tx,ny-th);c.lineTo(tx,ny+th);c.stroke();
+    if(maxK<=5||k===0||k%2===0)c.fillText(String(k),tx,ny+12);
+   }
+   c.restore();
+  }
+ }else if(st==='axes'){
+  const minX=Math.min(x1,x2),maxX=Math.max(x1,x2),minY=Math.min(y1,y2),maxY=Math.max(y1,y2);
+  const ox=(minX+maxX)/2,oy=(minY+maxY)/2,wSpan=maxX-minX,hSpan=maxY-minY;
+  c.beginPath();c.moveTo(minX,oy);c.lineTo(maxX,oy);c.moveTo(ox,maxY);c.lineTo(ox,minY);c.stroke();
+  if(wSpan>30&&hSpan>30){
+   const arrSz=Math.max(12,w*2.5);
+   drawInkArrowHead(c,maxX,oy,0,arrSz);drawInkArrowHead(c,ox,minY,-Math.PI/2,arrSz);
+   const step=Math.max(40,Math.round(Math.min(wSpan,hSpan)/5));
+   c.save();c.setLineDash([]);c.lineWidth=Math.max(1.8,w*.65);
+   const kx=Math.floor((wSpan/2-24)/step);
+   for(let k=-kx;k<=kx;k++){if(k===0)continue;const tx=ox+k*step;c.beginPath();c.moveTo(tx,oy-5);c.lineTo(tx,oy+5);c.stroke();}
+   const ky=Math.floor((hSpan/2-24)/step);
+   for(let k=-ky;k<=ky;k++){if(k===0)continue;const ty=oy+k*step;c.beginPath();c.moveTo(ox-5,ty);c.lineTo(ox+5,ty);c.stroke();}
+   c.font='italic bold 22px "Times New Roman", serif';c.textAlign='left';c.textBaseline='top';
+   c.fillText('x',maxX-18,oy+10);c.fillText('y',ox+12,minY+2);
+   c.textAlign='right';c.fillText('O',ox-8,oy+6);c.restore();
+  }
+ }
+ c.setLineDash([]);
+}
+function traceBezierPath(c,pts,w,dashed){
+ c.lineCap='round';c.lineJoin='round';c.lineWidth=w;
+ c.setLineDash(dashed?[w*2.2,w*1.8]:[]);
+ if(pts.length===1){
+  c.beginPath();c.arc(pts[0].x,pts[0].y,w/2,0,Math.PI*2);c.fill();return;
+ }
+ c.beginPath();c.moveTo(pts[0].x,pts[0].y);
+ if(pts.length===2){
+  c.lineTo(pts[1].x,pts[1].y);
+ }else{
+  for(let i=1;i<pts.length-1;i++){
+   const mx=(pts[i].x+pts[i+1].x)/2,my=(pts[i].y+pts[i+1].y)/2;
+   c.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
+  }
+  const last=pts[pts.length-1];c.lineTo(last.x,last.y);
+ }
+ c.stroke();c.setLineDash([]);
+}
+function paintInk(target,stroke){
+ const pts=stroke.points;if(!pts||!pts.length)return;
+ const w=pts[0].w||(stroke.tool==='eraser'?stroke.size*5.2:stroke.tool==='highlight'?stroke.size*4.2:stroke.size);
+ const isDash=Boolean(stroke.dashed&&stroke.tool!=='eraser');
+ if(stroke.tool==='shape'){
+  target.save();target.setTransform(INK_DPR,0,0,INK_DPR,0,0);
+  target.globalAlpha=1;target.globalCompositeOperation='source-over';
+  target.strokeStyle=stroke.color;target.fillStyle=stroke.color;
+  traceShapePath(target,stroke,w,isDash);target.restore();return;
+ }
+ if(stroke.tool==='pen'||stroke.tool==='marker'){
+  target.save();target.setTransform(INK_DPR,0,0,INK_DPR,0,0);
+  target.globalAlpha=1;target.globalCompositeOperation='source-over';
+  target.strokeStyle=stroke.color;target.fillStyle=stroke.color;
+  traceBezierPath(target,pts,w,isDash);target.restore();return;
+ }
+ strokeCtx.setTransform(1,0,0,1,0,0);strokeCtx.clearRect(0,0,inkStroke.width,inkStroke.height);
+ strokeCtx.save();strokeCtx.setTransform(INK_DPR,0,0,INK_DPR,0,0);
+ strokeCtx.strokeStyle=stroke.color;strokeCtx.fillStyle=stroke.color;
+ traceBezierPath(strokeCtx,pts,w,isDash);strokeCtx.restore();
+ target.save();target.setTransform(1,0,0,1,0,0);
+ target.globalAlpha=stroke.tool==='highlight'?.34:1;
+ target.globalCompositeOperation=stroke.tool==='eraser'?'destination-out':'source-over';
+ target.drawImage(inkStroke,0,0);target.restore();
+}
+function redrawInk(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(inkBase,0,0);if(activeStroke)paintInk(ctx,activeStroke,false)}
+function rebuildInk(){baseCtx.clearRect(0,0,canvas.width,canvas.height);inkPage().strokes.forEach(s=>paintInk(baseCtx,s));redrawInk();updateInkTools()}
+function restoreInk(){if(activePointer!==null&&canvas.hasPointerCapture(activePointer))canvas.releasePointerCapture(activePointer);activeStroke=null;activePointer=null;drawing=false;rebuildInk()}
+function clearPen(){if(!inkPage().strokes.length)return;inkSnapshot();inkPage().strokes=[];rebuildInk()}
+function inkUndo(){const p=inkPage();if(!p.undo.length)return;p.redo.push(p.strokes.slice());p.strokes=p.undo.pop();rebuildInk()}
+function inkRedo(){const p=inkPage();if(!p.redo.length)return;p.undo.push(p.strokes.slice());p.strokes=p.redo.pop();rebuildInk()}
+function setPenMode(enabled){penOn=enabled;canvas.classList.toggle('enabled',penOn);$('#inkToolbar').hidden=!penOn;$('#pen').classList.toggle('pen-active',penOn);$('#pen').textContent=penOn?'✏️ 退出批注':'✏️ 批注';$('#pen').setAttribute('aria-expanded',String(penOn));updateInkTools()}
+function updateInkTools(){
+ document.querySelectorAll('[data-ink-color]').forEach(b=>{const active=b.dataset.inkColor===inkSettings.color;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
+ document.querySelectorAll('[data-ink-tool]').forEach(b=>{const active=b.dataset.inkTool===inkSettings.tool;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
+ $('#inkSize').value=inkSettings.size;$('#inkSizeValue').textContent=inkSettings.size;
+ $('#inkCustomColor').value=inkSettings.color;$('#inkUndo').disabled=!inkPage().undo.length;$('#inkRedo').disabled=!inkPage().redo.length;
+ $('#inkMode').textContent={pen:'钢笔 · 轻重变化',marker:'签字笔 · 均匀线条',highlight:'荧光笔 · 半透明',eraser:'橡皮擦 · 局部擦除'}[inkSettings.tool];
+ const cursorSize=inkSettings.tool==='eraser'?Math.round(inkSettings.size*3.6):inkSettings.tool==='highlight'?Math.round(inkSettings.size*2.2):Math.max(3,Math.round(inkSettings.size*0.95));
+ const cursor=`<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><circle cx="24" cy="24" r="${cursorSize}" fill="${inkSettings.tool==='eraser'?'white':inkSettings.color}" fill-opacity=".3" stroke="${inkSettings.tool==='eraser'?'#4d5870':inkSettings.color}" stroke-width="1.5"/></svg>`;
+ canvas.style.cursor=`url("data:image/svg+xml,${encodeURIComponent(cursor)}") 24 24, crosshair`;
+}
+$('#pen').onclick=()=>setPenMode(!penOn);$('#clearPen').onclick=clearPen;$('#inkClose').onclick=()=>setPenMode(false);
+$('#inkUndo').onclick=inkUndo;$('#inkRedo').onclick=inkRedo;$('#inkClear').onclick=clearPen;
+$('#inkSize').oninput=e=>{inkSettings.size=+e.target.value;updateInkTools()};
+$('#inkCustomColor').oninput=e=>{inkSettings.color=e.target.value;updateInkTools()};
+$('#inkToolbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.inkColor){inkSettings.color=b.dataset.inkColor;if(inkSettings.tool==='eraser')inkSettings.tool='pen';updateInkTools()}if(b.dataset.inkTool){inkSettings.tool=b.dataset.inkTool;updateInkTools()}});
+canvas.onpointerdown=e=>{
+ if(!penOn||drawing||e.button!==0)return;e.preventDefault();
+ drawing=true;activePointer=e.pointerId;activeStroke={...inkSettings,points:[],drawnIdx:0};
+ const p0=inkPoint(e);activeStroke.points.push(p0);
+ canvas.setPointerCapture(e.pointerId);
+ if((activeStroke.tool==='pen'||activeStroke.tool==='marker')&&!activeStroke.dashed){
+  ctx.save();ctx.setTransform(INK_DPR,0,0,INK_DPR,0,0);
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle=activeStroke.color;ctx.beginPath();ctx.arc(p0.x,p0.y,p0.w/2,0,Math.PI*2);ctx.fill();ctx.restore();
+ }else{
+  redrawInk();
+ }
+};
+canvas.onpointermove=e=>{
+ if(!drawing||e.pointerId!==activePointer)return;e.preventDefault();
+ const samples=e.getCoalescedEvents?.();
+ let added=false;
+ for(const sample of samples?.length?samples:[e]){
+  const last=activeStroke.points.at(-1),p=inkPoint(sample,last);
+  if(Math.hypot(p.x-last.x,p.y-last.y)>.12){activeStroke.points.push(p);added=true;}
+ }
+ if(!added)return;
+ if((activeStroke.tool==='pen'||activeStroke.tool==='marker')&&!activeStroke.dashed){
+  const pts=activeStroke.points,w=pts[0].w||activeStroke.size;
+  ctx.save();ctx.setTransform(INK_DPR,0,0,INK_DPR,0,0);
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  ctx.strokeStyle=activeStroke.color;ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=w;ctx.setLineDash([]);
+  let idx=Math.max(1,activeStroke.drawnIdx||1);
+  while(idx<pts.length){
+   ctx.beginPath();
+   if(idx===1){
+    const m0x=(pts[0].x+pts[1].x)/2,m0y=(pts[0].y+pts[1].y)/2;
+    ctx.moveTo(pts[0].x,pts[0].y);ctx.lineTo(m0x,m0y);
+   }else{
+    const pPrev=pts[idx-1],pCurr=pts[idx],pPrev2=pts[idx-2];
+    const m1x=(pPrev2.x+pPrev.x)/2,m1y=(pPrev2.y+pPrev.y)/2;
+    const m2x=(pPrev.x+pCurr.x)/2,m2y=(pPrev.y+pCurr.y)/2;
+    ctx.moveTo(m1x,m1y);ctx.quadraticCurveTo(pPrev.x,pPrev.y,m2x,m2y);
+   }
+   ctx.stroke();
+   idx++;
+  }
+  activeStroke.drawnIdx=pts.length;
+  ctx.restore();
+ }else{
+  if(!inkFrame)inkFrame=requestAnimationFrame(()=>{inkFrame=0;redrawInk()});
+ }
+};
+function finishInk(e,cancelled=false){
+ if(!drawing||e.pointerId!==activePointer)return;
+ if(!cancelled){activeStroke.points.push(inkPoint(e,activeStroke.points.at(-1)));inkSnapshot();inkPage().strokes.push(activeStroke);paintInk(baseCtx,activeStroke)}
+ activeStroke=null;drawing=false;activePointer=null;if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);redrawInk();updateInkTools();
+}
+canvas.onpointerup=e=>finishInk(e);canvas.onpointercancel=e=>finishInk(e,true);
+canvas.onlostpointercapture=e=>{if(drawing)finishInk(e,true)};
+document.addEventListener('keydown',e=>{
+  if (e.key === 'Escape' && document.body.classList.contains('canvas-zoom-mode')) {
+    document.body.classList.remove('canvas-zoom-mode');
+    if (window.updateCanvasZoomBtnUI) window.updateCanvasZoomBtnUI();
+    return;
+  }
+  if ((e.key === 'z' || e.key === 'Z') && !e.ctrlKey && !e.metaKey && !e.altKey && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) {
+    if (window.toggleCanvasZoom) window.toggleCanvasZoom();
+    return;
+  }
+ if(!penOn||$('#tocDialog').open||$('#imageDialog').open||$('#transitionDialog').open||['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;
+ if(e.key==='Escape'){e.preventDefault();setPenMode(false)}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();if(e.shiftKey)inkRedo();else inkUndo()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();inkRedo()}
+});
+
+const remoteActions={prev:'上一页',next:'下一页',clear:'清空本页批注',fullscreen:'切换全屏'};
+const remoteDefaults={prev:['PageUp','ArrowLeft','ArrowUp'],next:['PageDown','ArrowRight','ArrowDown','Space','Enter'],clear:['KeyC'],fullscreen:['KeyF','F5']};
+const remoteStorageKey='projection-presenter-bindings-v1';let remoteBindings={},learningAction=null;
+try{const saved=JSON.parse(localStorage.getItem(remoteStorageKey)||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))for(const [action,key] of Object.entries(saved))if(Object.hasOwn(remoteActions,action)&&typeof key==='string')remoteBindings[action]=key}catch(e){}
+function remoteKey(e){const code=e.code||({' ':'Space',ArrowRight:'ArrowRight',ArrowLeft:'ArrowLeft'}[e.key]||(/^[a-z]$/i.test(e.key)?'Key'+e.key.toUpperCase():e.key));return [e.ctrlKey?'Ctrl':'',e.altKey?'Alt':'',e.shiftKey?'Shift':'',e.metaKey?'Meta':'',code].filter(Boolean).join('+')}
+function remoteKeyLabel(key){return key.replace('ArrowRight','→').replace('ArrowLeft','←').replace('ArrowUp','↑').replace('ArrowDown','↓').replace('PageDown','Page Down').replace('PageUp','Page Up').replace('Space','空格').replace('Enter','回车').replace(/Key([A-Z])/g,'$1')}
+function remoteSave(){try{localStorage.setItem(remoteStorageKey,JSON.stringify(remoteBindings));return true}catch(e){return false}}
+function showRemoteBindings(){
+ $('#remoteRows').innerHTML=Object.entries(remoteActions).map(([action,label])=>`<div class="remote-row"><strong>${label}</strong><span>${remoteBindings[action]?`<kbd>${remoteKeyLabel(remoteBindings[action])}</kbd> <small>已绑定</small>`:`<kbd>${remoteDefaults[action].map(remoteKeyLabel).join(' / ')}</kbd>`}</span><button data-learn="${action}" class="${learningAction===action?'listening':''}">${learningAction===action?'等待按键…':'绑定按键'}</button></div>`).join('');
+}
+$('#remote').onclick=()=>{learningAction=null;showRemoteBindings();$('#remoteStatus').textContent='常见翻页笔可直接使用；需要调整时，点击“绑定按键”，再按翻页笔上相应的按钮。';$('#remoteDialog').showModal()};
+$('#remoteClose').onclick=()=>$('#remoteDialog').close();$('#remoteDialog').addEventListener('close',()=>learningAction=null);
+$('#remoteRows').onclick=e=>{const b=e.target.closest('[data-learn]');if(!b)return;learningAction=b.dataset.learn;showRemoteBindings();$('#remoteStatus').textContent=`请按一次要用于“${remoteActions[learningAction]}”的翻页笔按键。按 Esc 取消。`};
+$('#remoteReset').onclick=()=>{remoteBindings={};learningAction=null;remoteSave();showRemoteBindings();$('#remoteStatus').textContent='已恢复默认：Page Up / Page Down 翻页，C 清空本页批注，F 或 F5 切换全屏。'};
+function runRemoteAction(action, key){
+  if (action === 'next' && (key === 'Space' || key === 'Enter')) {
+    const root = activeRoot();
+    const barEl = root && root.querySelector('.step-ctrl-bar');
+    if (barEl && currentSimType && ALL_SIMS[currentSimType]) {
+      const maxStep = Number(barEl.dataset.maxStep || 3);
+      const curStep = Number(simState.step || 0);
+      if (curStep < maxStep) {
+        window.advanceSimStep(curStep + 1);
+        return;
+      }
+    }
+  }
+  if(action==='prev')go(index-1);
+  if(action==='next')go(index+1);
+  if(action==='clear'){const hasInk=inkPage().strokes.length>0;clearPen();toast(hasInk?'已清空本页批注，可在批注工具中撤销':'本页没有批注')}
+  if(action==='fullscreen')$('#fullscreen').click();
+}
+document.addEventListener('keydown',e=>{
+ if(e.isComposing)return;const key=remoteKey(e);
+ if($('#remoteDialog').open){
+  if(!learningAction)return;
+  e.preventDefault();e.stopImmediatePropagation();if(e.repeat)return;
+  if(e.key==='Escape'){learningAction=null;showRemoteBindings();$('#remoteStatus').textContent='已取消本次绑定。';return}
+  if(['Control','Shift','Alt','Meta','Unidentified',''].includes(e.key)||key==='Unidentified')return;
+  const action=learningAction,duplicate=Object.entries(remoteBindings).find(([a,k])=>a!==action&&k===key);
+  if(duplicate){$('#remoteStatus').textContent=`此按键已绑定“${remoteActions[duplicate[0]]}”。请换一个按键，或先恢复默认。`;return}
+  remoteBindings[action]=key;learningAction=null;const saved=remoteSave();showRemoteBindings();$('#remoteStatus').textContent=`“${remoteKeyLabel(key)}”已绑定“${remoteActions[action]}”。${saved?'设置已保存在当前浏览器。':'本次打开课件期间有效。'}`;return;
+ }
+ if($('#tocDialog').open||$('#imageDialog').open||$('#transitionDialog').open||drawing)return;
+ const focused=document.activeElement,editing=['INPUT','SELECT','TEXTAREA'].includes(focused.tagName)||focused.isContentEditable;
+ if(editing&&!['PageUp','PageDown','F5'].includes(e.code))return;
+ let action=Object.entries(remoteBindings).find(([,k])=>k===key)?.[0];
+ if(!action)action=Object.keys(remoteDefaults).find(a=>!remoteBindings[a]&&remoteDefaults[a].includes(key));
+ if(action){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat)runRemoteAction(action, key);return}
+ if(e.ctrlKey||e.altKey||e.metaKey)return;
+ if(e.key==='Home'){e.preventDefault();go(0)}if(e.key==='End'){e.preventDefault();go(slides.length-1)}if(e.key.toLowerCase()==='m')$('#toc').click();
+},true);
+
+const transitionChoices={none:['极速翻页（推荐）','零延迟瞬时切换，彻底消除大屏翻页卡顿。'],fade:['柔和渐显','轻柔交替，适合连续讲解与练习。'],smart:['主题联动','普通翻页使用立体翻书，进入新环节时由光束揭幕。'],book:['立体翻书','纸页绕边缘翻转，光影随页面转动。'],beam:['光影扫幕','一束暖光扫过画面，逐渐揭开下一页。'],space:['空间旋转','页面沿空间转动，前后方向相互对应。']};
+const transitionSettings={effect:'none',duration:420};
+try{const saved=JSON.parse(localStorage.getItem('projection-transitions-v2')||'{}');if(Object.hasOwn(transitionChoices,saved.effect))transitionSettings.effect=saved.effect;if([420,650,900].includes(saved.duration))transitionSettings.duration=saved.duration}catch(e){}
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+let transitionRun=null,transitionSerial=0;
+function saveTransitionSettings(){try{localStorage.setItem('projection-transitions-v2',JSON.stringify(transitionSettings))}catch(e){}}
+function updateTransitionChoices(){
+ $('#transitionChoices').innerHTML=Object.entries(transitionChoices).map(([key,[name,description]])=>`<button data-effect="${key}" class="effect-choice ${transitionSettings.effect===key?'selected':''}" aria-pressed="${transitionSettings.effect===key}"><span class="effect-mini effect-${key}" aria-hidden="true"><i></i><i></i></span><span><b>${name}</b><small>${description}</small></span><em>${transitionSettings.effect===key?'已选':'选择'}</em></button>`).join('');
+ $('#transitionSpeed').value=transitionSettings.duration;$('#transitionMotionNote').hidden=!reducedMotion.matches;
+}
+$('#effects').onclick=()=>{stopSlideTransition();updateTransitionChoices();$('#transitionDialog').showModal()};
+$('#transitionClose').onclick=()=>$('#transitionDialog').close();
+$('#transitionChoices').onclick=e=>{const b=e.target.closest('[data-effect]');if(!b)return;transitionSettings.effect=b.dataset.effect;saveTransitionSettings();updateTransitionChoices()};
+$('#transitionSpeed').onchange=e=>{transitionSettings.duration=+e.target.value;saveTransitionSettings()};
+$('#transitionPreview').onclick=()=>{$('#transitionDialog').close();const effect=transitionSettings.effect==='smart'?'beam':transitionSettings.effect;animateSlideChange(()=>{},1,effect)};
+function stopSlideTransition(){if(!transitionRun)return;const run=transitionRun;transitionRun=null;run.animations.forEach(a=>a.cancel());run.layer.remove();$('#stage').classList.remove('transitioning');$('#penLayer').style.visibility='';$('#content').style.transformOrigin='';}
+function transitionSnapshot(){
+ const sheet=document.createElement('div');sheet.className='transition-sheet';sheet.inert=true;sheet.setAttribute('aria-hidden','true');
+ const copy=$('#content').cloneNode(true),mapping=new Map();
+ copy.querySelectorAll('[id]').forEach(el=>{const id=el.id,next='fx'+transitionSerial+'-'+id;mapping.set(id,next);el.id=next});copy.removeAttribute('id');
+ copy.querySelectorAll('*').forEach(el=>{for(const a of [...el.attributes]){if(a.name==='aria-live'||(a.name.startsWith('data-')&&a.name!=='data-lock-msg'&&a.name!=='data-lock-label'))el.removeAttribute(a.name);if(a.value.includes('url(#'))el.setAttribute(a.name,a.value.replace(/url\(#([^)]*)\)/g,(m,id)=>mapping.has(id)?`url(#${mapping.get(id)})`:m));if(['href','xlink:href'].includes(a.name)&&a.value.startsWith('#')&&mapping.has(a.value.slice(1)))el.setAttribute(a.name,'#'+mapping.get(a.value.slice(1)))}});
+ copy.querySelectorAll('.slide').forEach(el=>el.style.animation='none');sheet.append(copy);
+ if(inkPage().strokes.length){const ink=document.createElement('canvas');ink.width=canvas.width;ink.height=canvas.height;ink.className='transition-ink';ink.getContext('2d').drawImage(canvas,0,0);sheet.append(ink);}return sheet;
+}
+function animateSlideChange(change,direction,effect){
+ stopSlideTransition();
+ if(effect==='none'||reducedMotion.matches||!Element.prototype.animate){change();return}
+ const serial=++transitionSerial,layer=document.createElement('div');layer.className='transition-layer';layer.inert=true;layer.setAttribute('aria-hidden','true');
+ const old=transitionSnapshot();layer.append(old);$('#stage').append(layer);
+ try{change();}catch(err){console.error(err);layer.remove();return;}
+ const live=$('#content'),width=$('#stage').clientWidth,d=direction>=0?1:-1,duration=transitionSettings.duration,ease='cubic-bezier(.23,.73,.18,1)';
+ $('#stage').classList.add('transitioning');$('#penLayer').style.visibility='hidden';
+ const animations=[],play=(el,frames,options={})=>{const a=el.animate(frames,{duration,easing:ease,fill:'both',...options});animations.push(a);return a};
+ if(effect==='book'){
+  old.style.transformOrigin=d>0?'0% 50%':'100% 50%';old.classList.add('paper-turn');
+  play(old,[{transform:'perspective(2200px) rotateY(0deg)',opacity:1,filter:'brightness(1)'},{transform:`perspective(2200px) rotateY(${-d*55}deg)`,opacity:1,filter:'brightness(.80)',offset:.58},{transform:`perspective(2200px) rotateY(${-d*105}deg)`,opacity:0,filter:'brightness(.66)'}]);
+  play(live,[{transform:`perspective(2200px) translateX(${d*width*.05}px) rotateY(${d*9}deg)`,filter:'brightness(.88)'},{transform:'perspective(2200px) translateX(0) rotateY(0)',filter:'brightness(1)'}]);
+ }else if(effect==='beam'){
+  play(old,[{opacity:1},{opacity:0,offset:.72},{opacity:0}]);
+  const clip=d>0?'inset(0 100% 0 0)':'inset(0 0 0 100%)';
+  play(live,[{clipPath:clip,filter:'brightness(1.12)'},{clipPath:'inset(0 0% 0 0%)',filter:'brightness(1)'}]);
+  const beam=document.createElement('div');beam.className='transition-beam';layer.append(beam);play(beam,[{transform:`translateX(${d>0?-280:width+50}px) skewX(-14deg)`,opacity:0},{opacity:.9,offset:.2},{opacity:.7,offset:.75},{transform:`translateX(${d>0?width+150:-300}px) skewX(-14deg)`,opacity:0}],{easing:'cubic-bezier(.35,.05,.25,1)'});
+ }else if(effect==='space'){
+  old.style.transformOrigin=d>0?'0% 50%':'100% 50%';
+  play(old,[{transform:'perspective(2400px) translateX(0) rotateY(0deg)',opacity:1},{transform:`perspective(2400px) translateX(${-d*width*.55}px) rotateY(${-d*65}deg)`,opacity:0}]);
+  live.style.transformOrigin=d>0?'100% 50%':'0% 50%';
+  play(live,[{transform:`perspective(2400px) translateX(${d*width*.55}px) rotateY(${d*65}deg)`,opacity:0},{transform:'perspective(2400px) translateX(0) rotateY(0deg)',opacity:1}]);
+ }else{
+  play(old,[{opacity:1},{opacity:0}]);play(live,[{opacity:0,transform:`translateY(${12*d}px)`},{opacity:1,transform:'translateY(0)'}]);
+ }
+ transitionRun={serial,layer,animations};
+ Promise.allSettled(animations.map(a=>a.finished)).then(()=>{if(transitionRun?.serial!==serial)return;stopSlideTransition()});
+}
+function transitionNavigate(n){
+ const target=Math.max(0,Math.min(slides.length-1,n));if(target===index)return;
+ const from=slides[index],to=slides[target],direction=target>index?1:-1;
+ let effect=transitionSettings.effect;if(effect==='smart')effect=from.lesson!==to.lesson||phaseOf(from)!==phaseOf(to)?'beam':'book';
+ if(innerWidth<=700&&['book','space'].includes(effect))effect='fade';
+ animateSlideChange(()=>{index=target;render()},direction,effect);
+}
+window.addEventListener('resize',stopSlideTransition);document.addEventListener('fullscreenchange',stopSlideTransition);
+reducedMotion.addEventListener('change',()=>{stopSlideTransition();updateTransitionChoices()});
+
+window.addEventListener('resize',size);document.addEventListener('fullscreenchange',()=>setTimeout(size,80));
+let touchStart=null;$('#viewport').addEventListener('touchstart',e=>{if(e.target.closest('input,select,button,canvas'))return;touchStart=[e.touches[0].clientX,e.touches[0].clientY]},{passive:true});$('#viewport').addEventListener('touchend',e=>{if(!touchStart)return;const dx=e.changedTouches[0].clientX-touchStart[0],dy=e.changedTouches[0].clientY-touchStart[1];if(Math.abs(dx)>90&&Math.abs(dx)>Math.abs(dy)*2)go(index+(dx<0?1:-1));touchStart=null},{passive:true});
+document.querySelector('footer').insertBefore($('#toc'),$('#pen'));$('#toc').textContent='目录';$('#fullscreen').textContent='全屏授课';
+document.addEventListener('click',e=>{const b=e.target.closest('[data-reveal]');if(b)b.textContent=b.nextElementSibling.hidden?'显示解析':'收起解析'});
+/* A movable palette leaves the slide geometry unchanged while annotating. */
+function initFloatingInk(){
+ const toolbar=$('#inkToolbar');toolbar.classList.add('ink-floating','ink-simple');
+ const head=document.createElement('div');head.className='ink-float-head';head.innerHTML='<div id="inkDrag" title="拖动批注窗" aria-label="拖动批注窗"><span class="ink-grip" aria-hidden="true">⠿</span><span>课堂批注</span></div><button id="inkFold" type="button" title="收起为小笔按钮" aria-label="收起批注窗">−</button><button id="inkExit" type="button" title="退出批注" aria-label="退出批注">×</button>';
+ toolbar.prepend(head);
+ const more=document.createElement('button');more.id='inkMore';more.type='button';more.textContent='设置';more.setAttribute('aria-expanded','false');toolbar.insertBefore(more,toolbar.querySelector('#inkUndo').parentElement);
+ const bubble=document.createElement('button');bubble.id='inkBubble';bubble.type='button';bubble.hidden=true;bubble.title='展开批注窗；可拖动';bubble.setAttribute('aria-label','展开批注工具');bubble.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 16-1 4 4-1L20 7l-3-3L5 16Zm10-10 3 3M5 16l3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';document.body.append(bubble);
+ let folded=false,moved=false,drag=null;
+ const footerTop=()=>document.querySelector('footer').getBoundingClientRect().top;
+ const clamp=(value,min,max)=>Math.max(min,Math.min(Math.max(min,max),value));
+ const setPosition=(node,x,y)=>{const r=node.getBoundingClientRect();node.style.left=clamp(x,8,innerWidth-r.width-8)+'px';node.style.top=clamp(y,8,footerTop()-r.height-8)+'px'};
+ const sync=()=>{document.body.classList.remove('ink-open');document.documentElement.style.setProperty('--ink-dock-height','0px');toolbar.hidden=!penOn||folded;bubble.hidden=!penOn||!folded;const node=folded?bubble:toolbar;if(penOn){const r=node.getBoundingClientRect();setPosition(node,parseFloat(node.style.left)||Math.round((innerWidth-r.width)/2),parseFloat(node.style.top)||(footerTop()-r.height-12))}bubble.style.setProperty('--active-ink',inkSettings.color);toolbar.style.setProperty('--active-ink',inkSettings.color)};
+ const fold=()=>{const r=toolbar.getBoundingClientRect();folded=true;bubble.style.left=(r.right-52)+'px';bubble.style.top=r.top+'px';sync()};
+ const unfold=()=>{const r=bubble.getBoundingClientRect();folded=false;toolbar.classList.add('ink-simple');more.textContent='设置';more.setAttribute('aria-expanded','false');toolbar.hidden=false;setPosition(toolbar,r.right-toolbar.getBoundingClientRect().width,r.top);sync()};
+ $('#inkFold').onclick=fold;$('#inkExit').onclick=()=>setPenMode(false);
+ more.onclick=()=>{const r=toolbar.getBoundingClientRect();const simple=toolbar.classList.toggle('ink-simple');more.textContent=simple?'设置':'返回工具条';more.setAttribute('aria-expanded',String(!simple));setPosition(toolbar,r.right-toolbar.getBoundingClientRect().width,r.top);sync()};
+ const originalSetPenMode=setPenMode;setPenMode=enabled=>{if(enabled&&!penOn){folded=false;if(inkSettings.tool==='cursor')inkSettings.tool='pen';}originalSetPenMode(enabled);if(enabled&&inkSettings.tool==='cursor')canvas.classList.remove('enabled');sync()};
+ $('#inkClose').textContent='完成批注';$('#inkDrag').setAttribute('tabindex','0');$('#inkDrag').addEventListener('keydown',e=>{const delta={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[e.key];if(!delta)return;e.preventDefault();e.stopPropagation();const r=toolbar.getBoundingClientRect();setPosition(toolbar,r.left+delta[0],r.top+delta[1])});$('#inkMode').setAttribute('role','status');
+ function attachDrag(handle,node,isBubble=false){
+  handle.addEventListener('pointerdown',e=>{if(e.button!==0||(!isBubble&&e.target.closest('button')))return;const r=node.getBoundingClientRect();drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top};moved=false;handle.setPointerCapture(e.pointerId);e.preventDefault()});
+  handle.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>5)moved=true;if(moved)setPosition(node,drag.left+dx,drag.top+dy)});
+  handle.addEventListener('pointerup',e=>{if(!drag||drag.id!==e.pointerId)return;const clicked=!moved;drag=null;if(handle.hasPointerCapture(e.pointerId))handle.releasePointerCapture(e.pointerId);if(isBubble&&clicked)unfold()});
+  handle.addEventListener('pointercancel',()=>{drag=null;moved=true});
+ }
+ attachDrag($('#inkDrag'),toolbar);attachDrag(bubble,bubble,true);
+ bubble.addEventListener('click',e=>{if(e.detail===0)unfold()});
+ canvas.addEventListener('pointerdown',()=>{document.getElementById('inkSubMenu')?.classList.remove('palette-open')});
+ toolbar.addEventListener('click',()=>{bubble.style.setProperty('--active-ink',inkSettings.color);toolbar.style.setProperty('--active-ink',inkSettings.color)});
+ window.addEventListener('resize',sync);document.addEventListener('fullscreenchange',()=>requestAnimationFrame(sync));sync();
+}
+initFloatingInk();
+
+
+
+const hash=location.hash.match(/slide-(\d+)(?:-act-(m\d+))?(?:-step-(\d+))?(?:-b-(\d+))?(-pen)?(-pal)?(-hl)?(-shp)?(-toc)?/);if(hash)index=Math.max(0,Math.min(slides.length-1,+hash[1]-1));render();size();if(hash&&hash[2]){simState.action=hash[2];runSimFn(ALL_SIMS[currentSimType],simState,false);syncSlideProgression(simState);bindSimControls(currentSimType);}if(hash&&hash[3])window.advanceSimStep(+hash[3]);if(hash&&hash[4])window.unlockSingleBlock(+hash[4]);if(hash&&hash[5])setPenMode(true);if(hash&&hash[8]){document.querySelector('[data-ink-tool="shape"]')?.click();inkPage().strokes.push({tool:'shape',shapeType:'axes',color:'#384d8f',size:3,dashed:false,points:[{x:580,y:460,w:3},{x:820,y:670,w:3}]},{tool:'shape',shapeType:'rttriangle',color:'#d94040',size:3.2,dashed:false,points:[{x:380,y:510,w:3.2},{x:530,y:660,w:3.2}]});rebuildInk();window.syncSubMenuDock?.();}else if(hash&&hash[7]){document.querySelector('[data-ink-tool="highlight"]')?.click();}else if(hash&&hash[6]){document.getElementById('inkSubMenu')?.classList.add('palette-open');window.syncSubMenuDock?.();}if(hash&&hash[9]){document.getElementById('toc')?.click();}
+</script></body></html>
