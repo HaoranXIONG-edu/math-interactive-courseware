@@ -3363,7 +3363,13 @@ window.formatInlineMathHTML = function(rawStr) {
     .replace(/([A-Za-z0-9△▱∠⊥∥∽≌²³)])\s+([\u4e00-\u9fff])/g, '$1$2')
     .replace(/\s*([=+\-∶:∽≌∥⊥⇒])\s*/g, '$1');
   function fmtAtom(seg) {
-    return seg.replace(/(Rt△|△|[A-Za-z]+|[0-9]+(?:\.[0-9]+)?|[²³]|[=+\-±×÷·:∶∠⊥∥∽≌°⇒/])/g, (m) => {
+    return seg.replace(/([0-9]+(?:\.[0-9]+)?)?√\(([^)]+)\)|([0-9]+(?:\.[0-9]+)?)?√([0-9A-Za-z²³+\-]+)|Rt△|△|[A-Za-z]+|[0-9]+(?:\.[0-9]+)?|[²³]|[=+\-±×÷·:∶∠⊥∥∽≌°⇒/]/g, (m, c1, radParen, c2, radBare) => {
+      if (radParen !== undefined || radBare !== undefined) {
+        const coef = c1 || c2 || '';
+        const inner = radParen !== undefined ? radParen : radBare;
+        const coefHtml = coef ? `<span class="num">${coef}</span>` : '';
+        return `<span style="white-space:nowrap;">${coefHtml}<span class="sqrt"><span>${fmtAtom(inner)}</span></span></span>`;
+      }
       if (m === 'Rt△') return '<span class="num">Rt</span><span class="tri-sym">△</span>';
       if (m === '△') return '<span class="tri-sym">△</span>';
       if (m === '²') return '<sup><span class="num">2</span></sup>';
@@ -3372,13 +3378,7 @@ window.formatInlineMathHTML = function(rawStr) {
       return `<span class="num">${m}</span>`;
     });
   }
-  return clean.replace(/√\(([^)]+)\)|√([0-9A-Za-z²³+\-]+)/g, (_, p1, p2) => {
-    const inner = p1 !== undefined ? p1 : p2;
-    return `<span class="sqrt"><span>${fmtAtom(inner)}</span></span>`;
-  }).split(/(<span class="sqrt">[\s\S]*?<\/span>)/g).map(part => {
-    if (part.startsWith('<span class="sqrt">')) return part;
-    return fmtAtom(part);
-  }).join('');
+  return fmtAtom(clean);
 };
 
 window.defineSlide = function(cfg) {
@@ -4262,7 +4262,7 @@ window.defineSlide({
     },
     {
       title: '十字相似设元 x 表出各关键边长',
-      html: '由<span class="math">∠<span class="num">1</span><span class="num">=</span>∠<span class="num">2</span></span>得<span class="math"><span class="num">Rt△</span><i class="m">PME</i><span class="num">∽Rt△</span><i class="m">PNF</i></span>，边比<span class="math"><span class="fraction"><span><i class="m">NF</i></span><span><i class="m">ME</i></span></span><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span></span>．设<span class="math"><i class="m">BE</i><span class="num">=</span><i class="m">x</i></span>，则<span class="math"><i class="m">ME</i><span class="num">=4-</span><i class="m">x</i></span>，代入得<span class="math"><i class="m">NF</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span><span class="num">(4-</span><i class="m">x</span><span class="num">)</span></span>，进而<span class="math"><i class="m">BF</i><span class="num">=</span><span class="fraction"><span><span class="num">25-4</span><i class="m">x</i></span><span><span class="num">3</span></span></span></span>！'
+      html: '由<span class="math">∠<span class="num">1</span><span class="num">=</span>∠<span class="num">2</span></span>得<span class="math"><span class="num">Rt△</span><i class="m">PME</i><span class="num">∽Rt△</span><i class="m">PNF</i></span>，边比<span class="math"><span class="fraction"><span><i class="m">NF</i></span><span><i class="m">ME</i></span></span><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span></span>．设<span class="math"><i class="m">BE</i><span class="num">=</span><i class="m">x</i></span>，则<span class="math"><i class="m">ME</i><span class="num">=4-</span><i class="m">x</i></span>，代入得<span class="math"><i class="m">NF</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span><span class="num">(4-</span><i class="m">x</i><span class="num">)</span></span>，进而<span class="math"><i class="m">BF</i><span class="num">=</span><span class="fraction"><span><span class="num">25-4</span><i class="m">x</i></span><span><span class="num">3</span></span></span></span>！'
     }
   ],
   state: { x: 2.94 },
@@ -4928,8 +4928,7 @@ function slider(key,label,min,max,value,step=1,unit=''){
   const curVal = simState[key];
   const numVal = Number(curVal);
   const dispVal = (!isNaN(numVal) && !Number.isInteger(numVal)) ? numVal.toFixed(2) : curVal;
-  const outHTML = unit ? `<output data-value="${key}">${dispVal}${unit}</output>` : '';
-  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${curVal}" step="${step}" aria-label="${plain}">${outHTML}</label>`;
+  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${curVal}" step="${step}" aria-label="${plain}"><output data-value="${key}">${dispVal}${unit}</output></label>`;
 }
 function select(key,label,options,value){
   if (simState[key] === undefined) simState[key]=value;
@@ -4941,8 +4940,9 @@ function actions(items, activeKey){
   return `<div class="actions">${items.map(([k,t])=>`<button type="button" data-action="${k}" class="${cur===k?'active-act':''}">${t}</button>`).join('')}</div>`;
 }
 function modeButtons(key, curVal, items){
-  if (simState[key] === undefined) simState[key] = curVal;
-  const active = simState[key] !== undefined ? simState[key] : curVal;
+  if (curVal !== undefined) simState[key] = curVal;
+  else if (simState[key] === undefined && items && items.length) simState[key] = items[0][0];
+  const active = curVal !== undefined ? curVal : simState[key];
   return `<div class="actions">${items.map(([v, label, syncStep]) => `<button type="button" data-mode-key="${key}" data-mode-val="${v}" ${syncStep !== undefined ? `data-sync-step="${syncStep}"` : ''} class="${String(active) === String(v) ? 'active-act' : ''}">${label}</button>`).join('')}</div>`;
 }
 window.slider = slider;
@@ -5692,9 +5692,9 @@ function bindSimControls(type){
       e.stopPropagation();
       const k = mBtn.dataset.modeKey;
       const v = mBtn.dataset.modeVal;
-      simState[k] = isNaN(+v) ? v : +v;
+      simState[k] = (typeof simState[k] === 'number') ? (isNaN(+v) ? v : +v) : v;
       if (mBtn.dataset.syncStep !== undefined) {
-        simState.step = Number(mBtn.dataset.syncStep);
+        simState.step = Math.max(Number(simState.step || 0), Number(mBtn.dataset.syncStep));
       }
       if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       runSimFn(fn, simState, false);
