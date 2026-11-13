@@ -3666,6 +3666,38 @@ window.COURSEWARE_PHASES = [
   ['④ 模型总结', '十字双垂旋转模型通法']
 ];
 
+// 严格遵守教学规范：杜绝测量思想误导，全局彻底隐藏动点滑块数值 readout
+if (typeof document !== 'undefined' && document.head && typeof document.head.appendChild === 'function') {
+  const s = document.createElement('style');
+  s.id = 'no-measurement-readout-override';
+  s.textContent = `
+    .control output,
+    .screen-notes .control output,
+    .controls output,
+    output[data-value] {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    .control {
+      grid-template-columns: auto 1fr !important;
+    }
+    .screen-notes .control {
+      grid-template-columns: auto 1fr !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    .screen-notes .control > input[type=range] {
+      flex: 1 !important;
+    }
+  `;
+  document.head.appendChild(s);
+}
+
 // 通用几何绘图函数
 function svgTextHalo(x, y, text, opts = {}) {
   const { size = 15, color = '#0f172a', anchor = 'middle', weight = '700' } = opts;
@@ -4786,16 +4818,16 @@ window.defineSlide({
   `,
   steps: [
     {
-      title: '第一阶：角平分线对称与十字双垂全等（第1、2问）',
-      html: '当定点<i class="m">P</i>落在角平分线上时，双垂线<span class="math"><i class="m">PM</i><span class="num">=</span><i class="m">PN</i></span>．旋转角与夹角相等（<span class="math">∠<i class="m">EPF</i><span class="num">=</span>∠<i class="m">MPN</i><span class="num">=</span><i class="m">α</i></span>），利用“同减公共角”得<span class="math">∠<span class="num">1</span><span class="num">=</span>∠<span class="num">2</span></span>，构造全等<span class="math"><span class="num">Rt△</span><i class="m">PME</i><span class="num">≌Rt△</span><i class="m">PNF</i></span>，直接锁定<span class="math" style="white-space:nowrap;"><i class="m">PE</i><span class="num">=</span><i class="m">PF</i></span>．'
+      title: '特殊对称：十字双垂全等（第1、2问）',
+      html: '定点<i class="m">P</i>在角平分线上时，<span class="math"><i class="m">PM</i><span class="num">=</span><i class="m">PN</i></span>．同减公共角得<span class="math">∠<span class="num">1</span><span class="num">=</span>∠<span class="num">2</span></span>，构造全等<span class="math"><span class="num">Rt△</span><i class="m">PME</i><span class="num">≌Rt△</span><i class="m">PNF</i></span>，锁定旋转线段恒等<span class="math"><i class="m">PE</i><span class="num">=</span><i class="m">PF</i></span>．'
     },
     {
-      title: '第二阶：脱离角分线与十字双垂相似转化高比（第3问）',
-      html: '当定点<i class="m">P</i>不在角平分线上时，双垂线不相等，全等自然演进为相似：<span class="math"><span class="num">Rt△</span><i class="m">PME</i><span class="num">∽Rt△</span><i class="m">PNF</i></span>，得<span class="math" style="white-space:nowrap;"><span class="fraction"><span><i class="m">PF</i></span><span><i class="m">PE</i></span></span><span class="num">=</span><span class="fraction"><span><i class="m">PN</i></span><span><i class="m">PM</i></span></span></span>．连接公共顶点借助“等高三角形面积比等于底边比”，秒转为对角线分点比<span class="math" style="white-space:nowrap;"><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span><i class="m">n</i></span>．'
+      title: '一般位置：双垂相似转高比（第3问）',
+      html: '定点<i class="m">P</i>不在角平分线上时，双垂线不相等，全等演进为相似：<span class="math"><span class="num">Rt△</span><i class="m">PME</i><span class="num">∽Rt△</span><i class="m">PNF</i></span>，边比<span class="math"><span class="fraction"><span><i class="m">PF</i></span><span><i class="m">PE</i></span></span><span class="num">=</span><span class="fraction"><span><i class="m">PN</i></span><span><i class="m">PM</i></span></span></span>，连顶点借等高面积比秒转为分点比<span class="math"><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span><i class="m">n</i></span>．'
     },
     {
-      title: '第三阶：代数设元表边与外接平行 8 字相似解方程（第4问）',
-      html: '动点问题中，以十字相似作为桥梁：设<span class="math"><i class="m">BE</i><span class="num">=</span><i class="m">x</i></span>，将所有动点坐标和线段全用<i class="m">x</i>线性表出．遇分点比例条件，过动点引平行线构造经典的“<span class="num">8</span>字相似”，将分点比与代数式精准挂钩，一元一次方程化简求出双解！'
+      title: '坐标设元：十字相似+8字方程（第4问）',
+      html: '动点问题中，以十字相似作桥梁：设<span class="math"><i class="m">BE</i><span class="num">=</span><i class="m">x</i></span>，将所有动点坐标线性表出；过动点作平行线构造“<span class="num">8</span>字相似”，将分点比与代数式精准挂钩，一元一次方程化简求出双解！'
     }
   ],
   state: { focus: 1 },

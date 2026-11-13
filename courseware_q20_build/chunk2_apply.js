@@ -93,6 +93,75 @@ function svgSegmentLabel2(p1, p2, text, offset = 18, tPos = 0.5, color = '#0f172
   return svgTextHalo2(lx, ly, text, { size: size, color: color, weight: '700' });
 }
 
+// 几何标注：标准上下叠置分式胶囊框 (Native SVG Stacked Fraction Badge)
+window.svgFractionBadge = function(cx, cy, prefix, num, den, suffix = '', opts = {}) {
+  const fs = opts.fontSize || 11.0;
+  const color = opts.color || '#1e3a8a';
+  const bg = opts.bg || '#eff6ff';
+  const border = opts.border || '#93c5fd';
+
+  function calcW(str) {
+    let w = 0;
+    const clean = String(str).replace(/<[^>]+>/g, '');
+    for (let i = 0; i < clean.length; i++) {
+      w += fs * (clean.charCodeAt(i) > 127 ? 0.95 : 0.55);
+    }
+    return w;
+  }
+
+  const prefixW = prefix ? calcW(prefix) + 2 : 0;
+  const numW = calcW(num);
+  const denW = calcW(den);
+  const fracW = Math.max(numW, denW, 11) + 6;
+  const suffixW = suffix ? calcW(suffix) + 2 : 0;
+
+  const totalContentW = prefixW + fracW + suffixW;
+  const padX = opts.padX !== undefined ? opts.padX : 5;
+  const padY = opts.padY !== undefined ? opts.padY : 3.5;
+  const badgeW = Math.round(totalContentW + padX * 2);
+  const badgeH = Math.round(fs * 2.2 + padY * 2);
+
+  const rx = Math.round(cx - badgeW / 2);
+  const ry = Math.round(cy - badgeH / 2);
+
+  const startX = rx + padX;
+  const prefixX = startX;
+  const fracCenterX = startX + prefixW + fracW / 2;
+  const suffixX = startX + prefixW + fracW + 2;
+
+  const lineY = Math.round(cy);
+  const numY = Math.round(cy - 3);
+  const denY = Math.round(cy + fs * 0.85 + 2);
+  const prefixY = Math.round(cy + fs * 0.35);
+
+  let out = `<g>`;
+  out += `<rect x="${rx}" y="${ry}" width="${badgeW}" height="${badgeH}" rx="5" fill="${bg}" stroke="${border}" stroke-width="1.1"/>`;
+
+  if (prefix) {
+    const formattedPrefix = typeof window.svgAutoFormatText === 'function' ? window.svgAutoFormatText(prefix, fs) : prefix;
+    out += `<text x="${prefixX.toFixed(1)}" y="${prefixY.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${formattedPrefix}</text>`;
+  }
+
+  const lineX1 = (fracCenterX - fracW / 2 + 1).toFixed(1);
+  const lineX2 = (fracCenterX + fracW / 2 - 1).toFixed(1);
+  out += `<line x1="${lineX1}" y1="${lineY}" x2="${lineX2}" y2="${lineY}" stroke="${color}" stroke-width="1.2"/>`;
+
+  const formattedNum = typeof window.svgAutoFormatText === 'function' ? window.svgAutoFormatText(num, fs) : num;
+  out += `<text x="${fracCenterX.toFixed(1)}" y="${numY.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="middle">${formattedNum}</text>`;
+
+  const formattedDen = typeof window.svgAutoFormatText === 'function' ? window.svgAutoFormatText(den, fs) : den;
+  out += `<text x="${fracCenterX.toFixed(1)}" y="${denY.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="middle">${formattedDen}</text>`;
+
+  if (suffix) {
+    const formattedSuffix = typeof window.svgAutoFormatText === 'function' ? window.svgAutoFormatText(suffix, fs) : suffix;
+    out += `<text x="${suffixX.toFixed(1)}" y="${prefixY.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${formattedSuffix}</text>`;
+  }
+
+  out += `</g>`;
+  return out;
+};
+const svgFractionBadge = window.svgFractionBadge;
+
 // -----------------------------------------------------------------------------
 // Slide 3: 第(3)问 平行四边形双垂相似转高之比 (3 步骤)
 // -----------------------------------------------------------------------------

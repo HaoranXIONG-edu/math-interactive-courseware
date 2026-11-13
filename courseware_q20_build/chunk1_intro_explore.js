@@ -11,6 +11,38 @@ window.COURSEWARE_PHASES = [
   ['④ 模型总结', '十字双垂旋转模型通法']
 ];
 
+// 严格遵守教学规范：杜绝测量思想误导，全局彻底隐藏动点滑块数值 readout
+if (typeof document !== 'undefined' && document.head && typeof document.head.appendChild === 'function') {
+  const s = document.createElement('style');
+  s.id = 'no-measurement-readout-override';
+  s.textContent = `
+    .control output,
+    .screen-notes .control output,
+    .controls output,
+    output[data-value] {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    .control {
+      grid-template-columns: auto 1fr !important;
+    }
+    .screen-notes .control {
+      grid-template-columns: auto 1fr !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    .screen-notes .control > input[type=range] {
+      flex: 1 !important;
+    }
+  `;
+  document.head.appendChild(s);
+}
+
 // 通用几何绘图函数
 function svgTextHalo(x, y, text, opts = {}) {
   const { size = 15, color = '#0f172a', anchor = 'middle', weight = '700' } = opts;

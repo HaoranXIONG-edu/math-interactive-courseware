@@ -201,6 +201,9 @@ for (var idx = 0; idx < slides.length; idx++) {
         var fsize = sm ? parseFloat(sm[1]) : 14;
         var raw = tInner.replace(/<[^>]+>/g, "").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&").trim();
         if (!raw) continue;
+        if (/(?:[A-Za-z]{1,4}\s*=\s*|:\s*)\d+\/\d+(?:\([^)]+\))?|\(\s*\d+[A-Za-z0-9_+\-\s]*\)\/\d+|\b\d+\/\d+\s*\([A-Za-z0-9_+\-\s]+\)/.test(raw)) {
+          throw new Error("Slide " + idx + " (" + sl.navTag + " step=" + s + ") BARE SLASH FRACTION IN SVG TEXT: Found literal single-line slash equation '" + raw + "'. In dynamic courseware, all geometry/algebra fraction labels MUST be rendered using window.svgFoLabel() with standard 2D stacked .fraction HTML layout instead of raw single-line slashes (e.g. '4/3(4-x)')!");
+        }
         var tw = 0;
         for (var ci = 0; ci < raw.length; ci++) {
           tw += fsize * (raw.charCodeAt(ci) > 127 ? 0.95 : 0.54);

@@ -118,6 +118,9 @@ flowchart TD
    - 已知边长及转移后的等量，紧贴线段标出数值（如 `4`）。
 5. **视觉渲染层级**：
    $$\text{底层柔和三角形色块} \longrightarrow \text{原题实线与辅助虚线} \longrightarrow \text{角弧/短杠/直角标} \longrightarrow \text{顶层顶点圆点/斜体字母/图例条}$$
+6. **图内公式 100% 采用标准二维上下叠置分式铁律（严禁单行斜杠 `/` 拼凑）**：
+   - 设元边长（如 $NF = \frac{4}{3}(4-x)$、$BF = \frac{25-4x}{3}$）及模型比例（$\frac{PF}{PE} = \frac{4}{3}n$），一律调用 `window.svgFoLabel` 或在 `<foreignObject>` 中以 `.fraction` 渲染标准叠置分式，严禁在 `<text>` 中单行裸写 `4/3(4-x)` 或 `(25-4x)/3`；
+   - 编译脚本内置 `BARE SLASH FRACTION IN SVG TEXT DETECTED` 语法门禁进行强制校验拦截。
 
 ---
 

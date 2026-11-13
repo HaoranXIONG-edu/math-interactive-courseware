@@ -106,7 +106,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
    - **正斜体与下标自动引擎**：壳文件已在 `<script>` 顶部前置挂载 `window.svgAutoFormatText(rawText, baseSize)`、`window.svgFoCard(x, y, w, h, innerHtml, extraStyle)` 与 `window.svgFoLabel(x, y, w, h, innerHtml, extraStyle)`：
      - 凡包含 `S矩形AOBQ`、`S△AOQ`、`k₁`、`x²` 等文本，会自动将几何/代数变量转为 `Times New Roman` 斜体、数字/运算符转为正体、汉字转为宋体，并将面积下标与数字上下标按 `0.75em` 缩放偏移；
      - **严禁在 SVG `<text>` 中直接裸写未转义的 `<` 或 `>`**（如 `x<0` 会被 HTML 解析器误认为非法标签 `<0` 吞掉后续文字造成乱码！必须写成 `&lt;` / `&gt;` 或统一通过 `svgAutoFormatText` 转义输出）；
-     - 涉及分式（如 $\frac{1}{2}|k|$、$\frac{(k_1-k_2)^2}{2k_1}$）的图内悬浮公式卡片，一律优先调用 `window.svgFoCard` 或 `window.svgFoLabel` 渲染 HTML 原生 `.fraction` 上下叠置分式，严禁写 `0.5|k|` 或 `a/b` 斜杠！
+     - 涉及分式（如 $\frac{1}{2}|k|$、$\frac{(k_1-k_2)^2}{2k_1}$、设元边长 $\frac{4}{3}(4-x)$、$\frac{25-4x}{3}$）的图内悬浮公式卡片与几何边长胶囊框，一律优先调用 `window.svgFoCard` 或 `window.svgFoLabel` 渲染 HTML 原生 `.fraction` 上下叠置分式，**严禁在图内写 `0.5|k|`、`4/3(4-x)` 或 `(25-4x)/3` 单行斜杠拼凑**！
    - 坐标轴刻度数字必须布置在**无双曲线经过的象限侧**（如 $k>0$ 时标在二、四象限侧，$k<0$ 时标在一、三象限侧），且所有刻度与几何字母必须加白色描边光晕（`stroke="#ffffff" stroke-width="3.5" paint-order="stroke"`）防止压线。
 4. **函数图象画布全屏放大展示模式（Canvas Full-Screen Zoom）**：
    - 底座内置 `window.toggleCanvasZoom`（支持画布右下角 `🔍 全屏放大图象` 悬浮按钮、步骤控制栏 `🔍 放大图象` 按钮、双击画布空白处、快捷键 `Z` / `ESC`）；
@@ -263,6 +263,25 @@ window.defineSlide({
 8. **相似三角形严禁括号证明符号 & 根号完整顶线（`.sqrt`）门禁**：
    - **相似三角形严禁写 `（AA）` / `（SAS）`**：初中数学规范中仅全等三角形（`≌`）在括号内注 `（SAS）`、`（ASA）`、`（AAS）`、`（SSS）`、`（HL）`；**相似三角形（`∽` 或“相似”）后严禁附加 `（AA）`、`（SAS）`、`（SSS）` 等括号符号**（编译脚本已内置 `FORBIDDEN SIMILARITY PROOF SYMBOL` 门禁拦截）。
    - **根式必须带完整顶线（`.sqrt`）且严禁楷体渲染 `√`**：所有 HTML 文本（含 `.step` 正文、步骤标题、填空 `data-ans` 及 SVG `<foreignObject>` 卡片）中的根号严禁裸写纯文本 `√3`（在楷体下会退化为中文对勾乱码 `∨` 且无顶线），必须使用 `<span class="sqrt"><span class="num">3</span></span>` 渲染为 Times New Roman 正体 `√` + 顶部相连水平顶线（`steps[].title` 已由壳文件 `window.formatInlineMathHTML` 自动转换，编译脚本已内置 `BARE RADICAL '√' WITHOUT .sqrt VINCULUM` 门禁拦截）。
+9. **图内所有几何边长与设元代数式 100% 采用标准二维上下叠置分式铁律（严禁单行斜杠 `/` 拼凑）**：
+   - **痛点**：在几何与函数题中，设元 $x$ 后导出的边长表达式（如 $NF = \frac{4}{3}(4-x)$、$BF = \frac{25-4x}{3}$），若在 SVG 图中使用 `<text>` 渲染为单行斜杠纯文本（如 `NF=4/3(4-x)` 或 `(25-4x)/3`），既不符合初中数学出版级排版规范，也降低了课堂大屏的教学专业度。
+   - **强制实现方案**：
+     1. **胶囊标签与贴边数值**：凡包含分式的线段长标签，一律调用 `window.svgFoLabel(x, y, w, h, innerHtml, { bg, border, color })` 或在 `<foreignObject>` 中使用标准 `.fraction` HTML 结构：
+        ```javascript
+        window.svgFoLabel(20, midNFy - 14, 100, 28, `
+          <span class="math"><i class="m">NF</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span><span class="num">(4-</span><i class="m">x</i><span class="num">)</span></span>
+        `, { bg: '#fff7ed', border: '#fdba74', color: '#c2410c' });
+        ```
+     2. **带括号长分子分式**：如 $BF = \frac{25-4x}{3}$，渲染为：
+        ```javascript
+        window.svgFoLabel(20, midBFy - 14, 105, 28, `
+          <span class="math"><i class="m">BF</i><span class="num">=</span><span class="fraction"><span><span class="num">25-4</span><i class="m">x</i></span><span><span class="num">3</span></span></span></span>
+        `, { bg: '#eff6ff', border: '#93c5fd', color: '#1d4ed8' });
+        ```
+        分子居中在上方、水平分数线居中、分母在下方，自动去除不必要的分子外层括号。
+     3. **模型总结与流程图卡片**：在模型全景卡片中的高比、边长比例（如 $\frac{PF}{PE} = \frac{4}{3}n$），同样必须调用 `.fraction` 或 `svgFoCard` 呈现上下叠置分式，严禁在 `<text>` 中写 `PF/PE = (4/3)n`。
+   - **编译门禁拦截（`BARE SLASH FRACTION IN SVG TEXT DETECTED`）**：
+     `compile_seewo_courseware.py` 自动扫描所有 chunk 中的 SVG `<text>` 标签内容，若检测到纯文本单行斜杠分式（如 `\d+/\d+` 或 `/\d+\(`），立即报错拦截并提示改用 `svgFoLabel` / `.fraction` 渲染。
 
 
 
