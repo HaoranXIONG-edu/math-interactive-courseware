@@ -1,0 +1,2804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数学交互式课件 — 数学组件库 (math_components.js) & 页面 UI 组件库 (ui_components.js)</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: "Songti SC", "SimSun", "STSong", "Noto Serif CJK SC", serif;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 24px 32px 60px;
+    line-height: 1.6;
+}
+.page-wrap {
+    max-width: 1520px;
+    margin: 0 auto;
+}
+.hero-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
+    color: #ffffff;
+    padding: 24px 32px;
+    border-radius: 18px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.14);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.hero-header h1 {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+.hero-header p {
+    color: #cbd5e1;
+    font-size: 15.5px;
+}
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.btn-step {
+    background: #2563eb;
+    color: #fff;
+    border: 1.5px solid #93c5fd;
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+.btn-step:hover { background: #1d4ed8; }
+.lib-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-radius: 14px;
+    margin: 28px 0 18px;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+.lib-banner.math-lib {
+    background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+    border-left: 6px solid #60a5fa;
+}
+.lib-banner.ui-lib {
+    background: linear-gradient(90deg, #065f46 0%, #059669 100%);
+    border-left: 6px solid #34d399;
+}
+.lib-banner h2 {
+    font-size: 23px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.lib-file-pill {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1.5px solid #f1f5f9;
+    padding-bottom: 10px;
+    gap: 8px;
+}
+.card-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: #0f172a;
+}
+.api-tag {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 13px;
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.demo-box {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+.svg-stage {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    height: 385px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.svg-stage.short {
+    height: 235px;
+}
+.svg-stage svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+pre.code-block {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12.8px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    overflow-x: auto;
+    line-height: 1.48;
+}
+
+/* === 数学公式与符号样式 (与 seewo_shell_prefix.html 完全一致) === */
+.math-var, var, i.m {
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+}
+.math-num, .num {
+    font-family: "Times New Roman", Times, serif;
+    font-style: normal;
+}
+.fraction {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 3px;
+    font-size: 0.88em;
+    line-height: 1.05;
+    font-family: "Times New Roman", Times, serif;
+}
+.fraction > span:first-child, .fraction .num {
+    border-bottom: 1.6px solid currentColor;
+    padding: 0 4px 1px;
+    text-align: center;
+    display: block;
+}
+.fraction > span:last-child, .fraction .den {
+    padding: 1px 4px 0;
+    text-align: center;
+    display: block;
+}
+.sqrt {
+    display: inline-flex;
+    align-items: stretch;
+    vertical-align: baseline;
+    margin: 0 2px;
+    font-family: "Times New Roman", Times, serif;
+}
+.sqrt-hook {
+    width: 0.62em;
+    min-height: 1.05em;
+    flex-shrink: 0;
+    margin-right: -0.5px;
+    overflow: visible;
+}
+.sqrt > span {
+    border-top: 1.6px solid currentColor;
+    padding: 1px 3px 0 2px;
+    line-height: 1.05;
+    display: inline-block;
+}
+.math-arc {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: baseline;
+    margin: 0 2px;
+    line-height: 1;
+}
+.math-arc-cap {
+    width: 100%;
+    height: 0.34em;
+    min-width: 1.2em;
+    display: block;
+    overflow: visible;
+    margin-bottom: -0.06em;
+}
+.math-arc-base {
+    display: inline-block;
+    line-height: 1.05;
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+}
+.math-underbrace {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: top;
+    margin: 0 2px;
+    line-height: 1.1;
+}
+.math-underbrace-base {
+    padding: 0 3px;
+}
+.math-underbrace-svg {
+    width: 100%;
+    height: 10px;
+    overflow: visible;
+}
+.math-underbrace-note {
+    font-size: 0.78em;
+    color: #2563eb;
+    font-weight: 700;
+    margin-top: 1px;
+}
+.math-cases {
+    display: inline-flex;
+    align-items: stretch;
+    vertical-align: middle;
+    margin: 2px 4px;
+}
+.math-cases-brace {
+    width: 14px;
+    flex-shrink: 0;
+    margin-right: 3px;
+}
+.math-cases-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+.math-cases-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    white-space: nowrap;
+}
+.math-cases-tag {
+    color: #475569;
+    font-weight: 600;
+}
+
+/* === 页面 UI 组件样式 === */
+.blank {
+    display: inline-block;
+    min-width: 72px;
+    border-bottom: 2.2px solid #dc2626;
+    text-align: center;
+    padding: 0 8px 1px;
+    margin: 0 4px;
+    color: #dc2626;
+    font-weight: 700;
+    background: #fef2f2;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.2s;
+}
+.blank.is-hidden {
+    color: transparent;
+    background: #f8fafc;
+    border-bottom-color: #64748b;
+}
+.blank.is-hidden * {
+    visibility: hidden;
+}
+.choice-bracket {
+    font-weight: 700;
+    color: #0f172a;
+}
+.choice-bracket .choice-ans {
+    color: #dc2626;
+    font-family: "Times New Roman", Times, serif;
+    font-weight: 800;
+    padding: 0 6px;
+}
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.options-grid.cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.option-item {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 7px 12px;
+    font-size: 20px;
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+    <div class="hero-header">
+        <div>
+            <h1>数学交互式课件 — 双组件库架构总览（2024北师大版全六册）</h1>
+            <p>已拆分为【1. 数学公式与图形组件库 math_components.js】与【2. 页面 UI 设计与教学交互组件库 ui_components.js】，所有几何/函数标注采用无胶囊直接旁注</p>
+        </div>
+        <div class="hero-actions">
+            <button class="btn-step" onclick="toggleDemoStep()">🔄 切换讲解步进状态 (当前: <span id="step-indicator">已完成求解 step=4</span>)</button>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 第一部分：数学公式与图形组件库 (math_components.js)               -->
+    <!-- ================================================================= -->
+    <div class="lib-banner math-lib">
+        <h2>📐 第一库：数学公式与图形组件库（Math Component Library）</h2>
+        <span class="lib-file-pill">.agents/skills/math-interactive-courseware/layers/math_components.js</span>
+    </div>
+
+    <!-- M1: 数学公式编译器 & 原生 SVG 无胶囊直接旁注 -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M1-A. HTML 结构化数学公式编译器（顶弧 / 根式 / 分式 / 方程组）</span>
+                <span class="api-tag">MathFormula.render(latex)</span>
+            </div>
+            <div class="demo-box" id="demo-math-html" style="font-size:21px;line-height:1.9;"><div style="margin-bottom:8px;"><b>① 九下《圆》顶弧与连体根式：</b><span class="math">已知<i class="m">AB</i>是<span class="num">⊙</span><i class="m">O</i>的弦，半径<i class="m">OD</i><span class="num">⊥</span><i class="m">AB</i>于点<i class="m">M</i>，求证：<i class="m">AM</i><span class="num">=</span><i class="m">BM</i>，<span class="cw-arc" style="position:relative;display:inline-block;vertical-align:baseline;padding-top:0.32em;margin:0 1px;line-height:1;"><svg viewBox="0 0 28 7" preserveAspectRatio="none" style="position:absolute;top:0.02em;left:-1px;width:calc(100% + 2px);height:0.32em;overflow:visible;display:block;pointer-events:none;"><path d="M 1 6 Q 14 -0.8 27 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span><i class="m">AC</i></span></span><span class="num">=</span><span class="cw-arc" style="position:relative;display:inline-block;vertical-align:baseline;padding-top:0.32em;margin:0 1px;line-height:1;"><svg viewBox="0 0 28 7" preserveAspectRatio="none" style="position:absolute;top:0.02em;left:-1px;width:calc(100% + 2px);height:0.32em;overflow:visible;display:block;pointer-events:none;"><path d="M 1 6 Q 14 -0.8 27 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span><i class="m">BC</i></span></span>，且<i class="m">BC</i><span class="num">=</span><span class="num">4</span><span class="sqrt"><svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;"><path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">3</span></span>，面积<i class="m">S</i><span class="num">=</span><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span><i class="m">r</i><sup><span class="num">2</span></sup><span class="num">.</span></span></div><div style="margin-bottom:8px;"><b>② 七下《整式的乘除》下大括号：</b><span class="math"><i class="m">a</i><sup><i class="m">m</i></sup><span class="num">·</span><i class="m">a</i><sup><i class="m">n</i></sup><span class="num">=</span><span class="cw-underbrace" style="position:relative;display:inline-block;vertical-align:baseline;margin:0 3px 1.45em;line-height:1.2;"><span style="padding:0 2px;"><span class="num">(</span><i class="m">a</i><span class="num">·</span><i class="m">a</i><span class="num">⋯</span><i class="m">a</i><span class="num">)</span></span><span style="position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;align-items:center;pointer-events:none;margin-top:0px;"><svg width="100%" height="7" viewBox="0 0 100 9" preserveAspectRatio="none" style="width:100%;height:7px;overflow:visible;display:block;"><path d="M 2 1 Q 2 4.5 10 4.5 L 44 4.5 Q 50 4.5 50 8.5 Q 50 4.5 56 4.5 L 90 4.5 Q 98 4.5 98 1" fill="none" stroke="#475569" stroke-width="1.5"/></svg><span style="font-size:0.78em;color:#334155;line-height:1.1;margin-top:2px;white-space:nowrap;"><i class="m">m</i>个<i class="m">a</i></span></span></span><span class="num">·</span><span class="cw-underbrace" style="position:relative;display:inline-block;vertical-align:baseline;margin:0 3px 1.45em;line-height:1.2;"><span style="padding:0 2px;"><span class="num">(</span><i class="m">a</i><span class="num">·</span><i class="m">a</i><span class="num">⋯</span><i class="m">a</i><span class="num">)</span></span><span style="position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;align-items:center;pointer-events:none;margin-top:0px;"><svg width="100%" height="7" viewBox="0 0 100 9" preserveAspectRatio="none" style="width:100%;height:7px;overflow:visible;display:block;"><path d="M 2 1 Q 2 4.5 10 4.5 L 44 4.5 Q 50 4.5 50 8.5 Q 50 4.5 56 4.5 L 90 4.5 Q 98 4.5 98 1" fill="none" stroke="#475569" stroke-width="1.5"/></svg><span style="font-size:0.78em;color:#334155;line-height:1.1;margin-top:2px;white-space:nowrap;"><i class="m">n</i>个<i class="m">a</i></span></span></span><span class="num">=</span><i class="m">a</i><sup><i class="m">m</i><span class="num">+</span><i class="m">n</i></sup></span></div><div><b>③ 八上《二元一次方程组》& 八下《不等式组》：</b><span class="math">解不等式组：<span class="cw-cases" style="display:inline-flex;align-items:center;vertical-align:middle;margin:2px 4px;"><svg width="14" height="60" viewBox="0 0 14 48" preserveAspectRatio="none" style="flex-shrink:0;margin-right:4px;overflow:visible;display:block;"><path d="M 12 2 Q 6 2 6 9 L 6 19 Q 6 24 1 24 Q 6 24 6 29 L 6 39 Q 6 46 12 46" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span style="display:inline-flex;flex-direction:column;justify-content:center;"><span style="display:flex;align-items:center;justify-content:space-between;padding:2px 0;line-height:1.35;"><span><span class="num">2</span><i class="m">x</i><span class="num">-</span><span class="num">1</span><span class="num">&gt;</span><span class="num">-</span><i class="m">x</i><span class="num">,</span></span><span class="num" style="margin-left:16px;color:#475569;font-weight:700;">①</span></span><span style="display:flex;align-items:center;justify-content:space-between;padding:2px 0;line-height:1.35;"><span><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span><i class="m">x</i><span class="num">≤</span><span class="num">3.</span></span><span class="num" style="margin-left:16px;color:#475569;font-weight:700;">②</span></span></span></span></span></div></div>
+            <pre class="code-block">// 自动正斜体切分 + 连体矢量根号 + 顶弧与行内文字严格基线对齐 + 嵌套分式方程组
+MathFormula.render('已知 $AB$ 是 $\\odot O$ 的直径，弦 $CD\\perp AB$，则 $\\arc{AC}=\\arc{BC}$，且 $BC=4\\sqrt{3}$.')
+MathFormula.render('解不等式组：$\\cases{2x - 1 > -x, | ① // \\frac{1}{2}x \\leq 3. | ②}$')</pre>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M1-B. 纯原生 SVG 二维公式无胶囊直接旁注引擎</span>
+                <span class="api-tag">MathFormula.svg(x, y, expr, opts)</span>
+            </div>
+            <div class="svg-stage short" id="demo-svg-direct-math"><svg viewBox="0 0 780 210" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid-m1b" width="26" height="26" patternUnits="userSpaceOnUse"><path d="M 26 0 L 0 0 0 26" fill="none" stroke="#e2e8f0" stroke-width="1"/></pattern></defs><rect width="780" height="210" fill="url(#grid-m1b)" rx="10"/><line x1="60" y1="150" x2="220" y2="55" stroke="#0f172a" stroke-width="3"/><circle cx="60" cy="150" r="4.5" fill="#0f172a"/><circle cx="220" cy="55" r="4.5" fill="#0f172a"/><g class="svg-math-direct"><line x1="105.0" y1="75.2" x2="121.4" y2="75.2" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round"/><line x1="105.0" y1="75.2" x2="121.4" y2="75.2" stroke="#b45309" stroke-width="1.65" stroke-linecap="round"/><text x="113.2" y="70.2" font-family="'Times New Roman', serif" font-size="16.8" font-weight="700" fill="#b45309" text-anchor="middle" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16.8">4</tspan></text><text x="113.2" y="94.0" font-family="'Times New Roman', serif" font-size="16.8" font-weight="700" fill="#b45309" text-anchor="middle" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16.8">3</tspan></text><text x="123.9" y="82.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="20" font-weight="700" fill="#b45309" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="20">(4-</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="20">x</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="20">)</tspan></text></g><text x="140" y="185" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="16" fill="#475569">① 边旁二维分式直接标注</text><line x1="300" y1="145" x2="480" y2="145" stroke="#059669" stroke-width="3.2"/><circle cx="300" cy="145" r="4.5" fill="#059669"/><circle cx="480" cy="145" r="4.5" fill="#059669"/><g class="svg-math-direct"><text x="353.5" y="114.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="20" font-weight="700" fill="#059669" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="20">BC</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="20">=4</tspan></text><path d="M 402.8 106.8 L 405.1 105.0 L 407.9 115.5 L 411.7 96.8 L 426.0 96.8" fill="none" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 402.8 106.8 L 405.1 105.0 L 407.9 115.5 L 411.7 96.8 L 426.0 96.8" fill="none" stroke="#059669" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/><text x="412.7" y="114.0" font-family="'Times New Roman', serif" font-size="20" font-weight="700" fill="#059669" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="20">3</tspan></text></g><text x="390" y="185" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="16" fill="#475569">② 边旁连体根式直接标注</text><polygon points="560,150 710,150 650,55" fill="rgba(37,99,235,0.12)" stroke="#2563eb" stroke-width="2.6"/><g class="svg-math-direct"><text x="603.1" y="118.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="19" font-weight="700" fill="#1d4ed8" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="19">S</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="19">=</tspan></text><line x1="627.4" y1="111.5" x2="665.4" y2="111.5" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round"/><line x1="627.4" y1="111.5" x2="665.4" y2="111.5" stroke="#1d4ed8" stroke-width="1.65" stroke-linecap="round"/><g class="svg-math-direct"><text x="630.9" y="106.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16" font-weight="700" fill="#1d4ed8" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16">9</tspan></text><path d="M 640.4 100.8 L 642.7 99.0 L 645.5 108.0 L 649.3 92.8 L 661.4 92.8" fill="none" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 640.4 100.8 L 642.7 99.0 L 645.5 108.0 L 649.3 92.8 L 661.4 92.8" fill="none" stroke="#1d4ed8" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/><text x="650.3" y="106.5" font-family="'Times New Roman', serif" font-size="16" font-weight="700" fill="#1d4ed8" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16">3</tspan></text></g><text x="646.4" y="129.5" font-family="'Times New Roman', serif" font-size="16" font-weight="700" fill="#1d4ed8" text-anchor="middle" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16">2</tspan></text></g><text x="635" y="185" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="16" fill="#475569">③ 区域内部分式+根式直标</text></svg></div>
+            <pre class="code-block">// 不使用胶囊框或 foreignObject，直接在图形边旁渲染带白描边防压线的原生 SVG 二维分式与连体根式
+MathFormula.svg(140, 82, '\\frac{4}{3}(4-x)', { color: '#b45309', size: 20 })
+MathFormula.svg(390, 114, 'BC=4\\sqrt{3}',     { color: '#059669', size: 20 })
+MathFormula.svg(635, 118, 'S=\\frac{9\\sqrt{3}}{2}', { color: '#1d4ed8', size: 19 })</pre>
+        </div>
+    </div>
+
+    <!-- M2: 波利亚平面几何与圆/尺规画板 -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M2-A. 波利亚几何画板：多边形旋转 + 数字角 + 无胶囊直接旁注</span>
+                <span class="api-tag">createGeoCanvas()</span>
+            </div>
+            <div class="svg-stage" id="demo-geo-polya"><svg viewBox="0 0 620 365" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;"><polygon points="165.0,82.0 115.0,315.0 298.0,192.0" fill="rgba(37, 99, 235, 0.16)" stroke="none" stroke-width="1.6"/><polygon points="465.0,315.0 115.0,315.0 298.0,192.0" fill="rgba(217, 119, 6, 0.18)" stroke="none" stroke-width="1.6"/><polygon points="165.0,82.0 115.0,315.0 465.0,315.0 420.0,128.0" fill="none" stroke="#0f172a" stroke-width="2.6" stroke-linejoin="round"/><line x1="165.0" y1="82.0" x2="465.0" y2="315.0" stroke="#334155" stroke-width="2" stroke-linecap="round"/><line x1="115.0" y1="315.0" x2="420.0" y2="128.0" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="7 4"/><polygon points="298.0,192.0 288.0,198.7 297.7,205.8 307.7,199.1" fill="rgba(148, 163, 184, 0.14)" stroke="none"/><polyline points="288.0,198.7 297.7,205.8 307.7,199.1" fill="none" stroke="#475569" stroke-width="1.6"/><path d="M 136.6 300.5 A 26 26 0 0 0 120.5 289.6" fill="none" stroke="#2563eb" stroke-width="2.1"/><text x="136.9" y="287.2" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="15" fill="#2563eb" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15">1</tspan></text><path d="M 149.0 315.0 A 34 34 0 0 0 143.2 296.0" fill="none" stroke="#2563eb" stroke-width="2.1"/><text x="160.0" y="305.8" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="15" fill="#2563eb" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15">2</tspan></text><path d="M 394.4 123.4 A 26 26 0 0 0 397.0 140.1" fill="none" stroke="#d97706" stroke-width="2.1"/><text x="381.5" y="138.4" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="15" fill="#d97706" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15">3</tspan></text><path d="M 389.9 143.8 A 34 34 0 0 0 428.0 161.1" fill="none" stroke="#d97706" stroke-width="2.1"/><text x="400.6" y="175.3" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="15" fill="#d97706" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15">4</tspan></text><line x1="145.9" y1="199.8" x2="134.1" y2="197.2" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round"/><line x1="233.5" y1="130.8" x2="225.8" y2="140.1" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/><line x1="237.2" y1="133.9" x2="229.5" y2="143.2" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/><line x1="383.1" y1="247.2" x2="376.0" y2="256.9" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/><line x1="387.0" y1="250.1" x2="379.9" y2="259.8" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/><polyline points="288.5,109.0 295.7,105.6 290.1,99.8" fill="none" stroke="#059669" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/><g class="svg-legend-bar"><rect x="8" y="6" width="604" height="28" rx="6" fill="rgba(248,250,252,0.96)" stroke="#cbd5e1" stroke-width="1.2"/><path d="M 132.1 25.0 L 120.1 25.0 L 129.1 15.0" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M 127.1 25.0 A 6.5 6.5 0 0 0 125.4 19.2" fill="none" stroke="#2563eb" stroke-width="1.5"/><text x="138.1" y="24.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="12.5" fill="#2563eb" text-anchor="start"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5">∠1=∠2</tspan></text><line x1="189.4" y1="12.0" x2="189.4" y2="28.0" stroke="#cbd5e1" stroke-width="1.2"/><path d="M 210.4 25.0 L 198.4 25.0 L 207.4 15.0" fill="none" stroke="#d97706" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M 205.4 25.0 A 6.5 6.5 0 0 0 203.7 19.2" fill="none" stroke="#d97706" stroke-width="1.5"/><text x="216.4" y="24.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="12.5" fill="#d97706" text-anchor="start"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5">∠3=∠4</tspan></text><line x1="267.6" y1="12.0" x2="267.6" y2="28.0" stroke="#cbd5e1" stroke-width="1.2"/><line x1="275.6" y1="20.0" x2="293.6" y2="20.0" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/><text x="297.6" y="24.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="12.5" fill="#dc2626" text-anchor="start"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="12.5">BF</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5">,</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="12.5">DF</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5">: </tspan><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="12.5">构造筝形</tspan></text><line x1="398.9" y1="12.0" x2="398.9" y2="28.0" stroke="#cbd5e1" stroke-width="1.2"/><polygon points="413.9,14.5 407.9,25.0 419.9,25.0" fill="rgba(37,99,235,0.20)" stroke="#2563eb" stroke-width="1.5" stroke-linejoin="round"/><text x="425.9" y="24.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="12.5" fill="#2563eb" text-anchor="start"><tspan font-family="'Songti SC', 'SimSun', serif" font-style="normal" font-size="10.3">△</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="12.5">ABF</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5">≌</tspan><tspan font-family="'Songti SC', 'SimSun', serif" font-style="normal" font-size="10.3">△</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="12.5">CBF</tspan></text></g><g class="svg-math-direct"><text x="115.7" y="200.1" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="15.5" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15.5">4</tspan></text></g><g class="svg-math-direct"><line x1="467.3" y1="215.4" x2="481.8" y2="215.4" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round"/><line x1="467.3" y1="215.4" x2="481.8" y2="215.4" stroke="#b45309" stroke-width="1.65" stroke-linecap="round"/><text x="474.6" y="210.4" font-family="'Times New Roman', serif" font-size="13.4" font-weight="700" fill="#b45309" text-anchor="middle" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="13.4">4</tspan></text><text x="474.6" y="230.8" font-family="'Times New Roman', serif" font-size="13.4" font-weight="700" fill="#b45309" text-anchor="middle" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="13.4">3</tspan></text><text x="484.3" y="220.9" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16" font-weight="700" fill="#b45309" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16">(4-</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="16">x</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16">)</tspan></text></g><circle cx="165.0" cy="82.0" r="4.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="149.8" y="72.9" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="17" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="17">A</tspan></text></g><circle cx="115.0" cy="315.0" r="4.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="96.0" y="330.7" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="17" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="17">B</tspan></text></g><circle cx="465.0" cy="315.0" r="4.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="472.6" y="330.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="17" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="17">C</tspan></text></g><circle cx="420.0" cy="128.0" r="4.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="425.9" y="120.6" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="17" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="17">D</tspan></text></g><circle cx="298.0" cy="192.0" r="5.5" fill="#dc2626" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="272.8" y="180.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16.5" font-weight="700" fill="#dc2626" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="16.5">F</tspan></text></g><line x1="290.0" y1="315.0" x2="398.6" y2="341.0" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="4 3"/><circle cx="290.0" cy="315.0" r="3.8" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/><g class="svg-math-direct"><text x="399.5" y="348.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16" font-weight="700" fill="#dc2626" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="16">BC</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16">=4</tspan></text><path d="M 439.0 342.2 L 441.3 340.4 L 444.1 349.5 L 447.9 334.2 L 460.0 334.2" fill="none" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 439.0 342.2 L 441.3 340.4 L 444.1 349.5 L 447.9 334.2 L 460.0 334.2" fill="none" stroke="#dc2626" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/><text x="448.9" y="348.0" font-family="'Times New Roman', serif" font-size="16" font-weight="700" fill="#dc2626" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="16">3</tspan></text></g></svg></div>
+            <pre class="code-block">// 边旁分式与求解目标直接标注在对应边旁边（白底描边防压线，无胶囊边框，直观清爽）
+g.segmentLabel(D, C, '\\frac{4}{3}(4-x)', { side: 'right', dist: 24, color: '#b45309' })
+ .targetCallout([290, 315], [430, 348], { target: 'BC', ans: '4\\sqrt{3}', solved: isSolved });</pre>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M2-B. 九下《圆》切线自动解算 + 扇形阴影 + 尺规作图弧痕</span>
+                <span class="api-tag">circleWithCenter / tangentFromPoint</span>
+            </div>
+            <div class="svg-stage" id="demo-geo-circle"><svg viewBox="0 0 620 365" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;"><path d="M 215.0 200.0 L 254.0 287.7 A 96 96 0 0 0 254.0 112.3 Z" fill="rgba(37, 99, 235, 0.16)" stroke="none" stroke-width="1.5"/><circle cx="215.0" cy="200.0" r="96.0" fill="none" stroke="#0f172a" stroke-width="2.2"/><line x1="455.0" y1="200.0" x2="253.4" y2="112.0" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round"/><line x1="215.0" y1="200.0" x2="253.4" y2="112.0" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="7 4"/><line x1="455.0" y1="200.0" x2="253.4" y2="288.0" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round"/><line x1="215.0" y1="200.0" x2="253.4" y2="288.0" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="7 4"/><line x1="215.0" y1="200.0" x2="455.0" y2="200.0" stroke="#475569" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="7 4"/><polygon points="253.4,112.0 249.0,122.1 259.1,126.5 263.5,116.4" fill="rgba(148, 163, 184, 0.14)" stroke="none"/><polyline points="249.0,122.1 259.1,126.5 263.5,116.4" fill="none" stroke="#475569" stroke-width="1.6"/><polygon points="253.4,288.0 249.0,277.9 259.1,273.5 263.5,283.6" fill="rgba(148, 163, 184, 0.14)" stroke="none"/><polyline points="249.0,277.9 259.1,273.5 263.5,283.6" fill="none" stroke="#475569" stroke-width="1.6"/><path d="M 350.8 144.6 A 118 118 0 0 0 350.8 255.4" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round"/><line x1="215.0" y1="196.0" x2="215.0" y2="146.0" stroke="#0284c7" stroke-width="1.2"/><line x1="455.0" y1="196.0" x2="455.0" y2="146.0" stroke="#0284c7" stroke-width="1.2"/><line x1="215.0" y1="152.0" x2="264.6" y2="152.0" stroke="#0284c7" stroke-width="1.5"/><line x1="405.4" y1="152.0" x2="455.0" y2="152.0" stroke="#0284c7" stroke-width="1.5"/><polygon points="215.0,152.0 222.0,148.4 222.0,155.6" fill="#0284c7"/><polygon points="455.0,152.0 448.0,148.4 448.0,155.6" fill="#0284c7"/><g class="svg-legend-bar"><rect x="8" y="6" width="604" height="28" rx="6" fill="rgba(248,250,252,0.96)" stroke="#cbd5e1" stroke-width="1.2"/><line x1="161.0" y1="20.0" x2="179.0" y2="20.0" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/><text x="183.0" y="24.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="12.5" fill="#dc2626" text-anchor="start"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="12.5">OA</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5">,</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="12.5">OB</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5">: </tspan><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="12.5">切线垂直半径</tspan></text><line x1="307.3" y1="12.0" x2="307.3" y2="28.0" stroke="#cbd5e1" stroke-width="1.2"/><line x1="315.3" y1="20.0" x2="331.3" y2="20.0" stroke="#0284c7" stroke-width="2.4" stroke-linecap="round"/><text x="335.3" y="24.5" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="12.5" fill="#0284c7" text-anchor="start"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="12.5">尺规作图弧痕</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="12.5"> &amp; </tspan><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="12.5">尺寸线</tspan></text></g><circle cx="215.0" cy="200.0" r="3.8" fill="#0f172a"/><g class="svg-math-direct"><text x="195.4" y="218.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16.5" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="16.5">O</tspan></text></g><circle cx="253.4" cy="112.0" r="4.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="228.2" y="100.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16.5" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="16.5">A</tspan></text></g><circle cx="253.4" cy="288.0" r="4.5" fill="#0f172a" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="228.2" y="306.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16.5" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="16.5">B</tspan></text></g><circle cx="455.0" cy="200.0" r="5.5" fill="#dc2626" stroke="#ffffff" stroke-width="1.8"/><g class="svg-math-direct"><text x="471.0" y="205.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="16.5" font-weight="700" fill="#dc2626" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="16.5">P</tspan></text></g><g class="svg-math-direct"><text x="306.0" y="157.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="15" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="15">OP</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15">=4</tspan></text><path d="M 343.1 151.6 L 345.4 149.8 L 348.2 158.5 L 352.0 144.1 L 363.5 144.1" fill="none" stroke="#ffffff" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M 343.1 151.6 L 345.4 149.8 L 348.2 158.5 L 352.0 144.1 L 363.5 144.1" fill="none" stroke="#0f172a" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/><text x="353.0" y="157.0" font-family="'Times New Roman', serif" font-size="15" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15">2</tspan></text></g></svg></div>
+            <pre class="code-block">g.sectorFill(O, 96, -66, 66, 'blue').circleWithCenter(O, 96, 'O')
+ .tangentFromPoint(O, 96, P, { label1: 'A', label2: 'B' })
+ .compassArc(P, 118, 180, 56).dimensionLine(O, P, 'OP=4\\sqrt{2}', { offset: 48 });</pre>
+        </div>
+    </div>
+
+    <!-- M3: 二次函数画板 & 概率树状图 -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M3-A. 函数坐标系画板：二次函数抛物线 + 对称轴 + 铅垂高直接旁注</span>
+                <span class="api-tag">createFuncCanvas()</span>
+            </div>
+            <div class="svg-stage" id="demo-func-parabola"><svg viewBox="0 0 620 365" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;"><line x1="38.0" y1="42" x2="38.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="106.0" y1="42" x2="106.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="174.0" y1="42" x2="174.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="242.0" y1="42" x2="242.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="310.0" y1="42" x2="310.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="378.0" y1="42" x2="378.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="446.0" y1="42" x2="446.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="514.0" y1="42" x2="514.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="582.0" y1="42" x2="582.0" y2="331" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="314.9" x2="582" y2="314.9" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="282.8" x2="582" y2="282.8" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="250.7" x2="582" y2="250.7" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="218.6" x2="582" y2="218.6" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="186.5" x2="582" y2="186.5" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="154.4" x2="582" y2="154.4" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="122.3" x2="582" y2="122.3" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="90.2" x2="582" y2="90.2" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="58.1" x2="582" y2="58.1" stroke="#f1f5f9" stroke-width="1"/><line x1="38" y1="186.5" x2="592" y2="186.5" stroke="#334155" stroke-width="1.8"/><polygon points="596,186.5 587,182.5 587,190.5" fill="#334155"/><line x1="242.0" y1="331" x2="242.0" y2="32" stroke="#334155" stroke-width="1.8"/><polygon points="242.0,28 238.0,37 246.0,37" fill="#334155"/><text x="232.0" y="202.5" font-family="'Times New Roman', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155">O</text><text x="590" y="204.5" text-anchor="end" font-family="'Times New Roman', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">x</text><text x="254.0" y="40" font-family="'Times New Roman', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">y</text><polyline points="51.6,18.9 56.1,26.9 60.7,34.9 65.2,42.6 69.7,50.3 74.3,57.8 78.8,65.1 83.3,72.3 87.9,79.4 92.4,86.3 96.9,93.1 101.5,99.7 106.0,106.2 110.5,112.6 115.1,118.8 119.6,124.8 124.1,130.8 128.7,136.5 133.2,142.2 137.7,147.7 142.3,153.0 146.8,158.2 151.3,163.3 155.9,168.2 160.4,173.0 164.9,177.7 169.5,182.1 174.0,186.5 178.5,190.7 183.1,194.8 187.6,198.7 192.1,202.5 196.7,206.1 201.2,209.6 205.7,213.0 210.3,216.2 214.8,219.3 219.3,222.2 223.9,225.0 228.4,227.6 232.9,230.1 237.5,232.5 242.0,234.7 246.5,236.7 251.1,238.7 255.6,240.4 260.1,242.1 264.7,243.6 269.2,244.9 273.7,246.2 278.3,247.2 282.8,248.2 287.3,248.9 291.9,249.6 296.4,250.1 300.9,250.4 305.5,250.7 310.0,250.7 314.5,250.7 319.1,250.4 323.6,250.1 328.1,249.6 332.7,248.9 337.2,248.2 341.7,247.2 346.3,246.2 350.8,244.9 355.3,243.6 359.9,242.1 364.4,240.4 368.9,238.7 373.5,236.7 378.0,234.7 382.5,232.5 387.1,230.1 391.6,227.6 396.1,225.0 400.7,222.2 405.2,219.3 409.7,216.2 414.3,213.0 418.8,209.6 423.3,206.1 427.9,202.5 432.4,198.7 436.9,194.8 441.5,190.7 446.0,186.5 450.5,182.1 455.1,177.7 459.6,173.0 464.1,168.2 468.7,163.3 473.2,158.2 477.7,153.0 482.3,147.7 486.8,142.2 491.3,136.5 495.9,130.8 500.4,124.8 504.9,118.8 509.5,112.6 514.0,106.2 518.5,99.7 523.1,93.1 527.6,86.3 532.1,79.4 536.7,72.3 541.2,65.1 545.7,57.8 550.3,50.3 554.8,42.6 559.3,34.9 563.9,26.9 568.4,18.9" fill="none" stroke="#2563eb" stroke-width="2.6" stroke-linecap="round"/><line x1="310.0" y1="38" x2="310.0" y2="335" stroke="#d97706" stroke-width="1.8" stroke-dasharray="6 4"/><line x1="174.0" y1="218.6" x2="514.0" y2="98.2" stroke="#059669" stroke-width="2.2"/><polygon points="174.0,218.6 378.0,170.4 514.0,98.2" fill="rgba(37,99,235,0.15)" stroke="#2563eb" stroke-width="1.8"/><line x1="378.0" y1="170.4" x2="378.0" y2="234.7" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="6 3"/><g class="svg-math-direct"><text x="318.0" y="58.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="13.5" font-weight="700" fill="#d97706" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="13.5">直线</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="13.5">x</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="13.5">=1</tspan></text></g><circle cx="378.0" cy="170.4" r="4.8" fill="#dc2626" stroke="#fff" stroke-width="1.6"/><circle cx="378.0" cy="234.7" r="4.5" fill="#d97706" stroke="#fff" stroke-width="1.6"/><g class="svg-math-direct"><text x="388.0" y="207.6" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="15" font-weight="700" fill="#dc2626" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="15">PM</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="15">=2</tspan></text></g><circle cx="174.0" cy="218.6" r="4.5" fill="#0f172a" stroke="#0f172a" stroke-width="2"/><g class="svg-math-direct"><text x="106.0" y="210.6" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="14.5" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="14.5">A</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="14.5">(-1,-1)</tspan></text></g><circle cx="514.0" cy="98.2" r="4.5" fill="#0f172a" stroke="#0f172a" stroke-width="2"/><g class="svg-math-direct"><text x="522.0" y="92.2" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="14.5" font-weight="700" fill="#0f172a" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="14.5">B</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="14.5">(4,2.75)</tspan></text></g><circle cx="378.0" cy="170.4" r="4.5" fill="#d97706" stroke="#d97706" stroke-width="2"/><g class="svg-math-direct"><text x="360.0" y="160.4" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="14.5" font-weight="700" fill="#d97706" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="14.5">M</tspan></text></g><circle cx="378.0" cy="234.7" r="4.5" fill="#dc2626" stroke="#dc2626" stroke-width="2"/><g class="svg-math-direct"><text x="388.0" y="250.7" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="14.5" font-weight="700" fill="#dc2626" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="14.5">P</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="14.5">(2,-1.5)</tspan></text></g></svg></div>
+            <pre class="code-block">f.drawAxes().drawParabola(0.5, -1, -1.5).drawSymmetryAxis(1, '直线x=1')
+ .drawLine([-1, -1], [4, 2.75]).drawLeadVertical(2, 0.5, -1.5, [-1, -1], [4, 2.75], { label: 'PM=2' });</pre>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M3-B. 九上/七下《概率》多阶段分步树状图自动布局</span>
+                <span class="api-tag">createProbTree()</span>
+            </div>
+            <div class="svg-stage" id="demo-prob-tree"><svg viewBox="0 0 620 250" width="100%" height="100%" style="background:#ffffff;border-radius:10px;display:block;"><text x="12" y="97" font-size="12.5" font-weight="700" fill="#64748b">第1步</text><text x="12" y="165" font-size="12.5" font-weight="700" fill="#64748b">第2步</text><text x="12" y="204" font-size="12.5" font-weight="700" fill="#64748b">结果</text><line x1="310" y1="38" x2="123.3" y2="78" stroke="#64748b" stroke-width="1.8"/><line x1="123.3" y1="105" x2="76.7" y2="146" stroke="#dc2626" stroke-width="2.4"/><line x1="123.3" y1="105" x2="170.0" y2="146" stroke="#94a3b8" stroke-width="1.6"/><line x1="310" y1="38" x2="310.0" y2="78" stroke="#64748b" stroke-width="1.8"/><line x1="310.0" y1="105" x2="263.3" y2="146" stroke="#dc2626" stroke-width="2.4"/><line x1="310.0" y1="105" x2="356.7" y2="146" stroke="#94a3b8" stroke-width="1.6"/><line x1="310" y1="38" x2="496.7" y2="78" stroke="#64748b" stroke-width="1.8"/><line x1="496.7" y1="105" x2="450.0" y2="146" stroke="#94a3b8" stroke-width="1.6"/><line x1="496.7" y1="105" x2="543.3" y2="146" stroke="#94a3b8" stroke-width="1.6"/><rect x="276" y="12" width="68" height="26" rx="6" fill="#1e293b"/><text x="310" y="30" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">开始</text><rect x="101.3" y="79" width="44" height="26" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><text x="123.3" y="97" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" font-weight="700" fill="#1e40af">A</text><rect x="56.7" y="147" width="40" height="26" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1.6"/><text x="76.7" y="165" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13.5" font-weight="700" fill="#dc2626">B</text><text x="76.7" y="204" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13" font-weight="800" fill="#dc2626">(A,B) ✓</text><rect x="150.0" y="147" width="40" height="26" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/><text x="170.0" y="165" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13.5" font-weight="700" fill="#334155">C</text><text x="170.0" y="204" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13" font-weight="600" fill="#334155">(A,C)</text><rect x="288.0" y="79" width="44" height="26" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><text x="310.0" y="97" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" font-weight="700" fill="#1e40af">B</text><rect x="243.3" y="147" width="40" height="26" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1.6"/><text x="263.3" y="165" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13.5" font-weight="700" fill="#dc2626">A</text><text x="263.3" y="204" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13" font-weight="800" fill="#dc2626">(B,A) ✓</text><rect x="336.7" y="147" width="40" height="26" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/><text x="356.7" y="165" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13.5" font-weight="700" fill="#334155">C</text><text x="356.7" y="204" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13" font-weight="600" fill="#334155">(B,C)</text><rect x="474.7" y="79" width="44" height="26" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/><text x="496.7" y="97" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" font-weight="700" fill="#1e40af">C</text><rect x="430.0" y="147" width="40" height="26" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/><text x="450.0" y="165" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13.5" font-weight="700" fill="#334155">A</text><text x="450.0" y="204" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13" font-weight="600" fill="#334155">(C,A)</text><rect x="523.3" y="147" width="40" height="26" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/><text x="543.3" y="165" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13.5" font-weight="700" fill="#334155">B</text><text x="543.3" y="204" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13" font-weight="600" fill="#334155">(C,B)</text></svg></div>
+            <pre class="code-block">createProbTree({
+    root: '开始',
+    branches: [
+        { label: 'A', children: [{ label: 'B', outcome: '(A,B)', match: true }, { label: 'C', outcome: '(A,C)' }] },
+        { label: 'B', children: [{ label: 'A', outcome: '(B,A)', match: true }, { label: 'C', outcome: '(B,C)' }] }
+    ]
+}, isSolved);</pre>
+        </div>
+    </div>
+
+    <!-- M4: 数轴不等式组（无箭头平端） & 2024新课标箱线图 -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M4-A. 八下《一元一次不等式组》数轴公共解集（无箭头平端折线）</span>
+                <span class="api-tag">createNumberLine()</span>
+            </div>
+            <div class="svg-stage short" id="demo-number-line"><svg viewBox="0 0 620 195" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;"><rect x="177.0" y="90" width="266.0" height="38" fill="rgba(37, 99, 235, 0.16)"/><line x1="185.0" y1="128" x2="197.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="195.0" y1="128" x2="207.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="205.0" y1="128" x2="217.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="215.0" y1="128" x2="227.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="225.0" y1="128" x2="237.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="235.0" y1="128" x2="247.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="245.0" y1="128" x2="257.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="255.0" y1="128" x2="267.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="265.0" y1="128" x2="277.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="275.0" y1="128" x2="287.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="285.0" y1="128" x2="297.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="295.0" y1="128" x2="307.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="305.0" y1="128" x2="317.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="315.0" y1="128" x2="327.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="325.0" y1="128" x2="337.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="335.0" y1="128" x2="347.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="345.0" y1="128" x2="357.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="355.0" y1="128" x2="367.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="365.0" y1="128" x2="377.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="375.0" y1="128" x2="387.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="385.0" y1="128" x2="397.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="395.0" y1="128" x2="407.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="405.0" y1="128" x2="417.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="415.0" y1="128" x2="427.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="425.0" y1="128" x2="437.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="435.0" y1="128" x2="443.0" y2="90" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/><line x1="26" y1="128" x2="596" y2="128" stroke="#0f172a" stroke-width="2.2"/><polygon points="602,128 591,123 591,133" fill="#0f172a"/><line x1="44.0" y1="128" x2="44.0" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="44.0" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">-3</text><line x1="110.5" y1="128" x2="110.5" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="110.5" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">-2</text><line x1="177.0" y1="128" x2="177.0" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="177.0" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">-1</text><line x1="243.5" y1="128" x2="243.5" y2="119" stroke="#0f172a" stroke-width="2"/><text x="243.5" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="800" fill="#0f172a">0</text><line x1="310.0" y1="128" x2="310.0" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="310.0" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">1</text><line x1="376.5" y1="128" x2="376.5" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="376.5" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">2</text><line x1="443.0" y1="128" x2="443.0" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="443.0" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">3</text><line x1="509.5" y1="128" x2="509.5" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="509.5" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">4</text><line x1="576.0" y1="128" x2="576.0" y2="122" stroke="#0f172a" stroke-width="1.5"/><text x="576.0" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="600" fill="#0f172a">5</text><polyline points="177.0,128 177.0,90 590.0,90" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><g class="svg-math-direct"><text x="334.2" y="83.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="13.5" font-weight="700" fill="#2563eb" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="13.5">① </tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="13.5">x</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="13.5">&gt;-1</tspan><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="13.5">（空心圈）</tspan></text></g><polyline points="443.0,128 443.0,62 30.0,62" fill="none" stroke="#d97706" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><g class="svg-math-direct"><text x="190.7" y="55.0" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-size="13.5" font-weight="700" fill="#d97706" text-anchor="start" stroke="#ffffff" stroke-width="4.2" paint-order="stroke"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="13.5">② </tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="13.5">x</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="13.5">≤3</tspan><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="13.5">（实心点）</tspan></text></g><circle cx="177.0" cy="128" r="5" fill="#ffffff" stroke="#2563eb" stroke-width="2.4"/><circle cx="443.0" cy="128" r="5" fill="#d97706" stroke="#d97706" stroke-width="2.4"/></svg></div>
+            <pre class="code-block">// 严格对齐北师大版八下教材：仅数轴正方向带箭头，不等式解集折线末端不带箭头
+createNumberLine({ min: -3, max: 5, step: 1 })
+  .addInequality(-1, 'right', false, 1, { label: '① x>-1（空心圈）' })
+  .addInequality(3,  'left',  true,  2, { label: '② x≤3（实心点）' })
+  .shadeIntersection(-1, 3);</pre>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">M4-B. 八上 2024 新课标新增《四分位数与箱线图》智能防重叠标注</span>
+                <span class="api-tag">createBoxPlot()</span>
+            </div>
+            <div class="svg-stage short" id="demo-box-plot"><svg viewBox="0 0 620 205" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;"><text x="310" y="24" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0f172a"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">全班学生</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="14">1</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="14">min</tspan><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">跳绳次数箱线图（还原八上第</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="14">164</tspan><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">页）</tspan></text><line x1="91.0" y1="88" x2="219.4" y2="88" stroke="#0f172a" stroke-width="1.6" stroke-dasharray="4 3"/><line x1="310.0" y1="88" x2="529.0" y2="88" stroke="#0f172a" stroke-width="1.6" stroke-dasharray="4 3"/><line x1="91.0" y1="75" x2="91.0" y2="101" stroke="#0f172a" stroke-width="1.8"/><line x1="529.0" y1="75" x2="529.0" y2="101" stroke="#0f172a" stroke-width="1.8"/><rect x="219.4" y="68" width="90.6" height="40" fill="#38bdf8" stroke="#0f172a" stroke-width="1.6"/><line x1="249.6" y1="68" x2="249.6" y2="108" stroke="#0f172a" stroke-width="2.2"/><text x="91.0" y="58" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="700" fill="#0369a1">115</text><text x="211.4" y="58" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="700" fill="#0369a1">132</text><text x="257.6" y="58" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="700" fill="#0369a1">136</text><text x="310.0" y="58" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="700" fill="#0369a1">144</text><text x="529.0" y="58" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14.5" font-weight="700" fill="#0369a1">173</text><text x="91.0" y="132" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">最小值</tspan></text><line x1="219.4" y1="110" x2="193.4" y2="119" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2 2"/><text x="193.4" y="132" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">下四分位数</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="14">m</tspan><tspan dy="3.5" font-size="10.4"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="10.4">25</tspan></tspan></text><line x1="249.6" y1="110" x2="249.6" y2="143" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2 2"/><text x="249.6" y="156" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0369a1"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">中位数</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="14">m</tspan><tspan dy="3.5" font-size="10.4"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="10.4">50</tspan></tspan></text><line x1="310.0" y1="110" x2="336.0" y2="119" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2 2"/><text x="336.0" y="132" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">上四分位数</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="italic" font-size="14">m</tspan><tspan dy="3.5" font-size="10.4"><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="10.4">75</tspan></tspan></text><text x="529.0" y="132" text-anchor="middle" font-size="12.5" font-weight="700" fill="#334155"><tspan font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="14">最大值</tspan></text></svg></div>
+            <pre class="code-block">createBoxPlot({ min: 115, q25: 132, median: 136, q75: 144, max: 173,
+  title: '全班学生1min跳绳次数箱线图（还原八上第164页）' });</pre>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 第二部分：页面 UI 设计与教学交互组件库 (ui_components.js)         -->
+    <!-- ================================================================= -->
+    <div class="lib-banner ui-lib">
+        <h2>🎨 第二库：页面 UI 设计与教学交互组件库（Page UI Design Component Library）</h2>
+        <span class="lib-file-pill">.agents/skills/math-interactive-courseware/layers/ui_components.js</span>
+    </div>
+
+    <!-- U1 & U2: 教材栏目徽章、拆页横幅、题干卡片、零剧透填空与选择题网格 -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">U1. 2024版北师大教材原生栏目徽章 & 拆页【前问已知】承接横幅</span>
+                <span class="api-tag">UI.bookBadge() / UI.prevContext()</span>
+            </div>
+            <div class="demo-box" id="demo-ui-badges"><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #bae6fd;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>💡</span><span>尝试·思考</span></span><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #99f6e4;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>💬</span><span>尝试·交流</span></span><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #bfdbfe;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>🔍</span><span>思考·交流</span></span><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #ddd6fe;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>📐</span><span>操作·思考</span></span><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#d97706,#b45309);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #fde68a;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>👀</span><span>观察·思考</span></span><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#059669,#047857);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #a7f3d0;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>✏️</span><span>随堂练习</span></span><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #fecaca;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>📌</span><span>例 1</span></span></div><div class="prev-context-banner" style="display:flex;align-items:center;gap:10px;padding:8px 14px;margin-bottom:10px;border-radius:10px;background:linear-gradient(90deg,#eff6ff,#f8fafc);border-left:4px solid #2563eb;border-top:1px solid #dbeafe;border-right:1px solid #dbeafe;border-bottom:1px solid #dbeafe;font-size:19px;color:#1e3a8a;line-height:1.45;">
+            <span style="background:#2563eb;color:#fff;font-weight:700;font-size:15px;padding:2px 8px;border-radius:6px;flex-shrink:0;">【前问已知】</span>
+            <span><span class="math">由第（<span class="num">1</span>）问已求得蓄电池电压<i class="m">U</i><span class="num">=</span><span class="num">36</span><span class="num">V</span>，反比例函数表达式为<i class="m">I</i><span class="num">=</span><span class="fraction"><span><span class="num">36</span></span><span><i class="m">R</i></span></span>，点<i class="m">A</i><span class="num">(</span><span class="num">4</span><span class="num">,</span><span class="num">9</span><span class="num">)</span>在图象上<span class="num">.</span></span></span>
+        </div></div>
+            <pre class="code-block">UI.bookBadge('try-think') + UI.bookBadge('try-share') + UI.bookBadge('think-share') +
+UI.bookBadge('do-think')  + UI.bookBadge('practice')  + UI.bookBadge('example', '例 1')
+UI.prevContext('由第（1）问已求得蓄电池电压 $U=36\\text{V}$，反比例函数表达式为 $I=\\frac{36}{R}$，点 $A(4,9)$ 在图象上.')</pre>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">U2. 标准题干卡片 + 零剧透填空横线 + 选择题自适应选项网格</span>
+                <span class="api-tag">UI.stemCard() / UI.blank() / UI.choices()</span>
+            </div>
+            <div class="demo-box" id="demo-ui-stem"><div class="problem-stem" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:14px;padding:14px 18px;box-shadow:0 2px 8px rgba(15,23,42,0.04);font-size:23px;line-height:1.6;color:#0f172a;"><span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,#059669,#047857);color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid #a7f3d0;vertical-align:middle;margin-right:8px;line-height:1.3;"><span>✏️</span><span>随堂练习</span></span><span class="tag-source" style="display:inline-block;padding:2px 8px;border-radius:6px;background:#e0f2fe;color:#0369a1;font-size:16px;font-weight:700;margin-right:8px;vertical-align:middle;">2024北师大九下</span><span class="math">如图，在<span class="num">Rt</span><span class="num">△</span><i class="m">ABC</i>中，<span class="num">∠</span><i class="m">C</i><span class="num">=</span><span class="num">90</span><span class="num">°</span>，<i class="m">AB</i><span class="num">=</span><span class="num">8</span>，<span class="num">∠</span><i class="m">A</i><span class="num">=</span><span class="num">60</span><span class="num">°</span>，则直角边<i class="m">BC</i><span class="num">=</span><span class="blank" data-Empty="　　　" data-step="2" style=""><span class="math"><span class="num">4</span><span class="sqrt"><svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;"><path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">3</span></span></span></span>，外接圆半径<i class="m">R</i><span class="num">=</span><span class="blank" data-Empty="　　　" data-step="2" style=""><span class="math"><span class="num">4</span></span></span>，应选<span class="choice-bracket" data-step="2" data-ans="C">（<span class="choice-ans">C</span>）</span></span><div class="sub-q" style="margin-top:8px;padding-left:8px;font-size:22px;line-height:1.55;color:#1e293b;"><span class="math">（<span class="num">1</span>）求<span class="num">sin</span><i class="m">A</i>与<span class="num">tan</span><i class="m">A</i>的值；</span></div><div class="sub-q" style="margin-top:8px;padding-left:8px;font-size:22px;line-height:1.55;color:#1e293b;"><span class="math">（<span class="num">2</span>）求<span class="num">△</span><i class="m">ABC</i>的面积<i class="m">S</i><sub><span class="num">△</span><i class="m">ABC</i></sub><span class="num">.</span></span></div></div><div class="options-grid"><div class="option-item"><span class="math"><i class="m">A</i><span class="num">.</span><span class="num">2</span><span class="sqrt"><svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;"><path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">3</span></span></span></div><div class="option-item"><span class="math"><i class="m">B</i><span class="num">.</span><span class="num">4</span></span></div><div class="option-item"><span class="math"><i class="m">C</i><span class="num">.</span><span class="num">4</span><span class="sqrt"><svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;"><path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">3</span></span></span></div><div class="option-item"><span class="math"><i class="m">D</i><span class="num">.</span><span class="num">6</span></span></div></div></div>
+            <pre class="code-block">const c = UI.choices(['A. $2\\sqrt{3}$', 'B. $4$', 'C. $4\\sqrt{3}$', 'D. $6$'], 2, 'C', 4);
+UI.stemCard(`如图，在 $\\text{Rt}\\triangle ABC$ 中，$\\angle C=90^\\circ$，$AB=8$，$\\angle A=60^\\circ$，则 $BC=$ ${UI.blank(2, '4\\sqrt{3}')}，应选 ${c.bracket}`, { badge: 'practice', source: '2024北师大九下' }) + c.grid;</pre>
+        </div>
+    </div>
+
+    <!-- U3 & U4: 波利亚两字动作标签步骤卡片、步进描点表格、课堂总结矩阵卡片 -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">U3. 波利亚两字动作标签步骤流（[导角] / [表边] / [列式] / [求解]）</span>
+                <span class="api-tag">UI.stepCard(tag, latex, step, theme)</span>
+            </div>
+            <div class="demo-box" id="demo-ui-steps"><div class="step" data-step="1" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-top:8px;border-radius:12px;background:#eff6ff;border:1.5px solid #bfdbfe;font-size:21px;line-height:1.55;color:#0f172a;">
+            <span class="step-action-tag" style="display:inline-flex;align-items:center;justify-content:center;padding:2px 9px;border-radius:7px;background:#2563eb;color:#fff;font-size:17px;font-weight:700;flex-shrink:0;margin-top:2px;">[导角]</span>
+            <div style="flex:1;"><span class="math">由轴对称性质得<span class="num">∠</span><span class="num">1</span><span class="num">=∠</span><span class="num">2</span>，<span class="num">∠</span><i class="m">AFB</i><span class="num">=∠</span><i class="m">CFB</i><span class="num">=</span><span class="num">90</span><span class="num">°</span>，故<span class="num">△</span><i class="m">ABF</i><span class="num">≌△</span><i class="m">CBF</i>（<i class="m">ASA</i>）<span class="num">.</span></span></div>
+        </div><div class="step" data-step="2" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-top:8px;border-radius:12px;background:#fffbeb;border:1.5px solid #fde68a;font-size:21px;line-height:1.55;color:#0f172a;">
+            <span class="step-action-tag" style="display:inline-flex;align-items:center;justify-content:center;padding:2px 9px;border-radius:7px;background:#d97706;color:#fff;font-size:17px;font-weight:700;flex-shrink:0;margin-top:2px;">[表边]</span>
+            <div style="flex:1;"><span class="math">设<i class="m">CF</i><span class="num">=</span><i class="m">x</i>，在<span class="num">Rt</span><span class="num">△</span><i class="m">CDF</i>中，由<span class="num">tan</span><span class="num">∠</span><span class="num">3</span><span class="num">=</span><span class="fraction"><span><span class="num">3</span></span><span><span class="num">4</span></span></span>得<i class="m">DF</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span><span class="num">(</span><span class="num">4</span><span class="num">-</span><i class="m">x</i><span class="num">).</span></span></div>
+        </div><div class="step" data-step="3" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-top:8px;border-radius:12px;background:#ecfdf5;border:1.5px solid #a7f3d0;font-size:21px;line-height:1.55;color:#0f172a;">
+            <span class="step-action-tag" style="display:inline-flex;align-items:center;justify-content:center;padding:2px 9px;border-radius:7px;background:#059669;color:#fff;font-size:17px;font-weight:700;flex-shrink:0;margin-top:2px;">[求解]</span>
+            <div style="flex:1;"><span class="math">在<span class="num">Rt</span><span class="num">△</span><i class="m">BDF</i>中列勾股方程解得<i class="m">x</i><span class="num">=</span><span class="fraction"><span><span class="num">5</span></span><span><span class="num">2</span></span></span>，故<i class="m">BC</i><span class="num">=</span><span class="num">4</span><span class="sqrt"><svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;"><path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">3</span></span><span class="num">.</span></span></div>
+        </div></div>
+            <pre class="code-block">UI.stepCard('导角', '由轴对称性质得 $\\angle 1=\\angle 2$，$\\angle AFB=\\angle CFB=90^\\circ$，故 $\\triangle ABF\\cong\\triangle CBF$（ASA）.', 1, 'blue') +
+UI.stepCard('表边', '设 $CF=x$，在 $\\text{Rt}\\triangle CDF$ 中，由 $\\tan\\angle 3=\\frac{3}{4}$ 得 $DF=\\frac{4}{3}(4-x)$.', 2, 'orange') +
+UI.stepCard('求解', '在 $\\text{Rt}\\triangle BDF$ 中列勾股方程解得 $x=\\frac{5}{2}$，故 $BC=4\\sqrt{3}$.', 3, 'green');</pre>
+        </div>
+
+        <div class="card">
+            <div class="card-head">
+                <span class="card-title">U4. 步进描点表格 & 课堂方法总结矩阵卡片</span>
+                <span class="api-tag">UI.stepTable() / UI.summaryGrid()</span>
+            </div>
+            <div class="demo-box" id="demo-ui-summary"><table class="step-table" style="width:100%;border-collapse:collapse;font-size:20px;margin:8px 0;background:#fff;border-radius:8px;overflow:hidden;"><thead><tr><th style="padding:7px 10px;border:1.5px solid #94a3b8;background:#e2e8f0;font-weight:700;text-align:center;"><span class="math"><i class="m">x</i></span></th><th style="padding:7px 10px;border:1.5px solid #94a3b8;background:#f8fafc;font-weight:700;text-align:center;"><span class="math"><span class="num">-</span><span class="num">2</span></span></th><th style="padding:7px 10px;border:1.5px solid #94a3b8;background:#f8fafc;font-weight:700;text-align:center;"><span class="math"><span class="num">-</span><span class="num">1</span></span></th><th style="padding:7px 10px;border:1.5px solid #94a3b8;background:#f8fafc;font-weight:700;text-align:center;"><span class="math"><span class="num">1</span></span></th><th style="padding:7px 10px;border:1.5px solid #94a3b8;background:#f8fafc;font-weight:700;text-align:center;"><span class="math"><span class="num">2</span></span></th></tr></thead><tbody><tr><td style="padding:7px 10px;border:1.5px solid #94a3b8;background:#f1f5f9;font-weight:700;text-align:center;"><span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><i class="m">x</i></span></span></span></td><td style="padding:7px 10px;border:1.5px solid #94a3b8;text-align:center;"><span class="blank" data-Empty="　" data-step="2"><span class="math"><span class="num">-</span><span class="num">2</span></span></span></td><td style="padding:7px 10px;border:1.5px solid #94a3b8;text-align:center;"><span class="blank" data-Empty="　" data-step="2"><span class="math"><span class="num">-</span><span class="num">4</span></span></span></td><td style="padding:7px 10px;border:1.5px solid #94a3b8;text-align:center;"><span class="blank" data-Empty="　" data-step="2"><span class="math"><span class="num">4</span></span></span></td><td style="padding:7px 10px;border:1.5px solid #94a3b8;text-align:center;"><span class="blank" data-Empty="　" data-step="2"><span class="math"><span class="num">2</span></span></span></td></tr></tbody></table><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:8px;"><div  style="background:#eff6ff;border:1.8px solid #93c5fd;border-radius:14px;padding:12px 15px;display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="background:#2563eb;color:#ffffff;font-size:16px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0;"><span class="math">核心模型<span class="num">1</span></span></span>
+                    <span style="font-size:19px;font-weight:700;color:#0f172a;"><span class="math">波利亚数字角导角法</span></span>
+                </div>
+                <div style="font-size:18.5px;line-height:1.5;color:#1e293b;"><span class="math">用纯数字<span class="num">∠</span><span class="num">1</span><span class="num">,∠</span><span class="num">2</span>替代三字母角名，直观导出全等或相似<span class="num">.</span></span></div>
+            </div><div  style="background:#fffbeb;border:1.8px solid #fcd34d;border-radius:14px;padding:12px 15px;display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="background:#d97706;color:#ffffff;font-size:16px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0;"><span class="math">核心模型<span class="num">2</span></span></span>
+                    <span style="font-size:19px;font-weight:700;color:#0f172a;"><span class="math">无胶囊直接旁注规范</span></span>
+                </div>
+                <div style="font-size:18.5px;line-height:1.5;color:#1e293b;"><span class="math">边长分式<span class="fraction"><span><span class="num">4</span></span><span><span class="num">3</span></span></span><span class="num">(</span><span class="num">4</span><span class="num">-</span><i class="m">x</i><span class="num">)</span>与铅垂高<i class="m">PM</i><span class="num">=</span><span class="num">2</span>直接标注在对应线段旁<span class="num">.</span></span></div>
+            </div></div></div>
+            <pre class="code-block">UI.stepTable({ headers: ['$x$', '$-2$', '$-1$', '$1$', '$2$'],
+  rows: [{ cells: ['$y=\\frac{4}{x}$', '$-2$', '$-4$', '$4$', '$2$'], revealStep: 2 }] }) +
+UI.summaryGrid([
+  { badge: '核心模型 1', title: '波利亚数字角导角法', body: '用纯数字 $\\angle 1,\\angle 2$ 替代三字母角名，直观导出全等或相似.' },
+  { badge: '核心模型 2', title: '无胶囊直接旁注规范', body: '边长分式 $\\frac{4}{3}(4-x)$ 与铅垂高 $PM=2$ 直接标注在对应线段旁.' }
+], 2);</pre>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * =============================================================================
+ * 1. 数学学科与图形组件库 — Math & Geometry Component Library (math_components.js)
+ * 面向 2024北师大版初中数学（七上～九下全六册 34 章）
+ * =============================================================================
+ * 包含五大纯数学核心模块（与页面 UI 布局完全解耦）：
+ *   M1. window.MATH_THEME       : 数学图形出版级视觉令牌（线条、角度、填色、字号）
+ *   M2. window.MathFormula      : LaTeX 数学公式 HTML 编译器 & 纯原生 SVG 无背景直标渲染器
+ *   M3. window.createGeoCanvas  : 波利亚平面几何画板（多边形/圆与切线/尺规作图/工程尺寸线/直接标注）
+ *   M4. window.createFuncCanvas : 函数综合坐标系画板（一次函数/反比例双曲线/二次抛物线/对称轴/铅锤高）
+ *   M5. window.createNumberLine / createBoxPlot / createProbTree : 数轴不等式组、新课标箱线图、概率树状图
+ * =============================================================================
+ */
+(function (window) {
+  'use strict';
+
+  // ===========================================================================
+  // M1. MATH GRAPHICS DESIGN TOKENS (数学图形出版级设计令牌)
+  // ===========================================================================
+  var MATH_THEME = {
+    colors: {
+      ink: '#0f172a',          // 原题主线与核心文字（深石板黑）
+      slate: '#475569',        // 次要说明文字与直角标
+      muted: '#94a3b8',        // 网格线与引线
+      auxRed: '#dc2626',       // 辅助线、动点、核心高亮（朱红）
+      angleBlue: '#2563eb',    // 第一组导角、核心条件（皇家蓝）
+      angleAmber: '#d97706',   // 第二组导角、等量转移（琥珀金）
+      anglePurple: '#7c3aed',  // 第三组导角、对称翻折（紫罗兰）
+      targetGreen: '#059669',  // 求解目标引导色（翠绿）
+      dimCyan: '#0284c7',      // 教材工程双箭头尺寸线标准天蓝（九下第4页）
+      boxPlotFill: '#38bdf8',  // 2024版北师大八上箱线图标准青蓝箱体色（八上第164页）
+      // 柔和多边形/扇形底层填色（透明度 0.16~0.18）
+      fillBlue: 'rgba(37, 99, 235, 0.16)',
+      fillAmber: 'rgba(217, 119, 6, 0.18)',
+      fillGreen: 'rgba(5, 150, 105, 0.16)',
+      fillPurple: 'rgba(124, 58, 237, 0.16)',
+      fillRose: 'rgba(225, 29, 72, 0.15)'
+    },
+    stroke: {
+      primary: 2.6,            // 原题几何实线标准线宽
+      aux: 2.2,                // 辅助虚线标准线宽
+      auxDash: '7 4',          // 辅助线标准虚线样式
+      compass: 1.5,            // 尺规作图保留弧痕线宽
+      angleArc: 2.0,           // 数字角圆弧线宽
+      rightAngle: 1.6,         // 直角符号线宽
+      tick: 2.2,               // 等长短杠线宽
+      halo: 4.2                // 无背景直标文字防压线白边光晕宽度
+    },
+    angleTiers: {
+      1: 26,
+      2: 34,
+      3: 42,
+      4: 50
+    },
+    pointRadius: {
+      vertex: 4.5,
+      moving: 5.5,
+      center: 3.8
+    }
+  };
+  window.MATH_THEME = MATH_THEME;
+  window.CW_THEME = window.CW_THEME || MATH_THEME;
+
+  // ===========================================================================
+  // M2. MATH FORMULA COMPILER & NATIVE SVG DIRECT LABEL RENDERER (window.MathFormula)
+  // ===========================================================================
+
+  function extractBraceGroup(str, startIdx) {
+    var i = startIdx;
+    while (i < str.length && str.charAt(i) === ' ') i++;
+    if (str.charAt(i) !== '{') return null;
+    var depth = 0;
+    var contentStart = i + 1;
+    for (; i < str.length; i++) {
+      var ch = str.charAt(i);
+      if (ch === '\\') {
+        i++;
+        continue;
+      }
+      if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth === 0) {
+          return {
+            content: str.slice(contentStart, i),
+            endIndex: i + 1
+          };
+        }
+      }
+    }
+    return null;
+  }
+
+  function replaceMacroBalanced(str, macroCmd, numArgs, allowSubOnSecond, replacer) {
+    var out = '';
+    var idx = 0;
+    while (idx < str.length) {
+      var pos = str.indexOf(macroCmd, idx);
+      if (pos === -1) {
+        out += str.slice(idx);
+        break;
+      }
+      var afterCmd = pos + macroCmd.length;
+      if (/[a-zA-Z]/.test(str.charAt(afterCmd))) {
+        out += str.slice(idx, afterCmd);
+        idx = afterCmd;
+        continue;
+      }
+      out += str.slice(idx, pos);
+      var cur = afterCmd;
+      var args = [];
+      var ok = true;
+      for (var a = 0; a < numArgs; a++) {
+        while (cur < str.length && str.charAt(cur) === ' ') cur++;
+        if (a === 1 && allowSubOnSecond && str.charAt(cur) === '_') {
+          cur++;
+          while (cur < str.length && str.charAt(cur) === ' ') cur++;
+        }
+        var grp = extractBraceGroup(str, cur);
+        if (!grp) {
+          ok = false;
+          break;
+        }
+        args.push(grp.content);
+        cur = grp.endIndex;
+      }
+      if (!ok) {
+        out += macroCmd;
+        idx = afterCmd;
+      } else {
+        out += replacer.apply(null, args);
+        idx = cur;
+      }
+    }
+    return out;
+  }
+
+  /**
+   * 将 LaTeX 数学公式编译为符合北师大版教材规范的 HTML 结构
+   */
+  function compileMathToHtml(raw, isInner) {
+    var s = String(raw || '').trim();
+    if (!s) return '';
+
+    var placeholders = [];
+    function saveBlock(html) {
+      var id = '\u0000BLK' + placeholders.length + '\u0000';
+      placeholders.push(html);
+      return id;
+    }
+
+    // 0. 保护已编译的 HTML 交互组件标签（如 UI.blank / UI.choices 的 <!--UI_START-->...<!--UI_END-->）并去除 $ 定界符
+    if (!isInner) {
+      s = s.replace(/<!--UI_START-->([\s\S]*?)<!--UI_END-->/g, function (_, innerUi) {
+        return saveBlock(innerUi);
+      });
+    }
+    s = s.replace(/\$/g, '');
+
+    // 1. 方程组/不等式组 \cases{ line1 | ① // line2 | ② }
+    var guardCases = 0;
+    while (s.indexOf('\\cases') !== -1 && guardCases < 8) {
+      var prevCases = s;
+      s = replaceMacroBalanced(s, '\\cases', 1, false, function (body) {
+        var rows = body.split(/\s*\/\/\s*/);
+        var rowsHtml = rows
+          .map(function (r) {
+            var parts = r.split(/\s*\|\s*/);
+            var eqPart = compileMathToHtml(parts[0] || '', true);
+            var tagPart = parts[1]
+              ? '<span class="num" style="margin-left:16px;color:#475569;font-weight:700;">' + parts[1].trim() + '</span>'
+              : '';
+            return (
+              '<span style="display:flex;align-items:center;justify-content:space-between;padding:2px 0;line-height:1.35;">' +
+              '<span>' + eqPart + '</span>' +
+              tagPart +
+              '</span>'
+            );
+          })
+          .join('');
+        var braceH = Math.max(46, rows.length * 30);
+        var braceSvg =
+          '<svg width="14" height="' + braceH + '" viewBox="0 0 14 48" preserveAspectRatio="none" style="flex-shrink:0;margin-right:4px;overflow:visible;display:block;">' +
+          '<path d="M 12 2 Q 6 2 6 9 L 6 19 Q 6 24 1 24 Q 6 24 6 29 L 6 39 Q 6 46 12 46" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+          '</svg>';
+        return saveBlock(
+          '<span class="cw-cases" style="display:inline-flex;align-items:center;vertical-align:middle;margin:2px 4px;">' +
+          braceSvg +
+          '<span style="display:inline-flex;flex-direction:column;justify-content:center;">' + rowsHtml + '</span>' +
+          '</span>'
+        );
+      });
+      if (s === prevCases) break;
+      guardCases++;
+    }
+
+    // 2. 下大括号 \underbrace{expr}_{note}（基线锚定，主式与同行等号严格水平对齐）
+    var guardUb = 0;
+    while (s.indexOf('\\underbrace') !== -1 && guardUb < 10) {
+      var prevUb = s;
+      s = replaceMacroBalanced(s, '\\underbrace', 2, true, function (expr, note) {
+        var topHtml = compileMathToHtml(expr, true);
+        var botHtml = compileMathToHtml(note, true);
+        return saveBlock(
+          '<span class="cw-underbrace" style="position:relative;display:inline-block;vertical-align:baseline;margin:0 3px 1.45em;line-height:1.2;">' +
+          '<span style="padding:0 2px;">' + topHtml + '</span>' +
+          '<span style="position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;align-items:center;pointer-events:none;margin-top:0px;">' +
+          '<svg width="100%" height="7" viewBox="0 0 100 9" preserveAspectRatio="none" style="width:100%;height:7px;overflow:visible;display:block;">' +
+          '<path d="M 2 1 Q 2 4.5 10 4.5 L 44 4.5 Q 50 4.5 50 8.5 Q 50 4.5 56 4.5 L 90 4.5 Q 98 4.5 98 1" fill="none" stroke="#475569" stroke-width="1.5"/>' +
+          '</svg>' +
+          '<span style="font-size:0.78em;color:#334155;line-height:1.1;margin-top:2px;white-space:nowrap;">' + botHtml + '</span>' +
+          '</span>' +
+          '</span>'
+        );
+      });
+      if (s === prevUb) break;
+      guardUb++;
+    }
+
+    // 3. 圆弧顶弧符号 \arc{AB}（基线锚定，确保 AC、BC 与同行 AM=BM 处于同一基线）
+    var guardArc = 0;
+    while (s.indexOf('\\arc') !== -1 && guardArc < 10) {
+      var prevArc = s;
+      s = replaceMacroBalanced(s, '\\arc', 1, false, function (letters) {
+        var inner = compileMathToHtml(letters, true);
+        return saveBlock(
+          '<span class="cw-arc" style="position:relative;display:inline-block;vertical-align:baseline;padding-top:0.32em;margin:0 1px;line-height:1;">' +
+          '<svg viewBox="0 0 28 7" preserveAspectRatio="none" style="position:absolute;top:0.02em;left:-1px;width:calc(100% + 2px);height:0.32em;overflow:visible;display:block;pointer-events:none;">' +
+          '<path d="M 1 6 Q 14 -0.8 27 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+          '</svg>' +
+          '<span>' + inner + '</span>' +
+          '</span>'
+        );
+      });
+      if (s === prevArc) break;
+      guardArc++;
+    }
+
+    // 4. 常用 LaTeX 符号替换
+    s = s
+      .replace(/\\odot\b/g, '⊙')
+      .replace(/\\para\b/g, '▱')
+      .replace(/\\triangle\b/g, '△')
+      .replace(/\\angle\b/g, '∠')
+      .replace(/\\perp\b/g, '⊥')
+      .replace(/\\parallel\b/g, '∥')
+      .replace(/\\sim\b/g, '∽')
+      .replace(/\\cong\b/g, '≌')
+      .replace(/\\neq\b/g, '≠')
+      .replace(/\\leq\b/g, '≤')
+      .replace(/\\leqslant\b/g, '≤')
+      .replace(/\\geq\b/g, '≥')
+      .replace(/\\geqslant\b/g, '≥')
+      .replace(/\\times\b/g, '×')
+      .replace(/\\div\b/g, '÷')
+      .replace(/\\cdot\b/g, '·')
+      .replace(/\\cdots\b/g, '⋯')
+      .replace(/\\pm\b/g, '±')
+      .replace(/\\pi\b/g, 'π')
+      .replace(/\\alpha\b/g, 'α')
+      .replace(/\\beta\b/g, 'β')
+      .replace(/\\circ\b/g, '°')
+      .replace(/\\because\b/g, '∵')
+      .replace(/\\therefore\b/g, '∴')
+      .replace(/\\Rightarrow\b/g, '⇒')
+      .replace(/\\rightarrow\b/g, '→');
+
+    // 5. 矢量闭合根号 \sqrt{...}
+    var SQRT_HOOK_SVG =
+      '<svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;">' +
+      '<path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '</svg>';
+    var guardSqrt = 0;
+    while (s.indexOf('\\sqrt') !== -1 && guardSqrt < 10) {
+      var prevSqrt = s;
+      s = replaceMacroBalanced(s, '\\sqrt', 1, false, function (inner) {
+        var innerCompiled = compileMathToHtml(inner, true);
+        if (!/^<span class="num">[^<]*<\/span>$/.test(innerCompiled)) {
+          innerCompiled = '<span class="num">' + innerCompiled + '</span>';
+        }
+        return saveBlock('<span class="sqrt">' + SQRT_HOOK_SVG + innerCompiled + '</span>');
+      });
+      if (s === prevSqrt) break;
+      guardSqrt++;
+    }
+    s = s.replace(/√\(([^()]+)\)/g, function (_, inner) {
+      var innerCompiled = compileMathToHtml(inner, true);
+      return saveBlock('<span class="sqrt">' + SQRT_HOOK_SVG + '<span class="num">' + innerCompiled + '</span></span>');
+    });
+    s = s.replace(/√([0-9a-zA-Z]+)/g, function (_, inner) {
+      var innerCompiled = compileMathToHtml(inner, true);
+      if (!/^<span class="num">[^<]*<\/span>$/.test(innerCompiled)) {
+        innerCompiled = '<span class="num">' + innerCompiled + '</span>';
+      }
+      return saveBlock('<span class="sqrt">' + SQRT_HOOK_SVG + innerCompiled + '</span>');
+    });
+
+    // 6. 二维叠置分式 \frac{num}{den}
+    var guardFrac = 0;
+    while (s.indexOf('\\frac') !== -1 && guardFrac < 12) {
+      var prevFrac = s;
+      s = replaceMacroBalanced(s, '\\frac', 2, false, function (num, den) {
+        return saveBlock(
+          '<span class="fraction"><span>' +
+            compileMathToHtml(num, true) +
+            '</span><span>' +
+            compileMathToHtml(den, true) +
+            '</span></span>'
+        );
+      });
+      if (s === prevFrac) break;
+      guardFrac++;
+    }
+
+    // 6.5 处理 \text{...} 正体/中文宏（放在递归宏之后，确保子表达式内部也能正确还原）
+    var guardText = 0;
+    while (s.indexOf('\\text') !== -1 && guardText < 12) {
+      var prevText = s;
+      s = replaceMacroBalanced(s, '\\text', 1, false, function (txt) {
+        var cleanTxt = String(txt || '').trim();
+        if (/^[\u4e00-\u9fa5，。；：？！、（）“”‘’《》【】]+$/.test(cleanTxt)) {
+          return saveBlock(cleanTxt);
+        }
+        return saveBlock('<span class="num">' + cleanTxt + '</span>');
+      });
+      if (s === prevText) break;
+      guardText++;
+    }
+
+    // 7. 上下标
+    s = s.replace(/_\{([^{}]+)\}/g, function (_, sub) {
+      return saveBlock('<sub>' + compileMathToHtml(sub, true) + '</sub>');
+    });
+    s = s.replace(/_([0-9a-zA-Z△]+)/g, function (_, sub) {
+      return saveBlock('<sub>' + compileMathToHtml(sub, true) + '</sub>');
+    });
+    s = s.replace(/\^\{([^{}]+)\}/g, function (_, sup) {
+      return saveBlock('<sup>' + compileMathToHtml(sup, true) + '</sup>');
+    });
+    s = s.replace(/\^([0-9a-zA-Z+-]+)/g, function (_, sup) {
+      return saveBlock('<sup>' + compileMathToHtml(sup, true) + '</sup>');
+    });
+
+    function tokenizeSimpleMath(str) {
+      var tokenRe = /\u0000BLK\d+\u0000|[0-9.]+(?:\s*(?:cm|mm|km|kg|mg|hm|Pa|Hz|min|max|m|s|h|g|L|V|A|W|N)\b)?|\b(?:Rt|sin|cos|tan|cot|min|max|cm|mm|km|kg|mg|hm|Pa|Hz)\b|[a-zA-Zαβ]+|[+=<>≤≥≠±×÷·⋯:(),.|/?∠△⊥∥∽≌⊙▱∵∴°①②③④⑤%-]+|[\u4e00-\u9fa5，。；：？！、“”‘’（）【】《》—…]+|\s+/g;
+      var m = String(str).match(tokenRe);
+      if (!m) return String(str);
+      return m
+        .map(function (tk) {
+          if (tk.charAt(0) === '\u0000') return tk;
+          if (/^\s+$/.test(tk)) return '';
+          if (/^[0-9.]/.test(tk)) {
+            return '<span class="num">' + tk.replace(/\s+/g, '') + '</span>';
+          }
+          if (/^(?:Rt|sin|cos|tan|cot|min|max|cm|mm|km|kg|mg|hm|Pa|Hz)$/.test(tk)) {
+            return '<span class="num">' + tk + '</span>';
+          }
+          if (/^[a-zA-Zαβ]+$/.test(tk)) {
+            return '<i class="m">' + tk + '</i>';
+          }
+          if (/^[\u4e00-\u9fa5，。；：？！、“”‘’（）【】《》—…]+$/.test(tk)) {
+            return tk;
+          }
+          var safeOp = tk.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return '<span class="num">' + safeOp + '</span>';
+        })
+        .join('');
+    }
+
+    function restoreBlocks(str) {
+      var out = str;
+      var phRe = /\u0000BLK(\d+)\u0000/g;
+      var guard = 0;
+      while (phRe.test(out) && guard < 15) {
+        out = out.replace(phRe, function (_, idx) {
+          return placeholders[Number(idx)] || '';
+        });
+        guard++;
+      }
+      return out;
+    }
+
+    var tokenized = restoreBlocks(tokenizeSimpleMath(s));
+    return isInner ? tokenized : '<span class="math">' + tokenized + '</span>';
+  }
+
+  /**
+   * 纯原生 SVG 2D 数学公式无背景直标渲染器（无胶囊框、无 foreignObject、自带白边光晕防压线）
+   * 支持在几何图形或函数图象旁直接标注：
+   *   - 二维上下叠置分式：如 \frac{4}{3}(4-x)、y=\frac{4}{x}
+   *   - 带完整顶线根式：如 4\sqrt{3}、BC=4\sqrt{3}
+   *   - 普通混排表达式：如 求BC=?、PM=3、A(-1,2)
+   */
+  function estimateSvgTokenWidth(str, fs) {
+    var w = 0;
+    var s = String(str || '');
+    for (var i = 0; i < s.length; i++) {
+      var code = s.charCodeAt(i);
+      if (code >= 0x4e00 && code <= 0x9fff) w += fs * 1.02;
+      else if (/[A-Z]/.test(s.charAt(i))) w += fs * 0.68;
+      else if (/[a-z0-9]/.test(s.charAt(i))) w += fs * 0.56;
+      else w += fs * 0.52;
+    }
+    return w;
+  }
+
+  function parseSvgMathTokens(expr) {
+    var s = String(expr || '').replace(/^\$|\$$/g, '').trim();
+    s = s
+      .replace(/\\odot\b/g, '⊙')
+      .replace(/\\triangle\b/g, '△')
+      .replace(/\\angle\b/g, '∠')
+      .replace(/\\perp\b/g, '⊥')
+      .replace(/\\parallel\b/g, '∥')
+      .replace(/\\sim\b/g, '∽')
+      .replace(/\\cong\b/g, '≌')
+      .replace(/\\leq\b/g, '≤')
+      .replace(/\\geq\b/g, '≥')
+      .replace(/\\cdot\b/g, '·')
+      .replace(/\\pm\b/g, '±');
+
+    var tokens = [];
+    var i = 0;
+    while (i < s.length) {
+      if (s.slice(i, i + 5) === '\\frac') {
+        var g1 = extractBraceGroup(s, i + 5);
+        if (g1) {
+          var g2 = extractBraceGroup(s, g1.endIndex);
+          if (g2) {
+            tokens.push({ type: 'frac', num: g1.content, den: g2.content });
+            i = g2.endIndex;
+            continue;
+          }
+        }
+      }
+      if (s.slice(i, i + 5) === '\\sqrt') {
+        var gs = extractBraceGroup(s, i + 5);
+        if (gs) {
+          tokens.push({ type: 'sqrt', rad: gs.content });
+          i = gs.endIndex;
+          continue;
+        }
+      }
+      if (s.charAt(i) === '√') {
+        var mRad = s.slice(i + 1).match(/^([0-9a-zA-Z]+)/);
+        if (mRad) {
+          tokens.push({ type: 'sqrt', rad: mRad[1] });
+          i += 1 + mRad[1].length;
+          continue;
+        }
+      }
+      // 收集普通文本直到下一个 \frac 或 \sqrt 或 √
+      var nextIdx = s.length;
+      ['\\frac', '\\sqrt', '√'].forEach(function (kw) {
+        var p = s.indexOf(kw, i);
+        if (p !== -1 && p < nextIdx) nextIdx = p;
+      });
+      var textChunk = s.slice(i, nextIdx);
+      if (textChunk) {
+        tokens.push({ type: 'text', text: textChunk });
+      }
+      i = nextIdx;
+    }
+    return tokens;
+  }
+
+  function estimateSvgExprWidth(expr, fs) {
+    var tks = parseSvgMathTokens(expr);
+    var sum = 0;
+    var fracFs = Math.round(fs * 0.84 * 10) / 10;
+    tks.forEach(function (tk) {
+      if (tk.type === 'text') sum += estimateSvgTokenWidth(tk.text, fs);
+      else if (tk.type === 'sqrt') sum += 10 + estimateSvgTokenWidth(tk.rad, fs) + 3;
+      else if (tk.type === 'frac') sum += Math.max(estimateSvgExprWidth(tk.num, fracFs), estimateSvgExprWidth(tk.den, fracFs)) + 8;
+    });
+    return sum;
+  }
+
+  function renderSvgMathDirect(cx, cy, rawExpr, o) {
+    o = o || {};
+    var fs = o.size || o.fontSize || 15.5;
+    var fracFs = Math.round(fs * 0.84 * 10) / 10;
+    var color = o.color || MATH_THEME.colors.ink;
+    var halo = o.halo !== undefined ? o.halo : MATH_THEME.stroke.halo;
+    var anchor = o.anchor || 'middle';
+
+    var tokens = parseSvgMathTokens(rawExpr);
+    // 计算每个 token 的宽度
+    var totalW = 0;
+    tokens.forEach(function (tk) {
+      if (tk.type === 'text') {
+        tk.w = estimateSvgTokenWidth(tk.text, fs);
+      } else if (tk.type === 'frac') {
+        var nw = estimateSvgExprWidth(tk.num, fracFs);
+        var dw = estimateSvgExprWidth(tk.den, fracFs);
+        tk.w = Math.max(nw, dw) + 10;
+      } else if (tk.type === 'sqrt') {
+        tk.radW = estimateSvgTokenWidth(tk.rad, fs);
+        tk.w = 10 + tk.radW + 3;
+      }
+      totalW += tk.w;
+    });
+
+    var startX = anchor === 'start' ? cx : anchor === 'end' ? cx - totalW : cx - totalW / 2;
+    var curX = startX;
+    var out = [];
+
+    function fmtText(str, fSize) {
+      return typeof window.svgAutoFormatText === 'function' ? window.svgAutoFormatText(str, fSize) : str;
+    }
+
+    tokens.forEach(function (tk) {
+      if (tk.type === 'text') {
+        out.push(
+          '<text x="' + curX.toFixed(1) + '" y="' + cy.toFixed(1) + '" ' +
+          'font-family="\'Times New Roman\', \'Songti SC\', SimSun, serif" ' +
+          'font-size="' + fs + '" font-weight="700" fill="' + color + '" text-anchor="start" ' +
+          'stroke="#ffffff" stroke-width="' + halo + '" paint-order="stroke">' +
+          fmtText(tk.text, fs) +
+          '</text>'
+        );
+        curX += tk.w;
+      } else if (tk.type === 'frac') {
+        var midX = curX + tk.w / 2;
+        var barY = cy - fs * 0.34;
+        var numY = barY - 5.0;
+        var denY = barY + fracFs + 2.0;
+        // 分数线白边光晕 + 实线
+        out.push(
+          '<line x1="' + (curX + 1.5).toFixed(1) + '" y1="' + barY.toFixed(1) + '" x2="' + (curX + tk.w - 1.5).toFixed(1) + '" y2="' + barY.toFixed(1) + '" stroke="#ffffff" stroke-width="' + (halo + 1) + '" stroke-linecap="round"/>' +
+          '<line x1="' + (curX + 1.5).toFixed(1) + '" y1="' + barY.toFixed(1) + '" x2="' + (curX + tk.w - 1.5).toFixed(1) + '" y2="' + barY.toFixed(1) + '" stroke="' + color + '" stroke-width="1.65" stroke-linecap="round"/>'
+        );
+        if (tk.num.indexOf('\\sqrt') !== -1 || tk.num.indexOf('√') !== -1) {
+          out.push(renderSvgMathDirect(midX, numY, tk.num, { size: fracFs, color: color, halo: halo, anchor: 'middle' }));
+        } else {
+          out.push('<text x="' + midX.toFixed(1) + '" y="' + numY.toFixed(1) + '" font-family="\'Times New Roman\', serif" font-size="' + fracFs + '" font-weight="700" fill="' + color + '" text-anchor="middle" stroke="#ffffff" stroke-width="' + halo + '" paint-order="stroke">' + fmtText(tk.num, fracFs) + '</text>');
+        }
+        if (tk.den.indexOf('\\sqrt') !== -1 || tk.den.indexOf('√') !== -1) {
+          out.push(renderSvgMathDirect(midX, denY, tk.den, { size: fracFs, color: color, halo: halo, anchor: 'middle' }));
+        } else {
+          out.push('<text x="' + midX.toFixed(1) + '" y="' + denY.toFixed(1) + '" font-family="\'Times New Roman\', serif" font-size="' + fracFs + '" font-weight="700" fill="' + color + '" text-anchor="middle" stroke="#ffffff" stroke-width="' + halo + '" paint-order="stroke">' + fmtText(tk.den, fracFs) + '</text>');
+        }
+        curX += tk.w + 1;
+      } else if (tk.type === 'sqrt') {
+        // 一体化连续矢量根号折线（折钩 + 水平顶线 vinculum 一笔连通，绝不断开）
+        var topY = cy - fs * 0.86;
+        var botY = cy + 1.5;
+        var midY = cy - fs * 0.36;
+        var x0 = curX + 0.5;
+        var x1 = curX + 2.8;
+        var x2 = curX + 5.6;
+        var x3 = curX + 9.4;
+        var x4 = curX + tk.w - 0.5;
+        var dPath =
+          'M ' + x0.toFixed(1) + ' ' + midY.toFixed(1) +
+          ' L ' + x1.toFixed(1) + ' ' + (midY - 1.8).toFixed(1) +
+          ' L ' + x2.toFixed(1) + ' ' + botY.toFixed(1) +
+          ' L ' + x3.toFixed(1) + ' ' + topY.toFixed(1) +
+          ' L ' + x4.toFixed(1) + ' ' + topY.toFixed(1);
+        out.push(
+          '<path d="' + dPath + '" fill="none" stroke="#ffffff" stroke-width="' + (halo + 1) + '" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<path d="' + dPath + '" fill="none" stroke="' + color + '" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<text x="' + (x3 + 1).toFixed(1) + '" y="' + cy.toFixed(1) + '" font-family="\'Times New Roman\', serif" font-size="' + fs + '" font-weight="700" fill="' + color + '" text-anchor="start" stroke="#ffffff" stroke-width="' + halo + '" paint-order="stroke">' +
+          fmtText(tk.rad, fs) +
+          '</text>'
+        );
+        curX += tk.w;
+      }
+    });
+
+    return '<g class="svg-math-direct">' + out.join('') + '</g>';
+  }
+
+  // 内置 SVG 文本正斜体/上下标自动格式化、顶部图例条与数字角（确保 math_components.js 100% 独立运行）
+  if (typeof window.svgAutoFormatText !== 'function') {
+    window.svgAutoFormatText = function (rawText, baseSize) {
+      if (rawText === null || rawText === undefined) return '';
+      var str = String(rawText);
+      if (str.indexOf('<tspan') !== -1) return str;
+      var fs = Number(baseSize || 14);
+      var subFs = Math.max(9.5, Math.round(fs * 0.74 * 10) / 10);
+      var subDy = Math.round(fs * 0.25 * 10) / 10;
+      var supDy = Math.round(fs * 0.35 * 10) / 10;
+
+      str = str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      str = str.replace(/([\u4e00-\u9fff])\s+([A-Za-z0-9|△▱∠⊥∥∽=+\-(])/g, '$1$2');
+      str = str.replace(/([A-Za-z0-9|△▱∠⊥∥∽)])\s+([\u4e00-\u9fff])/g, '$1$2');
+      str = str.replace(/(\d)\s+(cm|mm|km|kg|mg|kPa|Pa|min|s|m|h|g|t|N|A|V|W|Ω|°C)(?![A-Za-z])/g, '$1$2');
+
+      function escSvg(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      var pendingDy = 0;
+      function consumeDyAttr(extraDy, forceFs) {
+        var totalDy = Math.round((pendingDy + (extraDy || 0)) * 10) / 10;
+        var hadPending = Math.abs(pendingDy) > 0.01;
+        pendingDy = 0;
+        var attr = '';
+        if (Math.abs(totalDy) > 0.01) attr += ' dy="' + totalDy + '"';
+        if (forceFs !== null && forceFs !== undefined) attr += ' font-size="' + forceFs + '"';
+        else if (hadPending) attr += ' font-size="' + fs + '"';
+        return attr;
+      }
+
+      function formatFlatTokens(seg, isSubOrSup) {
+        if (!seg) return '';
+        var tokenRe = /(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
+        var out = '';
+        var m;
+        var baseTokenFs = isSubOrSup ? subFs : fs;
+        while ((m = tokenRe.exec(seg)) !== null) {
+          var tk = m[0];
+          var idx = m.index;
+          var prevChar = idx > 0 ? seg.slice(0, idx).replace(/\s+$/, '').slice(-1) : '';
+          var isUnitAfterSlashOrDigit = /^[mshgtNAVWJL]$/.test(tk) && (prevChar === '/' || /[0-9]/.test(prevChar));
+          var safeTk = escSvg(tk);
+          var dyAttr = isSubOrSup ? '' : consumeDyAttr(0, null);
+          if (tk === '△') {
+            var triFs = Math.round(baseTokenFs * 0.82 * 10) / 10;
+            out += '<tspan' + dyAttr + ' font-family="\'Songti SC\', \'SimSun\', serif" font-style="normal" font-size="' + triFs + '">' + safeTk + '</tspan>';
+          } else if (/^(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
+            out += '<tspan' + dyAttr + ' font-family="\'Times New Roman\', Times, serif" font-style="normal" font-size="' + baseTokenFs + '">' + safeTk + '</tspan>';
+          } else if (/^[A-Za-z]+$/.test(tk)) {
+            out += '<tspan' + dyAttr + ' font-family="\'Times New Roman\', Times, serif" font-style="italic" font-size="' + baseTokenFs + '">' + safeTk + '</tspan>';
+          } else if (/^[\u4e00-\u9fff，。：；？！、（）“”]+$/.test(tk)) {
+            out += '<tspan' + dyAttr + ' font-family="\'Songti SC\', \'SimSun\', \'STSong\', serif" font-style="normal" font-size="' + baseTokenFs + '">' + safeTk + '</tspan>';
+          } else {
+            out += '<tspan' + dyAttr + ' font-family="\'Times New Roman\', Times, serif" font-style="normal" font-size="' + baseTokenFs + '">' + safeTk + '</tspan>';
+          }
+        }
+        return out;
+      }
+
+      var subMap = { '₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9','ₙ':'n' };
+      var supMap = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9' };
+      var masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)|_\{([^{}]+)\}|\^\{([^{}]+)\}/g;
+
+      var result = '';
+      var lastIdx = 0;
+      var match;
+      while ((match = masterRe.exec(str)) !== null) {
+        if (match.index > lastIdx) {
+          result += formatFlatTokens(str.slice(lastIdx, match.index), false);
+        }
+        if (match[1] !== undefined) {
+          var prefixSub = match[1];
+          var lettersSub = match[2] || '';
+          var sAttr = consumeDyAttr(0, null);
+          result += '<tspan' + sAttr + ' font-family="\'Times New Roman\', Times, serif" font-style="italic">S</tspan>';
+          result += '<tspan dy="' + subDy + '" font-size="' + subFs + '">' + formatFlatTokens(prefixSub + lettersSub, true) + '</tspan>';
+          pendingDy = -subDy;
+        } else if (match[3] !== undefined || match[5] !== undefined) {
+          var rawSub = match[3] ? match[3].split('').map(function (c) { return subMap[c] || c; }).join('') : match[5];
+          var subAttr = consumeDyAttr(subDy, subFs);
+          result += '<tspan' + subAttr + '>' + formatFlatTokens(rawSub, true) + '</tspan>';
+          pendingDy = -subDy;
+        } else if (match[4] !== undefined || match[6] !== undefined) {
+          var rawSup = match[4] ? match[4].split('').map(function (c) { return supMap[c] || c; }).join('') : match[6];
+          var supAttr = consumeDyAttr(-supDy, subFs);
+          result += '<tspan' + supAttr + '>' + formatFlatTokens(rawSup, true) + '</tspan>';
+          pendingDy = supDy;
+        }
+        lastIdx = masterRe.lastIndex;
+      }
+      if (lastIdx < str.length) {
+        result += formatFlatTokens(str.slice(lastIdx), false);
+      }
+      return result;
+    };
+  }
+
+  if (typeof window.svgLegendBar !== 'function') {
+    window.svgLegendBar = function (items, opts) {
+      opts = opts || {};
+      var list = Array.isArray(items) ? items.filter(Boolean) : [];
+      if (!list.length) return '';
+      var x = opts.x !== undefined ? opts.x : 12;
+      var y = opts.y !== undefined ? opts.y : 6;
+      var w = opts.width || 516;
+      var h = opts.height || 28;
+      var cy = y + h / 2;
+      var fs = opts.fontSize || 12.5;
+
+      function estTextW(str) {
+        var tw = 0;
+        var s = String(str || '');
+        for (var i = 0; i < s.length; i++) {
+          tw += fs * (s.charCodeAt(i) > 127 ? 0.92 : 0.54);
+        }
+        return tw;
+      }
+
+      var measured = list.map(function (it) {
+        var type = it.type || 'angle';
+        var iconW = type === 'dash' ? 18 : (type === 'line' ? 16 : 15);
+        var rawTxt = String(it.text || it.html || '').replace(/<[^>]+>/g, '');
+        var tw = estTextW(rawTxt);
+        return { it: it, type: type, iconW: iconW, rawTxt: rawTxt, tw: tw, totalW: iconW + 4 + tw };
+      });
+
+      var gap = 16;
+      var sumW = measured.reduce(function (acc, m) { return acc + m.totalW; }, 0) + gap * (measured.length - 1);
+      var curX = x + Math.max(8, (w - sumW) / 2);
+
+      var out = '<g class="svg-legend-bar">';
+      out += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="6" fill="rgba(248,250,252,0.96)" stroke="#cbd5e1" stroke-width="1.2"/>';
+
+      measured.forEach(function (m, idx) {
+        var color = m.it.color || '#2563eb';
+        if (m.type === 'angle') {
+          out += '<path d="M ' + (curX + 13).toFixed(1) + ' ' + (cy + 5).toFixed(1) + ' L ' + (curX + 1).toFixed(1) + ' ' + (cy + 5).toFixed(1) + ' L ' + (curX + 10).toFixed(1) + ' ' + (cy - 5).toFixed(1) + '" fill="none" stroke="' + color + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
+          out += '<path d="M ' + (curX + 8).toFixed(1) + ' ' + (cy + 5).toFixed(1) + ' A 6.5 6.5 0 0 0 ' + (curX + 6.3).toFixed(1) + ' ' + (cy - 0.8).toFixed(1) + '" fill="none" stroke="' + color + '" stroke-width="1.5"/>';
+        } else if (m.type === 'dash') {
+          out += '<line x1="' + curX.toFixed(1) + '" y1="' + cy.toFixed(1) + '" x2="' + (curX + 18).toFixed(1) + '" y2="' + cy.toFixed(1) + '" stroke="' + color + '" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/>';
+        } else if (m.type === 'tri') {
+          out += '<polygon points="' + (curX + 7).toFixed(1) + ',' + (cy - 5.5).toFixed(1) + ' ' + (curX + 1).toFixed(1) + ',' + (cy + 5).toFixed(1) + ' ' + (curX + 13).toFixed(1) + ',' + (cy + 5).toFixed(1) + '" fill="' + (m.it.fill || 'rgba(37,99,235,0.20)') + '" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round"/>';
+        } else {
+          out += '<line x1="' + curX.toFixed(1) + '" y1="' + cy.toFixed(1) + '" x2="' + (curX + 16).toFixed(1) + '" y2="' + cy.toFixed(1) + '" stroke="' + color + '" stroke-width="2.4" stroke-linecap="round"/>';
+        }
+        var tx = curX + m.iconW + 4;
+        var ty = cy + 4.5;
+        out += '<text x="' + tx.toFixed(1) + '" y="' + ty.toFixed(1) + '" font-family="\'Times New Roman\', \'Songti SC\', SimSun, serif" font-weight="700" font-size="' + fs + '" fill="' + color + '" text-anchor="start">' + window.svgAutoFormatText(m.rawTxt, fs) + '</text>';
+        curX += m.totalW + gap;
+        if (idx < measured.length - 1) {
+          var sepX = curX - gap / 2;
+          out += '<line x1="' + sepX.toFixed(1) + '" y1="' + (y + 6).toFixed(1) + '" x2="' + sepX.toFixed(1) + '" y2="' + (y + h - 6).toFixed(1) + '" stroke="#cbd5e1" stroke-width="1.2"/>';
+        }
+      });
+
+      out += '</g>';
+      return out;
+    };
+  }
+
+  if (typeof window.svgNumberedAngle !== 'function') {
+    window.svgNumberedAngle = function (v, pStart, pEnd, numStr, opts) {
+      opts = opts || {};
+      var radius = opts.radius || 28;
+      var color = opts.color || '#2563eb';
+      var fill = opts.fill || 'none';
+      var labelDist = opts.labelDist || (radius + 13);
+      var dx1 = pStart[0] - v[0], dy1 = pStart[1] - v[1];
+      var dx2 = pEnd[0] - v[0], dy2 = pEnd[1] - v[1];
+      var a1 = Math.atan2(dy1, dx1);
+      var a2 = Math.atan2(dy2, dx2);
+      var diff = a2 - a1;
+      while (diff <= -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      var sweep = diff > 0 ? 1 : 0;
+      var sx = v[0] + Math.cos(a1) * radius;
+      var sy = v[1] + Math.sin(a1) * radius;
+      var ex = v[0] + Math.cos(a2) * radius;
+      var ey = v[1] + Math.sin(a2) * radius;
+      var out = '';
+      if (fill && fill !== 'none') {
+        out += '<path d="M ' + v[0].toFixed(1) + ' ' + v[1].toFixed(1) + ' L ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' A ' + radius + ' ' + radius + ' 0 0 ' + sweep + ' ' + ex.toFixed(1) + ' ' + ey.toFixed(1) + ' Z" fill="' + fill + '" stroke="none"/>';
+      }
+      out += '<path d="M ' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' A ' + radius + ' ' + radius + ' 0 0 ' + sweep + ' ' + ex.toFixed(1) + ' ' + ey.toFixed(1) + '" fill="none" stroke="' + color + '" stroke-width="2.1"/>';
+      if (numStr !== undefined && numStr !== null && String(numStr) !== '') {
+        var midA = a1 + diff / 2 + (opts.angleShift || 0);
+        var lx = v[0] + Math.cos(midA) * labelDist + (opts.dx || 0);
+        var ly = v[1] + Math.sin(midA) * labelDist + 4.5 + (opts.dy || 0);
+        if (opts.leader) {
+          var mx = v[0] + Math.cos(midA) * (radius * 0.75);
+          var my = v[1] + Math.sin(midA) * (radius * 0.75);
+          var tx = v[0] + Math.cos(midA) * (labelDist - 7) + (opts.dx || 0);
+          var ty = v[1] + Math.sin(midA) * (labelDist - 7) + (opts.dy || 0);
+          out += '<line x1="' + mx.toFixed(1) + '" y1="' + my.toFixed(1) + '" x2="' + tx.toFixed(1) + '" y2="' + ty.toFixed(1) + '" stroke="' + color + '" stroke-width="1.3"/>';
+        }
+        var inner = window.svgAutoFormatText(String(numStr), opts.fontSize || 14);
+        out += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" font-family="\'Times New Roman\', \'Songti SC\', SimSun, serif" font-weight="700" font-size="' + (opts.fontSize || 14) + '" fill="' + color + '" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + inner + '</text>';
+      }
+      return out;
+    };
+  }
+
+  var MathFormula = {
+    render: compileMathToHtml,
+    svg: renderSvgMathDirect
+  };
+  window.MathFormula = MathFormula;
+
+  // ===========================================================================
+  // M3. POLYA-GRADE GEOMETRY CANVAS (window.createGeoCanvas)
+  // 全程采用无背景直标（Direct White-Halo Annotation），摒弃遮挡图形的胶囊框
+  // ===========================================================================
+
+  var COMPASS_OFFSET = {
+    'top': [0, -16],
+    'bottom': [0, 20],
+    'left': [-16, 5],
+    'right': [16, 5],
+    'top-left': [-14, -12],
+    'top-right': [14, -12],
+    'bottom-left': [-14, 18],
+    'bottom-right': [14, 18]
+  };
+
+  function createGeoCanvas(opts) {
+    opts = opts || {};
+    var W = opts.width || 560;
+    var H = opts.height || 420;
+    var bg = opts.bg || '#ffffff';
+
+    var hasMathCoord = Array.isArray(opts.xRange) && Array.isArray(opts.yRange);
+    var pad = Object.assign({ left: 36, right: 36, top: 44, bottom: 36 }, opts.padding || {});
+    var plotW = W - pad.left - pad.right;
+    var plotH = H - pad.top - pad.bottom;
+
+    function toPx(pt) {
+      if (!pt || !hasMathCoord) return [Number(pt[0]), Number(pt[1])];
+      var xMin = opts.xRange[0], xMax = opts.xRange[1];
+      var yMin = opts.yRange[0], yMax = opts.yRange[1];
+      var px = pad.left + ((pt[0] - xMin) / (xMax - xMin)) * plotW;
+      var py = pad.top + ((yMax - pt[1]) / (yMax - yMin)) * plotH;
+      return [px, py];
+    }
+
+    var layers = {
+      fills: [],
+      lines: [],
+      marks: [],
+      labels: []
+    };
+
+    var polyCentroid = [W / 2, H / 2];
+
+    var fillThemeMap = {
+      blue: MATH_THEME.colors.fillBlue,
+      amber: MATH_THEME.colors.fillAmber,
+      green: MATH_THEME.colors.fillGreen,
+      purple: MATH_THEME.colors.fillPurple,
+      rose: MATH_THEME.colors.fillRose
+    };
+
+    var api = {
+      width: W,
+      height: H,
+      toPx: toPx,
+
+      polygonFill: function (pts, theme, o) {
+        o = o || {};
+        var fill = fillThemeMap[theme] || theme || MATH_THEME.colors.fillBlue;
+        var stroke = o.stroke || 'none';
+        var sw = o.strokeWidth || 1.6;
+        var dash = o.dash ? ' stroke-dasharray="' + o.dash + '"' : '';
+        var pStr = pts
+          .map(function (p) {
+            var q = toPx(p);
+            return q[0].toFixed(1) + ',' + q[1].toFixed(1);
+          })
+          .join(' ');
+        layers.fills.push(
+          '<polygon points="' + pStr + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + sw + '"' + dash + '/>'
+        );
+        return api;
+      },
+
+      polygon: function (pts, o) {
+        o = o || {};
+        var stroke = o.color || MATH_THEME.colors.ink;
+        var sw = o.width || MATH_THEME.stroke.primary;
+        var fill = o.fill || 'none';
+        var dash = o.dash ? ' stroke-dasharray="' + o.dash + '"' : '';
+        var pxPts = pts.map(toPx);
+        if (pxPts.length >= 3) {
+          var sx = 0, sy = 0;
+          pxPts.forEach(function (q) { sx += q[0]; sy += q[1]; });
+          polyCentroid = [sx / pxPts.length, sy / pxPts.length];
+        }
+        var pStr = pxPts.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ');
+        layers.lines.push(
+          '<polygon points="' + pStr + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + sw + '" stroke-linejoin="round"' + dash + '/>'
+        );
+        return api;
+      },
+
+      segment: function (p1, p2, o) {
+        o = o || {};
+        var a = toPx(p1), b = toPx(p2);
+        var color = o.color || MATH_THEME.colors.ink;
+        var width = o.width || MATH_THEME.stroke.primary;
+        var dash = o.dash ? ' stroke-dasharray="' + o.dash + '"' : '';
+        layers.lines.push(
+          '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '" ' +
+          'stroke="' + color + '" stroke-width="' + width + '" stroke-linecap="round"' + dash + '/>'
+        );
+        return api;
+      },
+
+      auxLine: function (p1, p2, o) {
+        o = o || {};
+        return api.segment(p1, p2, {
+          color: o.color || MATH_THEME.colors.auxRed,
+          width: o.width || MATH_THEME.stroke.aux,
+          dash: o.dash || MATH_THEME.stroke.auxDash
+        });
+      },
+
+      circle: function (center, rPx, o) {
+        o = o || {};
+        var c = toPx(center);
+        var stroke = o.color || MATH_THEME.colors.ink;
+        var sw = o.width || 2.2;
+        var fill = o.fill || 'none';
+        var dash = o.dash ? ' stroke-dasharray="' + o.dash + '"' : '';
+        layers.lines.push(
+          '<circle cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="' + Number(rPx).toFixed(1) + '" ' +
+          'fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + sw + '"' + dash + '/>'
+        );
+        return api;
+      },
+
+      circleWithCenter: function (center, rPx, label, o) {
+        o = o || {};
+        api.circle(center, rPx, o);
+        var c = toPx(center);
+        layers.labels.push(
+          '<circle cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="' + MATH_THEME.pointRadius.center + '" fill="' + MATH_THEME.colors.ink + '"/>'
+        );
+        if (label !== false) {
+          var preset = COMPASS_OFFSET[o.dir || 'bottom-right'] || [12, 16];
+          layers.labels.push(renderSvgMathDirect(c[0] + preset[0], c[1] + preset[1], label || 'O', { size: 16.5 }));
+        }
+        return api;
+      },
+
+      sectorFill: function (center, rPx, startMathDeg, endMathDeg, theme, o) {
+        o = o || {};
+        var c = toPx(center);
+        var r = Number(rPx);
+        var rad1 = (-startMathDeg * Math.PI) / 180;
+        var rad2 = (-endMathDeg * Math.PI) / 180;
+        var x1 = c[0] + r * Math.cos(rad1), y1 = c[1] + r * Math.sin(rad1);
+        var x2 = c[0] + r * Math.cos(rad2), y2 = c[1] + r * Math.sin(rad2);
+        var span = ((endMathDeg - startMathDeg) % 360 + 360) % 360;
+        var largeArc = span > 180 ? 1 : 0;
+        var fill = fillThemeMap[theme] || theme || MATH_THEME.colors.fillBlue;
+        var isBow = Boolean(o.bow);
+        var d = isBow
+          ? 'M ' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 0 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) + ' Z'
+          : 'M ' + c[0].toFixed(1) + ' ' + c[1].toFixed(1) + ' L ' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 0 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) + ' Z';
+        layers.fills.push('<path d="' + d + '" fill="' + fill + '" stroke="' + (o.stroke || 'none') + '" stroke-width="1.5"/>');
+        return api;
+      },
+
+      tangentFromPoint: function (center, rPx, extPt, o) {
+        o = o || {};
+        var c = toPx(center), p = toPx(extPt);
+        var r = Number(rPx);
+        var dx = p[0] - c[0], dy = p[1] - c[1];
+        var d = Math.hypot(dx, dy);
+        if (d <= r) return api;
+        var baseAng = Math.atan2(dy, dx);
+        var alpha = Math.acos(r / d);
+        var a1 = baseAng - alpha, a2 = baseAng + alpha;
+        var t1 = [c[0] + r * Math.cos(a1), c[1] + r * Math.sin(a1)];
+        var t2 = [c[0] + r * Math.cos(a2), c[1] + r * Math.sin(a2)];
+
+        var which = o.which || 'both';
+        if (which === 'both' || which === 'first') {
+          api.segment(p, t1, { color: o.color || MATH_THEME.colors.ink });
+          if (o.showRadius !== false) {
+            api.auxLine(c, t1);
+            api.rightAngle(t1, c, p, { size: 11 });
+          }
+          if (o.label1) api.point(t1, o.label1, { dir: o.dir1 || 'top' });
+        }
+        if (which === 'both' || which === 'second') {
+          api.segment(p, t2, { color: o.color || MATH_THEME.colors.ink });
+          if (o.showRadius !== false) {
+            api.auxLine(c, t2);
+            api.rightAngle(t2, c, p, { size: 11 });
+          }
+          if (o.label2) api.point(t2, o.label2, { dir: o.dir2 || 'bottom' });
+        }
+        return api;
+      },
+
+      compassArc: function (center, rPx, midMathDeg, spanDeg, o) {
+        o = o || {};
+        var c = toPx(center);
+        var r = Number(rPx);
+        var half = (spanDeg || 28) / 2;
+        var rad1 = (-(midMathDeg - half) * Math.PI) / 180;
+        var rad2 = (-(midMathDeg + half) * Math.PI) / 180;
+        var x1 = c[0] + r * Math.cos(rad1), y1 = c[1] + r * Math.sin(rad1);
+        var x2 = c[0] + r * Math.cos(rad2), y2 = c[1] + r * Math.sin(rad2);
+        var col = o.color || '#0284c7';
+        layers.marks.push(
+          '<path d="M ' + x1.toFixed(1) + ' ' + y1.toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 0 ' + x2.toFixed(1) + ' ' + y2.toFixed(1) + '" ' +
+          'fill="none" stroke="' + col + '" stroke-width="' + MATH_THEME.stroke.compass + '" stroke-dasharray="' + (o.dash || '4 3') + '" stroke-linecap="round"/>'
+        );
+        return api;
+      },
+
+      dimensionLine: function (p1, p2, label, o) {
+        o = o || {};
+        var a = toPx(p1), b = toPx(p2);
+        var offset = o.offset !== undefined ? o.offset : 26;
+        var color = o.color || MATH_THEME.colors.dimCyan;
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var len = Math.hypot(dx, dy) || 1;
+        var ux = dx / len, uy = dy / len;
+        var nx = -uy, ny = ux;
+        if (o.side === 'right') {
+          nx = -nx; ny = -ny;
+        } else if (o.side !== 'left') {
+          var segMidX = (a[0] + b[0]) / 2, segMidY = (a[1] + b[1]) / 2;
+          if (nx * (segMidX - polyCentroid[0]) + ny * (segMidY - polyCentroid[1]) < 0) {
+            nx = -nx; ny = -ny;
+          }
+        }
+
+        var extA1 = [a[0] + nx * 4, a[1] + ny * 4];
+        var extA2 = [a[0] + nx * (offset + 6), a[1] + ny * (offset + 6)];
+        var extB1 = [b[0] + nx * 4, b[1] + ny * 4];
+        var extB2 = [b[0] + nx * (offset + 6), b[1] + ny * (offset + 6)];
+
+        var dimA = [a[0] + nx * offset, a[1] + ny * offset];
+        var dimB = [b[0] + nx * offset, b[1] + ny * offset];
+        var mid = [(dimA[0] + dimB[0]) / 2, (dimA[1] + dimB[1]) / 2];
+
+        var cleanLabel = String(label).replace(/\s+/g, '');
+        var gapHalf = o.gapHalf || Math.min(len * 0.36, Math.max(22, cleanLabel.length * 5.2 + 8));
+        var g1 = [mid[0] - ux * gapHalf, mid[1] - uy * gapHalf];
+        var g2 = [mid[0] + ux * gapHalf, mid[1] + uy * gapHalf];
+
+        var aw = 7, ah = 3.6;
+        var arrA1 = [dimA[0] + ux * aw + nx * ah, dimA[1] + uy * aw + ny * ah];
+        var arrA2 = [dimA[0] + ux * aw - nx * ah, dimA[1] + uy * aw - ny * ah];
+        var arrB1 = [dimB[0] - ux * aw + nx * ah, dimB[1] - uy * aw + ny * ah];
+        var arrB2 = [dimB[0] - ux * aw - nx * ah, dimB[1] - uy * aw - ny * ah];
+
+        layers.marks.push(
+          '<line x1="' + extA1[0].toFixed(1) + '" y1="' + extA1[1].toFixed(1) + '" x2="' + extA2[0].toFixed(1) + '" y2="' + extA2[1].toFixed(1) + '" stroke="' + color + '" stroke-width="1.2"/>' +
+          '<line x1="' + extB1[0].toFixed(1) + '" y1="' + extB1[1].toFixed(1) + '" x2="' + extB2[0].toFixed(1) + '" y2="' + extB2[1].toFixed(1) + '" stroke="' + color + '" stroke-width="1.2"/>' +
+          '<line x1="' + dimA[0].toFixed(1) + '" y1="' + dimA[1].toFixed(1) + '" x2="' + g1[0].toFixed(1) + '" y2="' + g1[1].toFixed(1) + '" stroke="' + color + '" stroke-width="1.5"/>' +
+          '<line x1="' + g2[0].toFixed(1) + '" y1="' + g2[1].toFixed(1) + '" x2="' + dimB[0].toFixed(1) + '" y2="' + dimB[1].toFixed(1) + '" stroke="' + color + '" stroke-width="1.5"/>' +
+          '<polygon points="' + dimA[0].toFixed(1) + ',' + dimA[1].toFixed(1) + ' ' + arrA1[0].toFixed(1) + ',' + arrA1[1].toFixed(1) + ' ' + arrA2[0].toFixed(1) + ',' + arrA2[1].toFixed(1) + '" fill="' + color + '"/>' +
+          '<polygon points="' + dimB[0].toFixed(1) + ',' + dimB[1].toFixed(1) + ' ' + arrB1[0].toFixed(1) + ',' + arrB1[1].toFixed(1) + ' ' + arrB2[0].toFixed(1) + ',' + arrB2[1].toFixed(1) + '" fill="' + color + '"/>'
+        );
+
+        layers.labels.push(renderSvgMathDirect(mid[0], mid[1] + 5, cleanLabel, { size: o.fontSize || 14.5, color: o.textColor || MATH_THEME.colors.ink }));
+        return api;
+      },
+
+      reflectPointAcrossLine: function (pt, lineA, lineB, labelPrime, o) {
+        o = o || {};
+        var p = toPx(pt), a = toPx(lineA), b = toPx(lineB);
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var len2 = dx * dx + dy * dy || 1;
+        var t = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / len2;
+        var foot = [a[0] + t * dx, a[1] + t * dy];
+        var pPrime = [2 * foot[0] - p[0], 2 * foot[1] - p[1]];
+
+        api.auxLine(p, pPrime, { color: o.color || MATH_THEME.colors.anglePurple });
+        api.rightAngle(foot, p, b, { size: 10 });
+        api.tickMarks(p, foot, 1, { color: MATH_THEME.colors.anglePurple });
+        api.tickMarks(foot, pPrime, 1, { color: MATH_THEME.colors.anglePurple });
+        api.point(pPrime, labelPrime || "P'", { role: 'aux', color: MATH_THEME.colors.anglePurple, dir: o.dir || 'bottom-right' });
+        return pPrime;
+      },
+
+      rightAngle: function (vertex, p1, p2, o) {
+        o = o || {};
+        var v = toPx(vertex), a = toPx(p1), b = toPx(p2);
+        var size = o.size || 12;
+        var color = o.color || MATH_THEME.colors.slate;
+        var v1 = [a[0] - v[0], a[1] - v[1]];
+        var v2 = [b[0] - v[0], b[1] - v[1]];
+        var l1 = Math.hypot(v1[0], v1[1]) || 1;
+        var l2 = Math.hypot(v2[0], v2[1]) || 1;
+        var u1 = [(v1[0] / l1) * size, (v1[1] / l1) * size];
+        var u2 = [(v2[0] / l2) * size, (v2[1] / l2) * size];
+        var pA = [v[0] + u1[0], v[1] + u1[1]];
+        var pB = [v[0] + u1[0] + u2[0], v[1] + u1[1] + u2[1]];
+        var pC = [v[0] + u2[0], v[1] + u2[1]];
+        var fill = o.fill || 'rgba(148, 163, 184, 0.14)';
+        layers.marks.push(
+          '<polygon points="' +
+            v[0].toFixed(1) + ',' + v[1].toFixed(1) + ' ' +
+            pA[0].toFixed(1) + ',' + pA[1].toFixed(1) + ' ' +
+            pB[0].toFixed(1) + ',' + pB[1].toFixed(1) + ' ' +
+            pC[0].toFixed(1) + ',' + pC[1].toFixed(1) +
+            '" fill="' + fill + '" stroke="none"/>' +
+          '<polyline points="' +
+            pA[0].toFixed(1) + ',' + pA[1].toFixed(1) + ' ' +
+            pB[0].toFixed(1) + ',' + pB[1].toFixed(1) + ' ' +
+            pC[0].toFixed(1) + ',' + pC[1].toFixed(1) +
+            '" fill="none" stroke="' + color + '" stroke-width="' + MATH_THEME.stroke.rightAngle + '"/>'
+        );
+        return api;
+      },
+
+      angle: function (vertex, pStart, pEnd, numStr, o) {
+        o = o || {};
+        var v = toPx(vertex), a = toPx(pStart), b = toPx(pEnd);
+        var colorMap = {
+          blue: MATH_THEME.colors.angleBlue,
+          amber: MATH_THEME.colors.angleAmber,
+          purple: MATH_THEME.colors.anglePurple,
+          red: MATH_THEME.colors.auxRed,
+          green: MATH_THEME.colors.targetGreen
+        };
+        var color = colorMap[o.color] || o.color || MATH_THEME.colors.angleBlue;
+        var tier = o.tier || 1;
+        var radius = o.radius || MATH_THEME.angleTiers[tier] || 26;
+
+        var a1 = Math.atan2(a[1] - v[1], a[0] - v[0]);
+        var a2 = Math.atan2(b[1] - v[1], b[0] - v[0]);
+        var diff = a2 - a1;
+        while (diff <= -Math.PI) diff += Math.PI * 2;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        var deg = Math.abs((diff * 180) / Math.PI);
+        var useLeader = o.leader !== undefined ? o.leader : deg < 28;
+
+        if (typeof window.svgNumberedAngle === 'function') {
+          layers.marks.push(
+            window.svgNumberedAngle(v, a, b, String(numStr), {
+              radius: radius,
+              color: color,
+              leader: useLeader,
+              labelOffset: o.labelOffset || (useLeader ? 20 : 13),
+              fontSize: o.fontSize || 15
+            })
+          );
+        }
+        return api;
+      },
+
+      tickMarks: function (p1, p2, count, o) {
+        o = o || {};
+        var a = toPx(p1), b = toPx(p2);
+        var nCount = count || 1;
+        var color = o.color || MATH_THEME.colors.auxRed;
+        var size = o.size || 6;
+        var tPos = o.t !== undefined ? o.t : 0.5;
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var len = Math.hypot(dx, dy) || 1;
+        var ux = dx / len, uy = dy / len;
+        var nx = -uy, ny = ux;
+        var mx = a[0] + dx * tPos, my = a[1] + dy * tPos;
+        var gap = 4.8;
+        for (var i = 0; i < nCount; i++) {
+          var shift = (i - (nCount - 1) / 2) * gap;
+          var cx = mx + ux * shift, cy = my + uy * shift;
+          layers.marks.push(
+            '<line x1="' + (cx - nx * size).toFixed(1) + '" y1="' + (cy - ny * size).toFixed(1) + '" ' +
+            'x2="' + (cx + nx * size).toFixed(1) + '" y2="' + (cy + ny * size).toFixed(1) + '" ' +
+            'stroke="' + color + '" stroke-width="' + MATH_THEME.stroke.tick + '" stroke-linecap="round"/>'
+          );
+        }
+        return api;
+      },
+
+      parallelMarks: function (p1, p2, count, o) {
+        o = o || {};
+        var a = toPx(p1), b = toPx(p2);
+        var nCount = count || 1;
+        var color = o.color || MATH_THEME.colors.angleBlue;
+        var size = o.size || 6.5;
+        var tPos = o.t !== undefined ? o.t : 0.5;
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var len = Math.hypot(dx, dy) || 1;
+        var ux = dx / len, uy = dy / len;
+        var nx = -uy, ny = ux;
+        var mx = a[0] + dx * tPos, my = a[1] + dy * tPos;
+        var gap = 6.5;
+        for (var i = 0; i < nCount; i++) {
+          var shift = (i - (nCount - 1) / 2) * gap;
+          var tipX = mx + ux * (shift + size * 0.5);
+          var tipY = my + uy * (shift + size * 0.5);
+          var w1x = tipX - ux * size + nx * (size * 0.72);
+          var w1y = tipY - uy * size + ny * (size * 0.72);
+          var w2x = tipX - ux * size - nx * (size * 0.72);
+          var w2y = tipY - uy * size - ny * (size * 0.72);
+          layers.marks.push(
+            '<polyline points="' +
+              w1x.toFixed(1) + ',' + w1y.toFixed(1) + ' ' +
+              tipX.toFixed(1) + ',' + tipY.toFixed(1) + ' ' +
+              w2x.toFixed(1) + ',' + w2y.toFixed(1) +
+              '" fill="none" stroke="' + color + '" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>'
+          );
+        }
+        return api;
+      },
+
+      polygonVertices: function (pts, names, o) {
+        o = o || {};
+        var pxPts = pts.map(toPx);
+        var n = pxPts.length;
+        var dist = o.dist || 17;
+        var dotColor = o.dotColor || MATH_THEME.colors.ink;
+        var textColor = o.textColor || MATH_THEME.colors.ink;
+        var customOffsets = o.offsets || {};
+
+        var cx = 0, cy = 0;
+        for (var i = 0; i < n; i++) {
+          cx += pxPts[i][0];
+          cy += pxPts[i][1];
+        }
+        cx /= n || 1;
+        cy /= n || 1;
+
+        for (var k = 0; k < n; k++) {
+          var curr = pxPts[k];
+          var prev = pxPts[(k - 1 + n) % n];
+          var next = pxPts[(k + 1) % n];
+          var label = names[k] || '';
+
+          layers.labels.push(
+            '<circle cx="' + curr[0].toFixed(1) + '" cy="' + curr[1].toFixed(1) + '" r="' + MATH_THEME.pointRadius.vertex + '" fill="' + dotColor + '" stroke="#ffffff" stroke-width="1.8"/>'
+          );
+
+          if (!label) continue;
+
+          var dx, dy;
+          if (customOffsets[label]) {
+            dx = customOffsets[label][0];
+            dy = customOffsets[label][1];
+          } else {
+            var u1x = prev[0] - curr[0], u1y = prev[1] - curr[1];
+            var u2x = next[0] - curr[0], u2y = next[1] - curr[1];
+            var l1 = Math.hypot(u1x, u1y) || 1;
+            var l2 = Math.hypot(u2x, u2y) || 1;
+            u1x /= l1; u1y /= l1;
+            u2x /= l2; u2y /= l2;
+
+            var bx = -(u1x + u2x);
+            var by = -(u1y + u2y);
+            var bLen = Math.hypot(bx, by);
+            if (bLen < 1e-3) {
+              bx = curr[0] - cx;
+              by = curr[1] - cy;
+              bLen = Math.hypot(bx, by) || 1;
+            }
+            bx /= bLen;
+            by /= bLen;
+
+            if (bx * (curr[0] - cx) + by * (curr[1] - cy) < 0) {
+              bx = -bx;
+              by = -by;
+            }
+            dx = bx * dist;
+            dy = by * dist + 5;
+          }
+
+          layers.labels.push(renderSvgMathDirect(curr[0] + dx, curr[1] + dy, label, { size: o.fontSize || 17, color: textColor }));
+        }
+        return api;
+      },
+
+      point: function (pt, label, o) {
+        o = o || {};
+        var p = toPx(pt);
+        var roleColor =
+          o.role === 'moving'
+            ? MATH_THEME.colors.auxRed
+            : o.role === 'aux'
+            ? MATH_THEME.colors.angleBlue
+            : MATH_THEME.colors.ink;
+        var dotColor = o.color || roleColor;
+        var r = o.r || (o.role === 'moving' ? MATH_THEME.pointRadius.moving : MATH_THEME.pointRadius.vertex);
+
+        layers.labels.push(
+          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + r + '" fill="' + dotColor + '" stroke="#ffffff" stroke-width="1.8"/>'
+        );
+
+        if (label) {
+          var preset = COMPASS_OFFSET[o.dir || 'top-right'] || [14, -10];
+          var dx = o.dx !== undefined ? o.dx : preset[0];
+          var dy = o.dy !== undefined ? o.dy : preset[1];
+          layers.labels.push(
+            renderSvgMathDirect(p[0] + dx, p[1] + dy, label, {
+              size: o.fontSize || 16.5,
+              color: o.textColor || dotColor,
+              anchor: o.anchor || (dx < -6 ? 'end' : dx > 6 ? 'start' : 'middle')
+            })
+          );
+        }
+        return api;
+      },
+
+      /**
+       * 线段旁直接标注数值或二维分式/根式（不使用胶囊框，自带白边光晕，自动朝多边形外侧法向偏移）
+       */
+      segmentLabel: function (p1, p2, expr, o) {
+        o = o || {};
+        var a = toPx(p1), b = toPx(p2);
+        var tPos = o.t !== undefined ? o.t : 0.5;
+        var mx = a[0] + (b[0] - a[0]) * tPos;
+        var my = a[1] + (b[1] - a[1]) * tPos;
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var len = Math.hypot(dx, dy) || 1;
+        var nx = -dy / len;
+        var ny = dx / len;
+
+        if (o.side === 'right') {
+          nx = -nx; ny = -ny;
+        } else if (o.side !== 'left') {
+          var outX = mx - polyCentroid[0], outY = my - polyCentroid[1];
+          if (nx * outX + ny * outY < 0) {
+            nx = -nx; ny = -ny;
+          }
+        }
+
+        var rawStr = String(expr || '');
+        var hasFrac = /\\frac/.test(rawStr);
+        var dist = o.dist || (hasFrac ? 24 : 16);
+        var lx = mx + nx * dist + (o.dx || 0);
+        var ly = my + ny * dist + 5 + (o.dy || 0);
+        var anchor = o.anchor || (nx > 0.35 ? 'start' : nx < -0.35 ? 'end' : 'middle');
+        if (anchor === 'start' && o.dist === undefined) lx = mx + nx * 14 + (o.dx || 0);
+        if (anchor === 'end' && o.dist === undefined) lx = mx + nx * 14 + (o.dx || 0);
+
+        var colorMap = {
+          amber: '#b45309',
+          blue: '#1d4ed8',
+          red: '#dc2626',
+          green: '#047857'
+        };
+        var txtColor = o.color || colorMap[o.pill] || (hasFrac ? '#b45309' : MATH_THEME.colors.ink);
+
+        layers.labels.push(
+          renderSvgMathDirect(lx, ly, rawStr, {
+            size: o.fontSize || 15.5,
+            color: txtColor,
+            anchor: anchor
+          })
+        );
+        return api;
+      },
+
+      /**
+       * 求解目标轻量化引线直标（不使用大块胶囊框，采用圆点虚线引线 + 白边光晕二维公式直标）
+       */
+      targetCallout: function (anchorPt, labelPosOrRect, cfg) {
+        cfg = cfg || {};
+        var anchor = toPx(anchorPt);
+        var isSolved = Boolean(cfg.solved);
+        var tx, ty;
+        if (Array.isArray(labelPosOrRect) && labelPosOrRect.length >= 4) {
+          tx = labelPosOrRect[0] + labelPosOrRect[2] / 2;
+          ty = labelPosOrRect[1] + labelPosOrRect[3] / 2 + 5;
+        } else if (Array.isArray(labelPosOrRect)) {
+          tx = labelPosOrRect[0];
+          ty = labelPosOrRect[1];
+        } else {
+          tx = anchor[0] + 60;
+          ty = anchor[1] + 28;
+        }
+
+        var rawExpr;
+        if (isSolved && cfg.ans) {
+          rawExpr = (cfg.target || '') + '=' + String(cfg.ans).replace(/^\$|\$$/g, '');
+        } else {
+          rawExpr = '求' + (cfg.target || '?') + '=?';
+        }
+        var color = isSolved ? MATH_THEME.colors.auxRed : MATH_THEME.colors.targetGreen;
+
+        // 停止引线于文字左侧边缘前 8px
+        var dx = tx - anchor[0], dy = (ty - 5) - anchor[1];
+        var dist = Math.hypot(dx, dy) || 1;
+        var endX = tx - (dx / dist) * 32;
+        var endY = (ty - 5) - (dy / dist) * 10;
+
+        layers.labels.push(
+          '<line x1="' + anchor[0].toFixed(1) + '" y1="' + anchor[1].toFixed(1) + '" x2="' + endX.toFixed(1) + '" y2="' + endY.toFixed(1) + '" stroke="' + color + '" stroke-width="1.8" stroke-dasharray="4 3"/>' +
+          '<circle cx="' + anchor[0].toFixed(1) + '" cy="' + anchor[1].toFixed(1) + '" r="3.8" fill="' + color + '" stroke="#ffffff" stroke-width="1.5"/>' +
+          renderSvgMathDirect(tx, ty, rawExpr, {
+            size: cfg.fontSize || 16,
+            color: color,
+            anchor: 'middle'
+          })
+        );
+        return api;
+      },
+
+      legendBar: function (items, o) {
+        if (!items || !items.length) return api;
+        var colorMap = {
+          blue: MATH_THEME.colors.angleBlue,
+          amber: MATH_THEME.colors.angleAmber,
+          purple: MATH_THEME.colors.anglePurple,
+          red: MATH_THEME.colors.auxRed,
+          green: MATH_THEME.colors.targetGreen
+        };
+        var typeMap = {
+          aux: 'dash',
+          dash: 'dash',
+          line: 'line',
+          angle: 'angle',
+          sim: 'tri',
+          cong: 'tri',
+          tri: 'tri'
+        };
+        var mapped = items.map(function (it) {
+          var c = colorMap[it.color] || it.color || (it.type === 'aux' ? MATH_THEME.colors.auxRed : MATH_THEME.colors.angleBlue);
+          return {
+            type: typeMap[it.type] || 'line',
+            color: c,
+            fill: it.fill,
+            text: it.text || ''
+          };
+        });
+        if (typeof window.svgLegendBar === 'function') {
+          layers.labels.push(window.svgLegendBar(mapped, Object.assign({ width: W - 16, x: 8, y: 6 }, o || {})));
+        }
+        return api;
+      },
+
+      mathText: function (pt, expr, o) {
+        var p = toPx(pt);
+        layers.labels.push(renderSvgMathDirect(p[0], p[1], expr, o));
+        return api;
+      },
+
+      raw: function (svgFragment, layerName) {
+        var target = layers[layerName] || layers.labels;
+        target.push(svgFragment);
+        return api;
+      },
+
+      toSvg: function () {
+        return (
+          '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="100%" style="background:' + bg + ';border-radius:12px;display:block;">' +
+          layers.fills.join('') +
+          layers.lines.join('') +
+          layers.marks.join('') +
+          layers.labels.join('') +
+          '</svg>'
+        );
+      }
+    };
+
+    return api;
+  }
+  window.createGeoCanvas = createGeoCanvas;
+
+  // ===========================================================================
+  // M4. FUNCTION & PARABOLA COORDINATE CANVAS (window.createFuncCanvas)
+  // 全部采用无胶囊直标（Direct White-Halo Annotation）
+  // ===========================================================================
+  function createFuncCanvas(opts) {
+    opts = opts || {};
+    var W = opts.width || 560;
+    var H = opts.height || 400;
+    var xRange = opts.xRange || [-5, 5];
+    var yRange = opts.yRange || [-4, 6];
+    var pad = Object.assign({ left: 38, right: 38, top: 42, bottom: 34 }, opts.padding || {});
+    var plotW = W - pad.left - pad.right;
+    var plotH = H - pad.top - pad.bottom;
+
+    function toPx(pt) {
+      var px = pad.left + ((pt[0] - xRange[0]) / (xRange[1] - xRange[0])) * plotW;
+      var py = pad.top + ((yRange[1] - pt[1]) / (yRange[1] - yRange[0])) * plotH;
+      return [px, py];
+    }
+
+    var parts = [];
+    var topOverlays = [];
+
+    var api = {
+      toPx: toPx,
+
+      drawAxes: function (o) {
+        o = o || {};
+        var origin = toPx([0, 0]);
+        var ox = origin[0], oy = origin[1];
+        var xStep = o.xStep || 1;
+        var yStep = o.yStep || 1;
+
+        if (o.grid !== false) {
+          for (var gx = Math.ceil(xRange[0]); gx <= Math.floor(xRange[1]); gx += xStep) {
+            var px = toPx([gx, 0])[0];
+            parts.push('<line x1="' + px.toFixed(1) + '" y1="' + pad.top + '" x2="' + px.toFixed(1) + '" y2="' + (H - pad.bottom) + '" stroke="#f1f5f9" stroke-width="1"/>');
+          }
+          for (var gy = Math.ceil(yRange[0]); gy <= Math.floor(yRange[1]); gy += yStep) {
+            var py = toPx([0, gy])[1];
+            parts.push('<line x1="' + pad.left + '" y1="' + py.toFixed(1) + '" x2="' + (W - pad.right) + '" y2="' + py.toFixed(1) + '" stroke="#f1f5f9" stroke-width="1"/>');
+          }
+        }
+
+        var axisColor = o.color || '#334155';
+        parts.push(
+          '<line x1="' + pad.left + '" y1="' + oy.toFixed(1) + '" x2="' + (W - pad.right + 10) + '" y2="' + oy.toFixed(1) + '" stroke="' + axisColor + '" stroke-width="1.8"/>' +
+          '<polygon points="' + (W - pad.right + 14) + ',' + oy.toFixed(1) + ' ' + (W - pad.right + 5) + ',' + (oy - 4).toFixed(1) + ' ' + (W - pad.right + 5) + ',' + (oy + 4).toFixed(1) + '" fill="' + axisColor + '"/>' +
+          '<line x1="' + ox.toFixed(1) + '" y1="' + (H - pad.bottom) + '" x2="' + ox.toFixed(1) + '" y2="' + (pad.top - 10) + '" stroke="' + axisColor + '" stroke-width="1.8"/>' +
+          '<polygon points="' + ox.toFixed(1) + ',' + (pad.top - 14) + ' ' + (ox - 4).toFixed(1) + ',' + (pad.top - 5) + ' ' + (ox + 4).toFixed(1) + ',' + (pad.top - 5) + '" fill="' + axisColor + '"/>'
+        );
+
+        parts.push(
+          '<text x="' + (ox - 10).toFixed(1) + '" y="' + (oy + 16).toFixed(1) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155">O</text>' +
+          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">' + (o.xLabel || 'x') + '</text>' +
+          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">' + (o.yLabel || 'y') + '</text>'
+        );
+        return api;
+      },
+
+      drawParabola: function (a, b, c, o) {
+        o = o || {};
+        var domMin = o.xMin !== undefined ? o.xMin : xRange[0];
+        var domMax = o.xMax !== undefined ? o.xMax : xRange[1];
+        var steps = 120;
+        var dx = (domMax - domMin) / steps;
+        var segs = [];
+        var cur = [];
+        for (var i = 0; i <= steps; i++) {
+          var x = domMin + i * dx;
+          var y = a * x * x + b * x + c;
+          if (y >= yRange[0] - 0.8 && y <= yRange[1] + 0.8) {
+            var p = toPx([x, y]);
+            cur.push(p[0].toFixed(1) + ',' + p[1].toFixed(1));
+          } else if (cur.length > 1) {
+            segs.push(cur);
+            cur = [];
+          } else {
+            cur = [];
+          }
+        }
+        if (cur.length > 1) segs.push(cur);
+        var col = o.color || '#2563eb';
+        var sw = o.width || 2.6;
+        segs.forEach(function (pts) {
+          parts.push('<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + col + '" stroke-width="' + sw + '" stroke-linecap="round"/>');
+        });
+        return api;
+      },
+
+      drawHyperbola: function (k, o) {
+        o = o || {};
+        var col = o.color || '#2563eb';
+        var sw = o.width || 2.6;
+        [-1, 1].forEach(function (sign) {
+          if (o.branch === 'positive' && sign < 0) return;
+          if (o.branch === 'negative' && sign > 0) return;
+          var pts = [];
+          for (var i = 1; i <= 80; i++) {
+            var x = sign * (0.15 + (i / 80) * (Math.max(Math.abs(xRange[0]), Math.abs(xRange[1])) - 0.15));
+            var y = k / x;
+            if (x >= xRange[0] && x <= xRange[1] && y >= yRange[0] - 0.5 && y <= yRange[1] + 0.5) {
+              var p = toPx([x, y]);
+              pts.push(p[0].toFixed(1) + ',' + p[1].toFixed(1));
+            }
+          }
+          if (pts.length > 1) {
+            parts.push('<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + col + '" stroke-width="' + sw + '" stroke-linecap="round"/>');
+          }
+        });
+        return api;
+      },
+
+      drawSymmetryAxis: function (h, label, o) {
+        o = o || {};
+        var px = toPx([h, 0])[0];
+        var col = o.color || '#d97706';
+        parts.push(
+          '<line x1="' + px.toFixed(1) + '" y1="' + (pad.top - 4) + '" x2="' + px.toFixed(1) + '" y2="' + (H - pad.bottom + 4) + '" stroke="' + col + '" stroke-width="1.8" stroke-dasharray="6 4"/>'
+        );
+        var txt = label || '直线x=' + h;
+        topOverlays.push(renderSvgMathDirect(px + 8, pad.top + 16, txt, { size: 13.5, color: col, anchor: 'start' }));
+        return api;
+      },
+
+      /**
+       * 铅锤高辅助线 PM 与面积割补三角形阴影（直接白边光晕标注，无胶囊框）
+       */
+      drawLeadVertical: function (xP, yTop, yBot, ptA, ptB, o) {
+        o = o || {};
+        var pTop = toPx([xP, yTop]);
+        var pBot = toPx([xP, yBot]);
+        if (ptA && ptB) {
+          var pA = toPx(ptA), pB = toPx(ptB);
+          parts.push(
+            '<polygon points="' + pA[0].toFixed(1) + ',' + pA[1].toFixed(1) + ' ' + pTop[0].toFixed(1) + ',' + pTop[1].toFixed(1) + ' ' + pB[0].toFixed(1) + ',' + pB[1].toFixed(1) + '" fill="rgba(37,99,235,0.15)" stroke="#2563eb" stroke-width="1.8"/>'
+          );
+        }
+        parts.push(
+          '<line x1="' + pTop[0].toFixed(1) + '" y1="' + pTop[1].toFixed(1) + '" x2="' + pBot[0].toFixed(1) + '" y2="' + pBot[1].toFixed(1) + '" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="6 3"/>'
+        );
+        topOverlays.push(
+          '<circle cx="' + pTop[0].toFixed(1) + '" cy="' + pTop[1].toFixed(1) + '" r="4.8" fill="#dc2626" stroke="#fff" stroke-width="1.6"/>' +
+          '<circle cx="' + pBot[0].toFixed(1) + '" cy="' + pBot[1].toFixed(1) + '" r="4.5" fill="#d97706" stroke="#fff" stroke-width="1.6"/>'
+        );
+        if (o.label) {
+          var midY = (pTop[1] + pBot[1]) / 2 + 5;
+          topOverlays.push(
+            renderSvgMathDirect(pTop[0] + 10, midY, o.label, {
+              size: 15,
+              color: '#dc2626',
+              anchor: 'start'
+            })
+          );
+        }
+        return api;
+      },
+
+      drawLine: function (p1, p2, o) {
+        o = o || {};
+        var a = toPx(p1), b = toPx(p2);
+        parts.push(
+          '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '" stroke="' + (o.color || '#0f766e') + '" stroke-width="' + (o.width || 2.2) + '"' + (o.dash ? ' stroke-dasharray="' + o.dash + '"' : '') + '/>'
+        );
+        return api;
+      },
+
+      drawPoint: function (pt, label, o) {
+        o = o || {};
+        var p = toPx(pt);
+        var col = o.color || '#0f172a';
+        var isOpen = Boolean(o.open);
+        topOverlays.push(
+          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (o.r || 4.5) + '" fill="' + (isOpen ? '#ffffff' : col) + '" stroke="' + col + '" stroke-width="2"/>'
+        );
+        if (label) {
+          var dx = o.dx !== undefined ? o.dx : 10;
+          var dy = o.dy !== undefined ? o.dy : -8;
+          topOverlays.push(
+            renderSvgMathDirect(p[0] + dx, p[1] + dy, label, {
+              size: 14.5,
+              color: col,
+              anchor: 'start'
+            })
+          );
+        }
+        return api;
+      },
+
+      toSvg: function () {
+        return (
+          '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;">' +
+          parts.join('') +
+          topOverlays.join('') +
+          '</svg>'
+        );
+      }
+    };
+    return api;
+  }
+  window.createFuncCanvas = createFuncCanvas;
+
+  // ===========================================================================
+  // M5. NUMBER LINE, BOX PLOT & PROBABILITY TREE (数轴、箱线图、概率树组件)
+  // ===========================================================================
+
+  function createNumberLine(opts) {
+    opts = opts || {};
+    var W = opts.width || 560;
+    var H = opts.height || 185;
+    var minVal = opts.min !== undefined ? opts.min : -4;
+    var maxVal = opts.max !== undefined ? opts.max : 6;
+    var step = opts.step || 1;
+    var axisY = opts.axisY || 128;
+    var padX = 44;
+    var usableW = W - padX * 2;
+
+    function toX(v) {
+      return padX + ((v - minVal) / (maxVal - minVal)) * usableW;
+    }
+
+    var shades = [];
+    var rays = [];
+    var points = [];
+
+    var api = {
+      toX: toX,
+
+      addInequality: function (val, dir, inclusive, tier, o) {
+        o = o || {};
+        var x = toX(val);
+        var h = (tier || 1) === 1 ? 38 : 66;
+        var topY = axisY - h;
+        var endX = dir === 'left' ? padX - 14 : W - padX + 14;
+        var col = o.color || ((tier || 1) === 1 ? '#2563eb' : '#d97706');
+
+        // 严格遵循北师大八下教材：不等式解集折线末端不加箭头
+        rays.push(
+          '<polyline points="' + x.toFixed(1) + ',' + axisY + ' ' + x.toFixed(1) + ',' + topY + ' ' + endX.toFixed(1) + ',' + topY + '" fill="none" stroke="' + col + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'
+        );
+        if (o.label) {
+          rays.push(renderSvgMathDirect((x + endX) / 2, topY - 7, o.label, { size: 13.5, color: col, anchor: 'middle' }));
+        }
+        points.push(
+          '<circle cx="' + x.toFixed(1) + '" cy="' + axisY + '" r="5" fill="' + (inclusive ? col : '#ffffff') + '" stroke="' + col + '" stroke-width="2.4"/>'
+        );
+        return api;
+      },
+
+      shadeIntersection: function (v1, v2, o) {
+        o = o || {};
+        var x1 = toX(Math.min(v1, v2));
+        var x2 = toX(Math.max(v1, v2));
+        var h = o.height || 38;
+        shades.push(
+          '<rect x="' + x1.toFixed(1) + '" y="' + (axisY - h) + '" width="' + Math.max(0, x2 - x1).toFixed(1) + '" height="' + h + '" fill="rgba(37, 99, 235, 0.16)"/>'
+        );
+        for (var sx = x1 + 8; sx < x2 - 4; sx += 10) {
+          shades.push(
+            '<line x1="' + sx.toFixed(1) + '" y1="' + axisY + '" x2="' + Math.min(x2, sx + 12).toFixed(1) + '" y2="' + (axisY - h) + '" stroke="rgba(37, 99, 235, 0.35)" stroke-width="1.4"/>'
+          );
+        }
+        return api;
+      },
+
+      toSvg: function () {
+        var ticks = [];
+        for (var v = minVal; v <= maxVal + 1e-6; v += step) {
+          var tx = toX(v);
+          var isZero = Math.abs(v) < 1e-6;
+          ticks.push(
+            '<line x1="' + tx.toFixed(1) + '" y1="' + axisY + '" x2="' + tx.toFixed(1) + '" y2="' + (axisY - (isZero ? 9 : 6)) + '" stroke="#0f172a" stroke-width="' + (isZero ? '2' : '1.5') + '"/>' +
+            '<text x="' + tx.toFixed(1) + '" y="' + (axisY + 22) + '" text-anchor="middle" font-family="\'Times New Roman\', serif" font-size="14.5" font-weight="' + (isZero ? '800' : '600') + '" fill="#0f172a">' + v + '</text>'
+          );
+        }
+        var axisLine =
+          '<line x1="' + (padX - 18) + '" y1="' + axisY + '" x2="' + (W - padX + 20) + '" y2="' + axisY + '" stroke="#0f172a" stroke-width="2.2"/>' +
+          '<polygon points="' + (W - padX + 26) + ',' + axisY + ' ' + (W - padX + 15) + ',' + (axisY - 5) + ' ' + (W - padX + 15) + ',' + (axisY + 5) + '" fill="#0f172a"/>';
+
+        return (
+          '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;">' +
+          shades.join('') +
+          axisLine +
+          ticks.join('') +
+          rays.join('') +
+          points.join('') +
+          '</svg>'
+        );
+      }
+    };
+    return api;
+  }
+  window.createNumberLine = createNumberLine;
+
+  function createBoxPlot(cfg) {
+    cfg = cfg || {};
+    var W = cfg.width || 580;
+    var H = cfg.height || 205;
+    var minV = Number(cfg.min);
+    var q25 = Number(cfg.q25);
+    var med = Number(cfg.median);
+    var q75 = Number(cfg.q75);
+    var maxV = Number(cfg.max);
+    var padX = 56;
+    var span = (maxV - minV) || 1;
+    var dMin = minV - span * 0.08;
+    var dMax = maxV + span * 0.08;
+
+    function toX(v) {
+      return padX + ((v - dMin) / (dMax - dMin)) * (W - padX * 2);
+    }
+
+    var cy = Math.round(H * 0.43);
+    var boxH = cfg.boxHeight || 40;
+    var capH = 26;
+
+    var xMin = toX(minV), x25 = toX(q25), x50 = toX(med), x75 = toX(q75), xMax = toX(maxV);
+
+    var svg = [];
+    if (cfg.title) {
+      var titleFmt = typeof window.svgAutoFormatText === 'function' ? window.svgAutoFormatText(cfg.title) : cfg.title;
+      svg.push('<text x="' + (W / 2) + '" y="24" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0f172a">' + titleFmt + '</text>');
+    }
+
+    svg.push(
+      '<line x1="' + xMin.toFixed(1) + '" y1="' + cy + '" x2="' + x25.toFixed(1) + '" y2="' + cy + '" stroke="#0f172a" stroke-width="1.6" stroke-dasharray="4 3"/>' +
+      '<line x1="' + x75.toFixed(1) + '" y1="' + cy + '" x2="' + xMax.toFixed(1) + '" y2="' + cy + '" stroke="#0f172a" stroke-width="1.6" stroke-dasharray="4 3"/>' +
+      '<line x1="' + xMin.toFixed(1) + '" y1="' + (cy - capH / 2) + '" x2="' + xMin.toFixed(1) + '" y2="' + (cy + capH / 2) + '" stroke="#0f172a" stroke-width="1.8"/>' +
+      '<line x1="' + xMax.toFixed(1) + '" y1="' + (cy - capH / 2) + '" x2="' + xMax.toFixed(1) + '" y2="' + (cy + capH / 2) + '" stroke="#0f172a" stroke-width="1.8"/>'
+    );
+
+    svg.push(
+      '<rect x="' + x25.toFixed(1) + '" y="' + (cy - boxH / 2) + '" width="' + Math.max(2, x75 - x25).toFixed(1) + '" height="' + boxH + '" fill="' + MATH_THEME.colors.boxPlotFill + '" stroke="#0f172a" stroke-width="1.6"/>' +
+      '<line x1="' + x50.toFixed(1) + '" y1="' + (cy - boxH / 2) + '" x2="' + x50.toFixed(1) + '" y2="' + (cy + boxH / 2) + '" stroke="#0f172a" stroke-width="2.2"/>'
+    );
+
+    var valPts = [
+      { x: xMin, v: minV },
+      { x: x25,  v: q25 },
+      { x: x50,  v: med },
+      { x: x75,  v: q75 },
+      { x: xMax, v: maxV }
+    ];
+    for (var k = 1; k < valPts.length; k++) {
+      if (valPts[k].x - valPts[k - 1].x < 34) {
+        valPts[k - 1].dx = -8;
+        valPts[k].dx = 8;
+      }
+    }
+    valPts.forEach(function (vp) {
+      svg.push(
+        '<text x="' + (vp.x + (vp.dx || 0)).toFixed(1) + '" y="' + (cy - boxH / 2 - 10) + '" text-anchor="middle" font-family="\'Times New Roman\', serif" font-size="14.5" font-weight="700" fill="#0369a1">' + vp.v + '</text>'
+      );
+    });
+
+    var row1Y = cy + boxH / 2 + 24;
+    var row2Y = cy + boxH / 2 + 48;
+    var shift25 = (x75 - x25 < 160) ? -26 : 0;
+    var shift75 = (x75 - x25 < 160) ? 26 : 0;
+
+    var labelItems = [
+      { x: xMin, lx: xMin, y: row1Y, name: '最小值', leader: false },
+      { x: x25,  lx: x25 + shift25, y: row1Y, name: '下四分位数m_{25}', leader: shift25 !== 0 },
+      { x: x50,  lx: x50, y: row2Y, name: '中位数m_{50}', leader: true, color: '#0369a1' },
+      { x: x75,  lx: x75 + shift75, y: row1Y, name: '上四分位数m_{75}', leader: shift75 !== 0 },
+      { x: xMax, lx: xMax, y: row1Y, name: '最大值', leader: false }
+    ];
+
+    labelItems.forEach(function (item) {
+      if (item.leader) {
+        svg.push(
+          '<line x1="' + item.x.toFixed(1) + '" y1="' + (cy + boxH / 2 + 2) + '" x2="' + item.lx.toFixed(1) + '" y2="' + (item.y - 13) + '" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2 2"/>'
+        );
+      }
+      var formattedName = typeof window.svgAutoFormatText === 'function' ? window.svgAutoFormatText(item.name) : item.name;
+      svg.push(
+        '<text x="' + item.lx.toFixed(1) + '" y="' + item.y + '" text-anchor="middle" font-size="12.5" font-weight="700" fill="' + (item.color || '#334155') + '">' +
+        formattedName +
+        '</text>'
+      );
+    });
+
+    return (
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="100%" style="background:#ffffff;border-radius:12px;display:block;">' +
+      svg.join('') +
+      '</svg>'
+    );
+  }
+  window.createBoxPlot = createBoxPlot;
+
+  function createProbTree(cfg, showHighlight) {
+    cfg = cfg || {};
+    var branches = cfg.branches || [];
+    var W = cfg.width || 540;
+    var H = cfg.height || 230;
+    var totalLeaves = 0;
+    branches.forEach(function (b) {
+      totalLeaves += (b.children ? b.children.length : 1);
+    });
+    var slotW = (W - 60) / Math.max(1, totalLeaves);
+    var rootX = W / 2, rootY = 26;
+    var l1Y = 92, l2Y = 160, resY = 204;
+
+    var lines = [];
+    var nodes = [];
+    var leafIdx = 0;
+
+    nodes.push(
+      '<rect x="' + (rootX - 34) + '" y="' + (rootY - 14) + '" width="68" height="26" rx="6" fill="#1e293b"/>' +
+      '<text x="' + rootX + '" y="' + (rootY + 4) + '" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">' + (cfg.root || '开始') + '</text>'
+    );
+
+    branches.forEach(function (b) {
+      var ch = b.children || [];
+      var startLeaf = leafIdx;
+      var endLeaf = leafIdx + Math.max(1, ch.length) - 1;
+      var bX = 30 + ((startLeaf + endLeaf) / 2 + 0.5) * slotW;
+
+      lines.push('<line x1="' + rootX + '" y1="' + (rootY + 12) + '" x2="' + bX.toFixed(1) + '" y2="' + (l1Y - 14) + '" stroke="#64748b" stroke-width="1.8"/>');
+      nodes.push(
+        '<rect x="' + (bX - 22).toFixed(1) + '" y="' + (l1Y - 13) + '" width="44" height="26" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>' +
+        '<text x="' + bX.toFixed(1) + '" y="' + (l1Y + 5) + '" text-anchor="middle" font-family="\'Times New Roman\', serif" font-size="14" font-weight="700" fill="#1e40af">' + b.label + '</text>'
+      );
+
+      ch.forEach(function (c) {
+        var cX = 30 + (leafIdx + 0.5) * slotW;
+        var isHit = Boolean(showHighlight && c.match);
+        var strokeCol = isHit ? '#dc2626' : '#94a3b8';
+        var bgCol = isHit ? '#fef2f2' : '#f8fafc';
+        var txtCol = isHit ? '#dc2626' : '#334155';
+
+        lines.push(
+          '<line x1="' + bX.toFixed(1) + '" y1="' + (l1Y + 13) + '" x2="' + cX.toFixed(1) + '" y2="' + (l2Y - 14) + '" stroke="' + strokeCol + '" stroke-width="' + (isHit ? '2.4' : '1.6') + '"/>'
+        );
+        nodes.push(
+          '<rect x="' + (cX - 20).toFixed(1) + '" y="' + (l2Y - 13) + '" width="40" height="26" rx="6" fill="' + bgCol + '" stroke="' + strokeCol + '" stroke-width="1.6"/>' +
+          '<text x="' + cX.toFixed(1) + '" y="' + (l2Y + 5) + '" text-anchor="middle" font-family="\'Times New Roman\', serif" font-size="13.5" font-weight="700" fill="' + txtCol + '">' + c.label + '</text>'
+        );
+        var outcomeTxt = c.outcome || '(' + b.label + ',' + c.label + ')';
+        nodes.push(
+          '<text x="' + cX.toFixed(1) + '" y="' + resY + '" text-anchor="middle" font-family="\'Times New Roman\', serif" font-size="13" font-weight="' + (isHit ? '800' : '600') + '" fill="' + txtCol + '">' + outcomeTxt + (isHit ? ' ✓' : '') + '</text>'
+        );
+        leafIdx++;
+      });
+    });
+
+    return (
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="100%" style="background:#ffffff;border-radius:10px;display:block;">' +
+      '<text x="12" y="' + (l1Y + 5) + '" font-size="12.5" font-weight="700" fill="#64748b">第1步</text>' +
+      '<text x="12" y="' + (l2Y + 5) + '" font-size="12.5" font-weight="700" fill="#64748b">第2步</text>' +
+      '<text x="12" y="' + resY + '" font-size="12.5" font-weight="700" fill="#64748b">结果</text>' +
+      lines.join('') +
+      nodes.join('') +
+      '</svg>'
+    );
+  }
+  window.createProbTree = createProbTree;
+
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+// =========================================================================
+// 数学交互式课件 — 页面 UI 设计与教学交互组件库 (ui_components.js v2.2)
+// 职责：专门负责课件的页面版式、2024版北师大教材栏目徽章、题干与拆页横幅、
+//       零剧透步骤卡片（[导角]/[求解]）、填空/选择网格、步进描点表格、课堂总结矩阵
+// 依赖：调用 window.MathFormula.render() 渲染卡片内部的数学公式
+// =========================================================================
+
+window.UI_THEME = {
+    primary: '#2563eb',
+    primaryLight: '#eff6ff',
+    primaryBorder: '#bfdbfe',
+    accentRed: '#dc2626',
+    accentRedLight: '#fef2f2',
+    accentOrange: '#d97706',
+    accentOrangeLight: '#fffbeb',
+    accentGreen: '#059669',
+    accentGreenLight: '#ecfdf5',
+    accentPurple: '#7c3aed',
+    accentPurpleLight: '#f5f3ff',
+    textMain: '#0f172a',
+    textSub: '#475569',
+    border: '#cbd5e1',
+    bgCard: '#ffffff',
+    bgSoft: '#f8fafc'
+};
+
+window._mathRender = function(text) {
+    if (window.MathFormula && typeof window.MathFormula.render === 'function') {
+        return window.MathFormula.render(text);
+    }
+    return String(text || '');
+};
+
+window.UI = {
+    // 1. 文本与内联公式渲染包装
+    text: function(rawText) {
+        return window._mathRender(rawText);
+    },
+
+    // 2. 2024版北师大教材原生栏目徽章（尝试·思考 / 思考·交流 / 操作·思考 / 随堂练习 / 例题）
+    bookBadge: function(type, customLabel) {
+        const presets = {
+            'try-think':   { label: '尝试·思考', bg: 'linear-gradient(135deg,#0284c7,#0369a1)', icon: '💡', border: '#bae6fd' },
+            'try-share':   { label: '尝试·交流', bg: 'linear-gradient(135deg,#0d9488,#0f766e)', icon: '💬', border: '#99f6e4' },
+            'think-share': { label: '思考·交流', bg: 'linear-gradient(135deg,#2563eb,#1d4ed8)', icon: '🔍', border: '#bfdbfe' },
+            'do-think':    { label: '操作·思考', bg: 'linear-gradient(135deg,#7c3aed,#6d28d9)', icon: '📐', border: '#ddd6fe' },
+            'observe':     { label: '观察·思考', bg: 'linear-gradient(135deg,#d97706,#b45309)', icon: '👀', border: '#fde68a' },
+            'practice':    { label: '随堂练习',  bg: 'linear-gradient(135deg,#059669,#047857)', icon: '✏️', border: '#a7f3d0' },
+            'example':     { label: customLabel || '例 1', bg: 'linear-gradient(135deg,#dc2626,#b91c1c)', icon: '📌', border: '#fecaca' }
+        };
+        const p = presets[type] || { label: customLabel || type, bg: 'linear-gradient(135deg,#2563eb,#1d4ed8)', icon: '📘', border: '#bfdbfe' };
+        return `<span class="book-badge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:${p.bg};color:#fff;font-size:18px;font-weight:700;box-shadow:0 2px 6px rgba(15,23,42,0.12);border:1.5px solid ${p.border};vertical-align:middle;margin-right:8px;line-height:1.3;"><span>${p.icon}</span><span>${p.label}</span></span>`;
+    },
+
+    // 3. 零剧透填空横线（到达 revealStep 时自动切换红色高亮答案）
+    blank: function(revealStep, answerLatex, minWidth) {
+        const w = minWidth ? `min-width:${minWidth}px;` : '';
+        return `<!--UI_START--><span class="blank" data-Empty="　　　" data-step="${revealStep}" style="${w}">${window._mathRender(answerLatex)}</span><!--UI_END-->`;
+    },
+
+    // 4. 选择题括号 + 响应式选项网格（支持 4 列单行或 2×2 双列）
+    choices: function(options, revealStep, answerLetter, cols = 4) {
+        const bracket = `<!--UI_START--><span class="choice-bracket" data-step="${revealStep}" data-ans="${answerLetter}">（<span class="choice-ans">　</span>）</span><!--UI_END-->`;
+        const gridClass = cols === 2 ? 'options-grid cols-2' : 'options-grid';
+        const items = options.map(opt => `<div class="option-item">${window._mathRender(opt)}</div>`).join('');
+        return { bracket, grid: `<div class="${gridClass}">${items}</div>` };
+    },
+
+    // 5. 题干卡片与多小问列表（支持题源标签、徽章与子问题编号）
+    stemCard: function(stemHtml, opts = {}) {
+        const badgeHtml = opts.badge ? UI.bookBadge(opts.badge, opts.badgeLabel) : '';
+        const sourceHtml = opts.source ? `<span class="tag-source" style="display:inline-block;padding:2px 8px;border-radius:6px;background:#e0f2fe;color:#0369a1;font-size:16px;font-weight:700;margin-right:8px;vertical-align:middle;">${opts.source}</span>` : '';
+        const subItems = (opts.subQuestions || []).map((q, idx) =>
+            `<div class="sub-q" style="margin-top:8px;padding-left:8px;font-size:22px;line-height:1.55;color:#1e293b;">${window._mathRender(`（${idx + 1}）${q}`)}</div>`
+        ).join('');
+        return `<div class="problem-stem" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:14px;padding:14px 18px;box-shadow:0 2px 8px rgba(15,23,42,0.04);font-size:23px;line-height:1.6;color:#0f172a;">${badgeHtml}${sourceHtml}${window._mathRender(stemHtml)}${subItems}</div>`;
+    },
+
+    // 6. 拆页【前问已知】承接横幅（第(2)/(3)问独立成页时顶部展示）
+    prevContext: function(summaryText, title = '前问已知') {
+        return `<div class="prev-context-banner" style="display:flex;align-items:center;gap:10px;padding:8px 14px;margin-bottom:10px;border-radius:10px;background:linear-gradient(90deg,#eff6ff,#f8fafc);border-left:4px solid #2563eb;border-top:1px solid #dbeafe;border-right:1px solid #dbeafe;border-bottom:1px solid #dbeafe;font-size:19px;color:#1e3a8a;line-height:1.45;">
+            <span style="background:#2563eb;color:#fff;font-weight:700;font-size:15px;padding:2px 8px;border-radius:6px;flex-shrink:0;">【${title}】</span>
+            <span>${window._mathRender(summaryText)}</span>
+        </div>`;
+    },
+
+    // 7. 波利亚两字动作标签步骤卡片（[导角] / [表边] / [列式] / [求解]）
+    stepCard: function(tag, contentLatex, stepIndex, theme = 'blue') {
+        const themes = {
+            blue:   { bg: '#eff6ff', border: '#bfdbfe', tagBg: '#2563eb', text: '#1e3a8a' },
+            orange: { bg: '#fffbeb', border: '#fde68a', tagBg: '#d97706', text: '#92400e' },
+            green:  { bg: '#ecfdf5', border: '#a7f3d0', tagBg: '#059669', text: '#065f46' },
+            purple: { bg: '#f5f3ff', border: '#ddd6fe', tagBg: '#7c3aed', text: '#5b21b6' },
+            red:    { bg: '#fef2f2', border: '#fecaca', tagBg: '#dc2626', text: '#991b1b' }
+        };
+        const t = themes[theme] || themes.blue;
+        return `<div class="step" data-step="${stepIndex}" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-top:8px;border-radius:12px;background:${t.bg};border:1.5px solid ${t.border};font-size:21px;line-height:1.55;color:#0f172a;">
+            <span class="step-action-tag" style="display:inline-flex;align-items:center;justify-content:center;padding:2px 9px;border-radius:7px;background:${t.tagBg};color:#fff;font-size:17px;font-weight:700;flex-shrink:0;margin-top:2px;">[${tag}]</span>
+            <div style="flex:1;">${window._mathRender(contentLatex)}</div>
+        </div>`;
+    },
+
+    // 8. 步进描点表格（列表 → 描点 → 连线）
+    stepTable: function(cfg) {
+        const headers = cfg.headers || [];
+        const rows = cfg.rows || [];
+        const ths = headers.map((h, i) => `<th style="padding:7px 10px;border:1.5px solid #94a3b8;background:${i === 0 ? '#e2e8f0' : '#f8fafc'};font-weight:700;text-align:center;">${window._mathRender(String(h))}</th>`).join('');
+        const trs = rows.map(row => {
+            const tds = row.cells.map((cell, idx) => {
+                if (idx === 0) {
+                    return `<td style="padding:7px 10px;border:1.5px solid #94a3b8;background:#f1f5f9;font-weight:700;text-align:center;">${window._mathRender(String(cell))}</td>`;
+                }
+                const stepAttr = row.revealStep ? `class="blank" data-Empty="　" data-step="${row.revealStep}"` : '';
+                return `<td style="padding:7px 10px;border:1.5px solid #94a3b8;text-align:center;"><span ${stepAttr}>${window._mathRender(String(cell))}</span></td>`;
+            }).join('');
+            return `<tr>${tds}</tr>`;
+        }).join('');
+        return `<table class="step-table" style="width:100%;border-collapse:collapse;font-size:20px;margin:8px 0;background:#fff;border-radius:8px;overflow:hidden;"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+    },
+
+    // 9. 课堂方法总结矩阵卡片（支持 2×2 或 3 列网格）
+    summaryGrid: function(cards, cols = 2) {
+        const palette = [
+            { bg: '#eff6ff', border: '#93c5fd', titleBg: '#2563eb', titleColor: '#ffffff' },
+            { bg: '#fffbeb', border: '#fcd34d', titleBg: '#d97706', titleColor: '#ffffff' },
+            { bg: '#ecfdf5', border: '#6ee7b7', titleBg: '#059669', titleColor: '#ffffff' },
+            { bg: '#f5f3ff', border: '#c4b5fd', titleBg: '#7c3aed', titleColor: '#ffffff' }
+        ];
+        const items = (cards || []).map((c, idx) => {
+            const p = palette[idx % palette.length];
+            const stepAttr = c.step ? `class="step" data-step="${c.step}"` : '';
+            return `<div ${stepAttr} style="background:${p.bg};border:1.8px solid ${p.border};border-radius:14px;padding:12px 15px;display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="background:${p.titleBg};color:${p.titleColor};font-size:17px;font-weight:700;padding:2px 10px;border-radius:999px;">${window._mathRender(c.badge || `要点 ${idx + 1}`)}</span>
+                    <span style="font-size:20px;font-weight:700;color:#0f172a;">${window._mathRender(c.title || '')}</span>
+                </div>
+                <div style="font-size:19px;line-height:1.5;color:#1e293b;">${window._mathRender(c.body || '')}</div>
+            </div>`;
+        }).join('');
+        return `<div style="display:grid;grid-template-columns:repeat(${cols},minmax(0,1fr));gap:12px;margin-top:8px;">${items}</div>`;
+    },
+
+    // 10. 几何/函数画板底栏参数滑块与交互按钮条
+    controlBar: function(controls = []) {
+        const items = controls.map(ctrl => {
+            if (ctrl.type === 'slider') {
+                return `<label style="display:inline-flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:#1e293b;background:#fff;padding:4px 12px;border-radius:999px;border:1.5px solid #cbd5e1;">
+                    <span>${window._mathRender(ctrl.label || '参数')}</span>
+                    <input type="range" min="${ctrl.min ?? -5}" max="${ctrl.max ?? 5}" step="${ctrl.step ?? 0.5}" value="${ctrl.value ?? 1}" style="accent-color:#2563eb;cursor:pointer;" oninput="${ctrl.onInput || ''}">
+                    <span style="color:#2563eb;font-family:'Times New Roman',serif;min-width:28px;text-align:center;">${ctrl.value ?? 1}</span>
+                </label>`;
+            }
+            return `<button type="button" onclick="${ctrl.onClick || ''}" style="padding:5px 14px;border-radius:999px;border:1.5px solid ${ctrl.primary ? '#1d4ed8' : '#cbd5e1'};background:${ctrl.primary ? '#2563eb' : '#ffffff'};color:${ctrl.primary ? '#ffffff' : '#1e293b'};font-size:17px;font-weight:700;cursor:pointer;">${window._mathRender(ctrl.label || '操作')}</button>`;
+        }).join('');
+        return `<div class="canvas-control-bar" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;padding:8px 12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;margin-top:8px;">${items}</div>`;
+    }
+};
+
+</script>
+<script>
+
+function buildDemosForStep(step) {
+    var out = {};
+    var isSolved = step >= 3;
+
+    // M1-A: HTML 结构化公式编译器
+    out['demo-math-html'] =
+        '<div style="margin-bottom:8px;"><b>① 九下《圆》顶弧与连体根式：</b>' +
+        MathFormula.render('已知 $AB$ 是 $\\odot O$ 的弦，半径 $OD\\perp AB$ 于点 $M$，求证：$AM=BM$，$\\arc{AC}=\\arc{BC}$，且 $BC=4\\sqrt{3}$，面积 $S=\\frac{1}{2}r^2$.') +
+        '</div>' +
+        '<div style="margin-bottom:8px;"><b>② 七下《整式的乘除》下大括号：</b>' +
+        MathFormula.render('$a^m\\cdot a^n = \\underbrace{(a\\cdot a\\cdots a)}_{m\\text{个}a}\\cdot\\underbrace{(a\\cdot a\\cdots a)}_{n\\text{个}a} = a^{m+n}$') +
+        '</div>' +
+        '<div><b>③ 八上《二元一次方程组》& 八下《不等式组》：</b>' +
+        MathFormula.render('解不等式组：$\\cases{2x - 1 > -x, | ① // \\frac{1}{2}x \\leq 3. | ②}$') +
+        '</div>';
+
+    // M1-B: 原生 SVG 二维公式无胶囊直接旁注
+    out['demo-svg-direct-math'] =
+        '<svg viewBox="0 0 780 210" xmlns="http://www.w3.org/2000/svg">' +
+        '<defs><pattern id="grid-m1b" width="26" height="26" patternUnits="userSpaceOnUse">' +
+        '<path d="M 26 0 L 0 0 0 26" fill="none" stroke="#e2e8f0" stroke-width="1"/></pattern></defs>' +
+        '<rect width="780" height="210" fill="url(#grid-m1b)" rx="10"/>' +
+        '<line x1="60" y1="150" x2="220" y2="55" stroke="#0f172a" stroke-width="3"/>' +
+        '<circle cx="60" cy="150" r="4.5" fill="#0f172a"/><circle cx="220" cy="55" r="4.5" fill="#0f172a"/>' +
+        MathFormula.svg(140, 82, '\\frac{4}{3}(4-x)', { color: '#b45309', size: 20 }) +
+        '<text x="140" y="185" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="16" fill="#475569">① 边旁二维分式直接标注</text>' +
+        '<line x1="300" y1="145" x2="480" y2="145" stroke="#059669" stroke-width="3.2"/>' +
+        '<circle cx="300" cy="145" r="4.5" fill="#059669"/><circle cx="480" cy="145" r="4.5" fill="#059669"/>' +
+        MathFormula.svg(390, 114, 'BC=4\\sqrt{3}', { color: '#059669', size: 20 }) +
+        '<text x="390" y="185" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="16" fill="#475569">② 边旁连体根式直接标注</text>' +
+        '<polygon points="560,150 710,150 650,55" fill="rgba(37,99,235,0.12)" stroke="#2563eb" stroke-width="2.6"/>' +
+        MathFormula.svg(635, 118, 'S=\\frac{9\\sqrt{3}}{2}', { color: '#1d4ed8', size: 19 }) +
+        '<text x="635" y="185" text-anchor="middle" font-family="Songti SC, SimSun, serif" font-size="16" fill="#475569">③ 区域内部分式+根式直标</text>' +
+        '</svg>';
+
+    // M2-A: 波利亚几何画板（无胶囊直接旁注）
+    var A = [165, 82], B = [115, 315], C = [465, 315], D = [420, 128], F = [298, 192];
+    var g1 = createGeoCanvas({ width: 620, height: 365 });
+    g1.legendBar([
+        { type: 'angle', color: 'blue', text: '∠1=∠2' },
+        { type: 'angle', color: 'amber', text: '∠3=∠4' },
+        { type: 'aux', color: 'red', text: 'BF,DF: 构造筝形' },
+        { type: 'cong', color: 'blue', text: '△ABF≌△CBF' }
+    ])
+    .polygonFill([A, B, F], 'blue')
+    .polygonFill([C, B, F], 'amber')
+    .polygon([A, B, C, D])
+    .segment(A, C, { color: '#334155', width: 2.0 })
+    .auxLine(B, D)
+    .rightAngle(F, B, C, { size: 12 })
+    .angle(B, F, A, 1, { tier: 1, color: 'blue' })
+    .angle(B, C, F, 2, { tier: 2, color: 'blue' })
+    .angle(D, A, F, 3, { tier: 1, color: 'amber' })
+    .angle(D, F, C, 4, { tier: 2, color: 'amber' })
+    .tickMarks(A, B, 1, { color: '#dc2626' })
+    .tickMarks(A, F, 2, { color: '#2563eb' })
+    .tickMarks(F, C, 2, { color: '#2563eb' })
+    .parallelMarks(A, D, 1, { color: '#059669' })
+    .segmentLabel(A, B, '4', { side: 'left', dist: 16 })
+    .segmentLabel(D, C, '\\frac{4}{3}(4-x)', { side: 'right', dist: 24, color: '#b45309', fontSize: 16 })
+    .polygonVertices([A, B, C, D], ['A', 'B', 'C', 'D'])
+    .point(F, 'F', { role: 'moving', dir: 'top-left' })
+    .targetCallout([290, 315], [430, 348], { target: 'BC', ans: '4\\sqrt{3}', solved: isSolved, fontSize: 16 });
+    out['demo-geo-polya'] = g1.toSvg();
+
+    // M2-B: 圆与切线 + 扇形阴影 + 双箭头尺寸线 + 尺规作图弧痕
+    var O = [215, 200], P = [455, 200];
+    var g2 = createGeoCanvas({ width: 620, height: 365 });
+    g2.legendBar([
+        { type: 'aux', color: 'red', text: 'OA,OB: 切线垂直半径' },
+        { type: 'line', color: '#0284c7', text: '尺规作图弧痕 & 尺寸线' }
+    ])
+    .sectorFill(O, 96, -66, 66, 'blue')
+    .circleWithCenter(O, 96, 'O', { dir: 'bottom-left' })
+    .tangentFromPoint(O, 96, P, { label1: 'A', label2: 'B', dir1: 'top-left', dir2: 'bottom-left' })
+    .auxLine(O, P, { color: '#475569' })
+    .point(P, 'P', { role: 'moving', dir: 'right' })
+    .compassArc(P, 118, 180, 56, { color: '#059669' })
+    .dimensionLine(O, P, 'OP=4\\sqrt{2}', { offset: 48, side: 'right', fontSize: 15 });
+    out['demo-geo-circle'] = g2.toSvg();
+
+    // M3-A: 二次函数与铅垂高直接旁注
+    var f1 = createFuncCanvas({ width: 620, height: 365, xRange: [-3, 5], yRange: [-4.5, 4.5] });
+    f1.drawAxes({ xStep: 1, yStep: 1 })
+      .drawParabola(0.5, -1, -1.5, { color: '#2563eb', width: 2.6 })
+      .drawSymmetryAxis(1, '直线x=1')
+      .drawLine([-1, -1], [4, 2.75], { color: '#059669', width: 2.2 })
+      .drawLeadVertical(2, 0.5, -1.5, [-1, -1], [4, 2.75], { label: 'PM=2' })
+      .drawPoint([-1, -1], 'A(-1,-1)', { color: '#0f172a', dx: -68, dy: -8 })
+      .drawPoint([4, 2.75], 'B(4,2.75)', { color: '#0f172a', dx: 8, dy: -6 })
+      .drawPoint([2, 0.5], 'M', { color: '#d97706', dx: -18, dy: -10 })
+      .drawPoint([2, -1.5], 'P(2,-1.5)', { color: '#dc2626', dx: 10, dy: 16 });
+    out['demo-func-parabola'] = f1.toSvg();
+
+    // M3-B: 概率树状图
+    out['demo-prob-tree'] = createProbTree({
+        width: 620, height: 250,
+        root: '开始',
+        branches: [
+            { label: 'A', children: [{ label: 'B', outcome: '(A,B)', match: true }, { label: 'C', outcome: '(A,C)', match: false }] },
+            { label: 'B', children: [{ label: 'A', outcome: '(B,A)', match: true }, { label: 'C', outcome: '(B,C)', match: false }] },
+            { label: 'C', children: [{ label: 'A', outcome: '(C,A)', match: false }, { label: 'B', outcome: '(C,B)', match: false }] }
+        ]
+    }, isSolved);
+
+    // M4-A: 一元一次不等式组数轴（无箭头平端）
+    var nl = createNumberLine({ width: 620, height: 195, min: -3, max: 5, step: 1 })
+        .addInequality(-1, 'right', false, 1, { label: '① x>-1（空心圈）', color: '#2563eb' })
+        .addInequality(3,  'left',  true,  2, { label: '② x≤3（实心点）',  color: '#d97706' })
+        .shadeIntersection(-1, 3);
+    out['demo-number-line'] = nl.toSvg();
+
+    // M4-B: 箱线图
+    out['demo-box-plot'] = createBoxPlot({
+        width: 620, height: 205,
+        min: 115, q25: 132, median: 136, q75: 144, max: 173,
+        title: '全班学生1min跳绳次数箱线图（还原八上第164页）'
+    });
+
+    // U1: 教材栏目徽章 & 拆页横幅
+    out['demo-ui-badges'] =
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">' +
+        UI.bookBadge('try-think') +
+        UI.bookBadge('try-share') +
+        UI.bookBadge('think-share') +
+        UI.bookBadge('do-think') +
+        UI.bookBadge('observe') +
+        UI.bookBadge('practice') +
+        UI.bookBadge('example', '例 1') +
+        '</div>' +
+        UI.prevContext('由第（1）问已求得蓄电池电压 $U=36\\text{V}$，反比例函数表达式为 $I=\\frac{36}{R}$，点 $A(4,9)$ 在图象上.');
+
+    // U2: 题干卡片 + 零剧透填空 + 选择题网格
+    var ch = UI.choices(['A. $2\\sqrt{3}$', 'B. $4$', 'C. $4\\sqrt{3}$', 'D. $6$'], 2, 'C', 4);
+    out['demo-ui-stem'] =
+        UI.stemCard(
+            '如图，在 $\\text{Rt}\\triangle ABC$ 中，$\\angle C=90^\\circ$，$AB=8$，$\\angle A=60^\\circ$，则直角边 $BC=$ ' +
+            UI.blank(2, '4\\sqrt{3}') + '，外接圆半径 $R=$ ' + UI.blank(2, '4') + '，应选 ' + ch.bracket,
+            { badge: 'practice', source: '2024北师大九下', subQuestions: ['求 $\\sin A$ 与 $\\tan A$ 的值；', '求 $\\triangle ABC$ 的面积 $S_{\\triangle ABC}$.'] }
+        ) + ch.grid;
+
+    // U3: 波利亚两字动作标签步骤流
+    out['demo-ui-steps'] =
+        UI.stepCard('导角', '由轴对称性质得 $\\angle 1=\\angle 2$，$\\angle AFB=\\angle CFB=90^\\circ$，故 $\\triangle ABF\\cong\\triangle CBF$（ASA）.', 1, 'blue') +
+        UI.stepCard('表边', '设 $CF=x$，在 $\\text{Rt}\\triangle CDF$ 中，由 $\\tan\\angle 3=\\frac{3}{4}$ 得 $DF=\\frac{4}{3}(4-x)$.', 2, 'orange') +
+        UI.stepCard('求解', '在 $\\text{Rt}\\triangle BDF$ 中列勾股方程解得 $x=\\frac{5}{2}$，故 $BC=4\\sqrt{3}$.', 3, 'green');
+
+    // U4: 步进描点表格 & 总结卡片
+    out['demo-ui-summary'] =
+        UI.stepTable({
+            headers: ['$x$', '$-2$', '$-1$', '$1$', '$2$'],
+            rows: [{ cells: ['$y=\\frac{4}{x}$', '$-2$', '$-4$', '$4$', '$2$'], revealStep: 2 }]
+        }) +
+        UI.summaryGrid([
+            { badge: '核心模型 1', title: '波利亚数字角导角法', body: '用纯数字 $\\angle 1,\\angle 2$ 替代三字母角名，直观导出全等或相似.' },
+            { badge: '核心模型 2', title: '无胶囊直接旁注规范', body: '边长分式 $\\frac{4}{3}(4-x)$ 与铅垂高 $PM=2$ 直接标注在对应线段旁.' }
+        ], 2);
+
+    return out;
+}
+
+window.currentDemoStep = 4;
+
+function renderAllDemos(step) {
+    var out = buildDemosForStep(step);
+    Object.keys(out).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.innerHTML = out[id];
+    });
+    document.querySelectorAll('.blank').forEach(function(el) {
+        var req = parseInt(el.getAttribute('data-step') || '1', 10);
+        if (step < req) el.classList.add('is-hidden');
+        else el.classList.remove('is-hidden');
+    });
+    document.querySelectorAll('.choice-bracket').forEach(function(el) {
+        var req = parseInt(el.getAttribute('data-step') || '1', 10);
+        var ans = el.getAttribute('data-ans') || '';
+        var span = el.querySelector('.choice-ans');
+        if (span) span.textContent = step >= req ? ans : '　';
+    });
+    document.getElementById('step-indicator').textContent = step >= 3 ? '已完成求解 step=4' : '初始零剧透状态 step=0';
+}
+
+function toggleDemoStep() {
+    window.currentDemoStep = window.currentDemoStep >= 3 ? 0 : 4;
+    renderAllDemos(window.currentDemoStep);
+}
+</script>
+</body>
+</html>

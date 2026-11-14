@@ -26,5 +26,6 @@ ENV/
 *.tmp
 *.log
 
-# Sensitive student paper assets & large demo clips
+# Sensitive student paper assets, reference textbooks & large demo clips
 courseware_assets/
+textbooks/
