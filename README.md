@@ -9,9 +9,9 @@
 ---
 
 ## 目录
-- [一、核心架构与标准作业流程（SOP）](#一核心架构与标准作业流程sop)
-  - [阶段一：学案结构解析与无损修补（.docx）](#阶段一学案结构解析与无损修补docx)
-  - [阶段二：基于定稿学案的 1:1 课件编译（.html）](#阶段二基于定稿学案的-11-课件编译html)
+- [一、系统架构与构建流程](#一系统架构与构建流程)
+  - [阶段一：Word 学案解析与无损修补（.docx）](#阶段一word-学案解析与无损修补docx)
+  - [阶段二：交互式动态课件构建与校验（.html）](#阶段二交互式动态课件构建与校验html)
 - [二、自适应页面版式体系（Layouts A–E）](#二自适应页面版式体系layouts-ae)
 - [三、几何图示 SVG 动态标注规范](#三几何图示-svg-动态标注规范)
 - [四、渐进式呈现与教学节奏控制规范](#四渐进式呈现与教学节奏控制规范)
@@ -20,66 +20,65 @@
 
 ---
 
-## 一、核心架构与标准作业流程（SOP）
+## 一、系统架构与构建流程
 
-为彻底解决“边改学案边猜着写课件”导致的题干不一致、字母错位、设问脱节与反复返工问题，本项目严格执行**“两阶段用户确认制 SOP（Two-Stage Confirmation SOP）”**：
+本项目采用**两阶段解耦构建流程**：先完成 Word 学案的结构解析、配图重绘与 XML 无损修补，经审阅定稿后，再以定稿学案为唯一数据源生成对应的单文件交互式 HTML 课件，确保学案与课件的题干、符号及图形坐标完全一致。
 
 ```mermaid
 flowchart TD
-  subgraph Stage1["第一阶段：学案结构解析与无损修补（定稿 .docx）"]
-    A[原版 Word 学案 .docx] --> B[inspect_docx_worksheet.py 结构解析与审计]
-    B --> C[WMF/MathType 自动解码为 LaTeX 公式]
-    B --> D[提取并审计配图分辨率/裁剪参数]
-    C & D --> E[数学可解性验算 & 零自由常数校验]
-    E --> F[并发重绘 300 DPI 高清配图]
+  subgraph Stage1["阶段一：Word 学案解析与无损修补（.docx）"]
+    A[原版 Word 学案 .docx] --> B[inspect_docx_worksheet.py 文档结构解析]
+    B --> C[WMF / OMML 公式解码为 LaTeX]
+    B --> D[提取配图并审计分辨率与裁剪参数]
+    C & D --> E[几何坐标推导与可解性校验]
+    E --> F[重绘 300 DPI 高清配图]
     F --> G[docx_inplace_patcher.py 原地 XML 修补]
-    G --> H[输出优化版学案 .docx 与修改清单]
+    G --> H[输出优化版学案 .docx]
   end
 
-  H --> Gate{{"🛑 阶段确认门禁<br/>用户审阅定稿"}}
+  H --> Gate{{"学案审阅与定稿确认"}}
 
-  subgraph Stage2["第二阶段：1:1 动态课件编译（.html）"]
-    Gate -->|用户确认定稿/回传微调| I[提取课时定稿蓝图]
-    I --> J[多智能体并发编写 chunk1/chunk2/chunk3.js]
-    J --> K[compile_seewo_courseware.py 一键编译]
-    K --> L[全页面步数契约与运行时无头仿真]
-    L --> M[交付单文件交互式 HTML 动态课件]
+  subgraph Stage2["阶段二：交互式动态课件构建与校验（.html）"]
+    Gate -->|定稿确认| I[提取课时结构化蓝图]
+    I --> J[分模块编写 chunk1 / chunk2 / chunk3.js]
+    J --> K[compile_seewo_courseware.py 合并编译]
+    K --> L[语法检查、步数对齐与 SVG 碰撞仿真]
+    L --> M[输出单文件交互式课件 .html]
   end
 ```
 
-### 阶段一：学案结构解析与无损修补（.docx）
-1. **结构解析与公式解码**：
-   - 运行 `inspect_docx_worksheet.py`，全自动扫描文档结构；
-   - 彻底解码遗留 MathType `<w:object>`（WMF 矢量碎片）与原生 `<m:oMath>`，转换为内联 `$LaTeX$` 公式；
-   - 过滤公式矢量碎片，仅导出有效几何/函数配图，审计物理尺寸与 `<a:srcRect>` 裁剪边界。
-2. **数学可解性与几何零自由常数规范（Mathematical Solvability）**：
-   - 严禁随意设定无约束常数坐标；
-   - 除动点（如 $A(x_0, k/x_0)$）外，垂足、交点、对称点坐标必须严格由已知条件方程推导计算；
-   - 严格进行代数消元检验（确保所求面积/线段无无法消除的未知变量）；
-   - 题干几何名称与图形顶点字母必须 100% 严格一致。
+### 阶段一：Word 学案解析与无损修补（.docx）
+1. **文档解析与公式解码**：
+   - 运行 `inspect_docx_worksheet.py` 扫描文档 XML 结构；
+   - 将遗留 MathType `<w:object>`（WMF 矢量对象）与原生 `<m:oMath>` 自动解码为内联 `$LaTeX$` 表达式；
+   - 导出文档内的几何与函数配图，审计原始分辨率、物理尺寸及 `<a:srcRect>` 裁剪参数。
+2. **几何坐标推导与可解性校验**：
+   - 除自由动点（如 $A(x_0, k/x_0)$）外，垂足、交点、对称点坐标均由题干几何条件对应的代数方程精确计算，不引入无约束常数坐标；
+   - 对含参面积或长度问题进行代数消元检验，确保结果唯一可解；
+   - 校验题干几何元素名称与配图顶点字母完全对应。
 3. **原地无损 XML 修补（In-Place XML Patching）**：
-   - 严禁丢弃模板重新生成 docx。调用 `docx_inplace_patcher.py` 定点替换 `word/document.xml`；
-   - 100% 保留页面边距、抬头页眉、四号（12pt）字号、1.5倍行距；
-   - 彻底清空 `<mc:AlternateContent>` 浮动圆角归纳框下方被遮挡的废弃模板残留段落，同步更新 DrawingML 与 VML 双分支。
-4. **🛑 阶段确认门禁**：
-   - 交付 `xxx_学生学案_优化版.docx` 及清单，明确向用户确认：“请确认学案是否定稿，确认后将 1:1 生成对应 HTML 课件”。
+   - 调用 `docx_inplace_patcher.py` 在原文档 `word/document.xml` 上执行定点替换；
+   - 完整保留原模板的页面边距、页眉、字号（四号 12pt）与行距（1.5 倍行距）；
+   - 同步更新 `<mc:AlternateContent>` 浮动文本框的 DrawingML 与 VML 双分支，并清理文本框下方被遮挡的残留段落。
+4. **定稿确认**：
+   - 输出 `xxx_学生学案_优化版.docx` 及修订说明，确认定稿后进入课件构建阶段。
 
-### 阶段二：基于定稿学案的 1:1 课件编译（.html）
-1. **锁定唯一真实数据源（Single Source of Truth）**：
-   - 以定稿学案中的题干、设问、字母和配图为唯一基准，严禁脱离学案自由发挥。
-2. **模块化分块编写（Parallel Chunk Builders）**：
-   - 将课件划分为 3 个模块并行编写：
+### 阶段二：交互式动态课件构建与校验（.html）
+1. **数据源对齐**：
+   - 以定稿学案中的题干、设问梯度、顶点字母与配图坐标作为唯一基准数据。
+2. **模块化脚本编写**：
+   - 按教学环节划分为 3 个脚本模块：
      - `chunk1_intro_explore.js`：情境引入与新知探究；
      - `chunk2_apply.js`：新知应用与典例精析；
      - `chunk3_train_summary.js`：分层训练与课堂小结。
-   - 统一调用壳层规范：`window.defineSlide({...})`、`window.createCoordCanvas({...})`、`window.renderMultiPanelScene(step, panels)`。
-3. **一键编译与严苛门禁检测**：
-   - 运行 `compile_seewo_courseware.py`，执行以下门禁检测：
-     - 语法树扫描与括号平衡；
-     - 步数契约检验（`.step` 卡片数必须严格等于进度圆点数，且 $\ge$ 填空最大 `data-step`）；
-     - DOM 树合规性校验（禁止非法嵌套 `<svg>`，防止样式污染）；
-     - `<foreignObject>` 与 `<text>` 几何包围盒零碰撞防压线算法；
-     - 0 到 `maxStep` 完整生命周期无头运行时仿真。
+   - 统一调用壳层接口：`window.defineSlide({...})`、`window.createCoordCanvas({...})`、`window.renderMultiPanelScene(step, panels)`。
+3. **编译与自动化校验**：
+   - 运行 `compile_seewo_courseware.py` 注入交互壳层并执行自动化校验：
+     - JavaScript 语法检查；
+     - 步骤一致性校验（`.step` 卡片数与进度圆点数、填空 `data-step` 严格对齐）；
+     - DOM 与公式排版校验（根式顶线 `.sqrt`、二维叠置分式 `.fraction`、禁止嵌套 `<svg>`）；
+     - SVG 文本与图形包围盒防重叠碰撞检测；
+     - 全页面 `0..maxStep` 步进状态无头运行时仿真。
 
 ---
 
