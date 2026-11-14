@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>2.2.2 反比例函数的图象（2） · 动态交互讲义</title><style>:root{--ink:#15314b;--muted:#63788b;--blue:#145c85;--teal:#007f86;--gold:#e7a831;--paper:#f6f8fa;--line:#d7e2ea}*{box-sizing:border-box}body{margin:0;background:#dce5ec;color:var(--ink);font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:white;color:var(--ink);border-radius:8px;padding:10px 18px;transition:background .15s}button:hover{background:#e8f3f5}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button:disabled{opacity:.35;cursor:default}header{height:60px;background:#102e47;color:white;display:flex;align-items:center;padding:0 26px;gap:14px;box-shadow:0 2px 10px #102e4730}header strong{font-size:20px;margin-right:auto;letter-spacing:2px}header button{background:transparent;color:#dbe8f1;border-color:#496378;padding:8px 16px;font-size:14px}header button.active{background:#e6ae43;color:#182e43;border-color:#e6ae43}#viewport{height:calc(100dvh - 126px);display:flex;align-items:center;justify-content:center;overflow:hidden}#stage{position:relative;width:1600px;height:900px;flex-shrink:0;background:var(--paper);transform-origin:center;overflow:hidden;box-shadow:0 18px 55px #17334a22}.slide{position:absolute;inset:0;padding:48px 66px 52px;background:radial-gradient(ellipse at 95% 5%,#e4f0f5,transparent 45%),var(--paper)}.eyebrow{font-size:20px;letter-spacing:3px;color:var(--teal);font-weight:700;display:flex;gap:14px;align-items:center;margin-bottom:12px}.eyebrow:before{content:'';width:32px;height:4px;background:var(--gold)}h1,h2,h3,p{margin:0}h1{font-family:'STZhongsong','SimSun',serif;font-weight:700;font-size:82px;line-height:1.25;letter-spacing:5px}h2{font-size:44px;line-height:1.3;margin-bottom:24px;letter-spacing:1px}h3{font-size:29px;margin-bottom:17px}p,li{font-size:27px;line-height:1.7}p+p{margin-top:15px}small,.muted{font-size:20px;color:var(--muted);line-height:1.6}.lead{font-size:32px;line-height:1.65}.two{display:grid;grid-template-columns:1.05fr 1fr;gap:38px;align-items:start}.wide{grid-template-columns:1.6fr 1fr}.panel{border:1px solid var(--line);background:#ffffffdf;border-radius:16px;padding:28px}.question{padding-left:22px;border-left:5px solid var(--gold);margin-bottom:24px}.question p{font-size:28px}.step{display:flex;gap:20px;padding:17px 0;border-bottom:1px solid var(--line);align-items:baseline}.step b{color:var(--teal);font-family:Georgia,serif;font-size:32px}.step span{font-size:26px;line-height:1.6}.reveal{margin-top:20px;background:#e5f2f1;border:0;color:#086c71;font-size:22px;padding:12px 23px}.answer{margin-top:17px;background:#e8f3f2;border-radius:10px;padding:19px 24px;border-left:4px solid var(--teal);font-size:25px;line-height:1.65}.answer[hidden]{display:none}.formula{font-family:Georgia,'Microsoft YaHei',serif;font-size:37px;line-height:1.6;color:var(--blue);padding:14px 0}.tag{display:inline-block;padding:5px 12px;font-size:18px;background:#e6edf3;color:#466378;border-radius:5px;margin-bottom:13px}.visual{height:475px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}.visual svg{width:100%;height:100%;font-family:'Microsoft YaHei',sans-serif}.visual svg text{font-size:20px;fill:var(--ink)}.original{display:block;max-width:100%;max-height:380px;object-fit:contain;margin:auto}.original.small{max-height:245px}.caption{font-size:18px;color:var(--muted);margin-top:10px;line-height:1.5}.controls{display:grid;gap:12px;margin-top:16px}.control{display:grid;grid-template-columns:140px 1fr 90px;gap:15px;align-items:center;font-size:21px}.control input{width:100%;accent-color:var(--teal)}.control output{text-align:right;font-variant-numeric:tabular-nums;color:var(--blue)}.control select{width:100%;padding:6px;border:1px solid var(--line);border-radius:5px;background:white}.control.select{grid-template-columns:140px 1fr}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.actions button{font-size:20px;padding:9px 16px}.readout{display:flex;gap:26px;flex-wrap:wrap;font-size:21px;background:#edf3f6;padding:13px 18px;border-radius:8px;margin-top:14px}.readout b{color:var(--teal);font-size:25px}.subfoot{position:absolute;bottom:21px;left:66px;right:66px;display:flex;justify-content:space-between;font-size:16px;letter-spacing:1px;color:#7890a1}.cover{background:radial-gradient(ellipse at 90% 25%,#1b6781,transparent 60%),#12324d;color:white}.cover .eyebrow,.cover .muted{color:#97d9dc}.cover .subfoot{color:#a2bbcc}.cover .two{align-items:center;height:690px;grid-template-columns:1fr 1fr}.cover .subtitle{font-size:31px;color:#c4dae7;margin-top:30px;line-height:1.8}.cover .topics{display:flex;gap:12px;margin-top:36px}.cover .topics span{border:1px solid #7595a5;padding:10px 15px;font-size:20px;border-radius:5px}.cover svg{width:100%;height:520px}.cover svg text{fill:white}.big-number{font-family:Georgia,serif;color:#e9b24b;font-size:120px;font-weight:400;line-height:1}.quiz{display:grid;gap:13px;margin-top:18px}.option{text-align:left;font-size:25px;padding:16px 20px;line-height:1.45;background:white;border:1px solid #cddce5;display:flex;gap:17px;align-items:center}.option b{border-radius:50%;background:#eaf0f4;width:38px;height:38px;flex-shrink:0;text-align:center;line-height:38px;font-size:21px}.option.correct{background:#deefea;border-color:#249d84}.option.wrong{background:#fff1e9;border-color:#d99a76}.feedback{font-size:23px;line-height:1.65;min-height:48px;margin-top:16px;color:var(--teal)}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.three .panel{min-height:210px}.three p{font-size:25px}table{width:100%;border-collapse:collapse;font-size:24px;line-height:1.5}td,th{padding:19px 22px;border:1px solid #cfdae4;text-align:left}th{background:#153e5b;color:white}tr:nth-child(even){background:#eaf1f5}.compact p,.compact li{font-size:24px;line-height:1.65}.compact h3{font-size:27px}.source-image-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.source-image-grid button{padding:12px}.source-image-grid img{width:100%;height:160px;object-fit:contain}.source-image-grid b{display:block;margin-top:5px;font-size:22px}.sunrecord{display:flex;gap:22px;align-items:center;margin:25px 0}.sunrecord div{flex:1;padding:25px 15px;background:#e8f1f5;text-align:center;border-bottom:4px solid #79aeb7}.sunrecord b{display:block;font-size:40px;color:var(--teal);margin:12px 0}.sunrecord span{font-size:23px}.compact .answer{font-size:23px}footer{height:66px;background:#f5f8fb;display:flex;align-items:center;gap:14px;padding:0 25px;border-top:1px solid #c6d5e0}footer button{font-size:14px;padding:9px 16px}#pageCount{min-width:84px;font-size:15px;text-align:center;color:#61778a}#slideTitle{font-size:15px;flex:1;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.progress{height:3px;background:#b7c9d6;position:fixed;bottom:63px;left:0;width:100%}.progress i{display:block;height:100%;background:var(--teal);transition:width .2s}.keyhint{font-size:12px;color:#6e8292}dialog{max-width:1100px;width:90%;max-height:85dvh;border:0;border-radius:15px;background:#f6f9fb;padding:30px;color:var(--ink)}dialog::backdrop{background:#082b48a0}dialog h3{font-size:25px}#tocList{display:grid;grid-template-columns:1fr 1fr;gap:10px}#tocList button{text-align:left;display:flex;gap:15px;align-items:center;font-size:16px;padding:13px}#tocList button.current{border-color:var(--teal);background:#deeeef}#tocList button span{color:var(--teal);font-weight:bold}#closeToc{float:right}#penLayer{position:absolute;inset:0;z-index:5;pointer-events:none;touch-action:none}#penLayer.enabled{pointer-events:auto;cursor:crosshair}.pen-active{background:#f7cf7a!important;color:#18344c!important}#toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#12334c;color:white;padding:10px 25px;border-radius:8px;z-index:20;display:none}.bullets{padding-left:30px}.em{color:var(--teal);font-weight:700}.img-row{display:flex;gap:20px;align-items:center}.img-row img{max-width:49%;max-height:250px;object-fit:contain}.line-prompt{font-size:23px;margin:12px 0;color:var(--blue)}.spot{border-bottom:3px solid var(--gold);padding-bottom:3px}.end-grid{margin-top:34px}.end-grid .panel{border-top:5px solid var(--teal)}@media(max-width:700px){header{height:auto;min-height:60px;padding:12px;gap:7px;flex-wrap:wrap}header strong{font-size:17px;width:100%;letter-spacing:0}header button{font-size:12px;padding:7px 10px}#viewport{height:calc(100dvh - 164px);overflow:auto;display:block}#stage{width:100%;height:auto;min-height:100%;transform:none!important;overflow:visible}.slide{position:relative;padding:25px 20px 45px;min-height:100%}.two,.cover .two,.three{grid-template-columns:1fr;gap:22px;height:auto}.eyebrow{font-size:13px;letter-spacing:1px}h1{font-size:49px}h2{font-size:29px;margin-bottom:20px}h3{font-size:23px}p,li,.question p,.lead{font-size:19px}.panel{padding:18px}.cover .subtitle{font-size:21px}.cover svg{height:290px}.cover .topics{gap:7px;flex-wrap:wrap}.cover .topics span{font-size:14px}.big-number{font-size:70px}.visual{height:300px}.control{font-size:15px;grid-template-columns:92px 1fr 58px;gap:7px}.control.select{grid-template-columns:92px 1fr}.actions button{font-size:15px}.answer,.compact .answer{font-size:18px}.formula{font-size:26px}.subfoot{left:20px;right:20px;font-size:10px;bottom:12px}.step span,.three p,.compact p,.compact li{font-size:18px}.readout{gap:13px;font-size:15px}.readout b{font-size:20px}.option{font-size:18px}.reveal{font-size:17px}.feedback{font-size:17px}.muted,small{font-size:15px}footer{padding:0 8px;gap:6px;height:66px}footer button{font-size:12px;padding:8px}#slideTitle,.keyhint,#pen,#clearPen{display:none}#pageCount{flex:1;min-width:45px;font-size:13px}.progress{bottom:63px}#tocList{grid-template-columns:1fr}table{font-size:15px}td,th{padding:10px}.sunrecord{gap:7px}.sunrecord div{padding:13px 5px}.sunrecord b{font-size:25px}.sunrecord span{font-size:15px}.source-image-grid img{height:120px}.cover .two>div:last-child{order:2}.caption{font-size:13px}}
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>2.2.2 反比例函数的图象（2） · 动态交互讲义</title><style>:root{--ink:#15314b;--muted:#63788b;--blue:#145c85;--teal:#007f86;--gold:#e7a831;--paper:#f6f8fa;--line:#d7e2ea}*{box-sizing:border-box}body{margin:0;background:#dce5ec;color:var(--ink);font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:white;color:var(--ink);border-radius:8px;padding:10px 18px;transition:background .15s}button:hover{background:#e8f3f5}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button:disabled{opacity:.35;cursor:default}header{height:60px;background:#102e47;color:white;display:flex;align-items:center;padding:0 26px;gap:14px;box-shadow:0 2px 10px #102e4730}header strong{font-size:20px;margin-right:auto;letter-spacing:2px}header button{background:transparent;color:#dbe8f1;border-color:#496378;padding:8px 16px;font-size:14px}header button.active{background:#e6ae43;color:#182e43;border-color:#e6ae43}#viewport{height:calc(100dvh - 126px);display:flex;align-items:center;justify-content:center;overflow:hidden}#stage{position:relative;width:1600px;height:900px;flex-shrink:0;background:var(--paper);transform-origin:center;overflow:hidden;box-shadow:0 18px 55px #17334a22}.slide{position:absolute;inset:0;padding:48px 66px 52px;background:radial-gradient(ellipse at 95% 5%,#e4f0f5,transparent 45%),var(--paper)}.eyebrow{font-size:20px;letter-spacing:3px;color:var(--teal);font-weight:700;display:flex;gap:14px;align-items:center;margin-bottom:12px}.eyebrow:before{content:'';width:32px;height:4px;background:var(--gold)}h1,h2,h3,p{margin:0}h1{font-family:'STZhongsong','SimSun',serif;font-weight:700;font-size:82px;line-height:1.25;letter-spacing:5px}h2{font-size:44px;line-height:1.3;margin-bottom:24px;letter-spacing:1px}h3{font-size:29px;margin-bottom:17px}p,li{font-size:27px;line-height:1.7}p+p{margin-top:15px}small,.muted{font-size:20px;color:var(--muted);line-height:1.6}.lead{font-size:32px;line-height:1.65}.two{display:grid;grid-template-columns:1.05fr 1fr;gap:38px;align-items:start}.wide{grid-template-columns:1.6fr 1fr}.panel{border:1px solid var(--line);background:#ffffffdf;border-radius:16px;padding:28px}.question{padding-left:22px;border-left:5px solid var(--gold);margin-bottom:24px}.question p{font-size:28px}.step{display:flex;gap:20px;padding:17px 0;border-bottom:1px solid var(--line);align-items:baseline}.step b{color:var(--teal);font-family:Georgia,serif;font-size:32px}.step span{font-size:26px;line-height:1.6}.reveal{margin-top:20px;background:#e5f2f1;border:0;color:#086c71;font-size:22px;padding:12px 23px}.answer{margin-top:17px;background:#e8f3f2;border-radius:10px;padding:19px 24px;border-left:4px solid var(--teal);font-size:25px;line-height:1.65}.answer[hidden]{display:none}.formula{font-family:Georgia,'Microsoft YaHei',serif;font-size:37px;line-height:1.6;color:var(--blue);padding:14px 0}.tag{display:inline-block;padding:5px 12px;font-size:18px;background:#e6edf3;color:#466378;border-radius:5px;margin-bottom:13px}.visual{height:475px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}.visual svg{width:100%;height:100%;font-family:'Times New Roman','Songti SC','SimSun',serif;font-size:16px;fill:var(--ink)}.original{display:block;max-width:100%;max-height:380px;object-fit:contain;margin:auto}.original.small{max-height:245px}.caption{font-size:18px;color:var(--muted);margin-top:10px;line-height:1.5}.controls{display:grid;gap:12px;margin-top:16px}.control{display:grid;grid-template-columns:140px 1fr 90px;gap:15px;align-items:center;font-size:21px}.control input{width:100%;accent-color:var(--teal)}.control output{text-align:right;font-variant-numeric:tabular-nums;color:var(--blue)}.control select{width:100%;padding:6px;border:1px solid var(--line);border-radius:5px;background:white}.control.select{grid-template-columns:140px 1fr}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.actions button{font-size:20px;padding:9px 16px}.readout{display:flex;gap:26px;flex-wrap:wrap;font-size:21px;background:#edf3f6;padding:13px 18px;border-radius:8px;margin-top:14px}.readout b{color:var(--teal);font-size:25px}.subfoot{position:absolute;bottom:21px;left:66px;right:66px;display:flex;justify-content:space-between;font-size:16px;letter-spacing:1px;color:#7890a1}.cover{background:radial-gradient(ellipse at 90% 25%,#1b6781,transparent 60%),#12324d;color:white}.cover .eyebrow,.cover .muted{color:#97d9dc}.cover .subfoot{color:#a2bbcc}.cover .two{align-items:center;height:690px;grid-template-columns:1fr 1fr}.cover .subtitle{font-size:31px;color:#c4dae7;margin-top:30px;line-height:1.8}.cover .topics{display:flex;gap:12px;margin-top:36px}.cover .topics span{border:1px solid #7595a5;padding:10px 15px;font-size:20px;border-radius:5px}.cover svg{width:100%;height:520px}.cover svg text{fill:white}.big-number{font-family:Georgia,serif;color:#e9b24b;font-size:120px;font-weight:400;line-height:1}.quiz{display:grid;gap:13px;margin-top:18px}.option{text-align:left;font-size:25px;padding:16px 20px;line-height:1.45;background:white;border:1px solid #cddce5;display:flex;gap:17px;align-items:center}.option b{border-radius:50%;background:#eaf0f4;width:38px;height:38px;flex-shrink:0;text-align:center;line-height:38px;font-size:21px}.option.correct{background:#deefea;border-color:#249d84}.option.wrong{background:#fff1e9;border-color:#d99a76}.feedback{font-size:23px;line-height:1.65;min-height:48px;margin-top:16px;color:var(--teal)}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.three .panel{min-height:210px}.three p{font-size:25px}table{width:100%;border-collapse:collapse;font-size:24px;line-height:1.5}td,th{padding:19px 22px;border:1px solid #cfdae4;text-align:left}th{background:#153e5b;color:white}tr:nth-child(even){background:#eaf1f5}.compact p,.compact li{font-size:24px;line-height:1.65}.compact h3{font-size:27px}.source-image-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.source-image-grid button{padding:12px}.source-image-grid img{width:100%;height:160px;object-fit:contain}.source-image-grid b{display:block;margin-top:5px;font-size:22px}.sunrecord{display:flex;gap:22px;align-items:center;margin:25px 0}.sunrecord div{flex:1;padding:25px 15px;background:#e8f1f5;text-align:center;border-bottom:4px solid #79aeb7}.sunrecord b{display:block;font-size:40px;color:var(--teal);margin:12px 0}.sunrecord span{font-size:23px}.compact .answer{font-size:23px}footer{height:66px;background:#f5f8fb;display:flex;align-items:center;gap:14px;padding:0 25px;border-top:1px solid #c6d5e0}footer button{font-size:14px;padding:9px 16px}#pageCount{min-width:84px;font-size:15px;text-align:center;color:#61778a}#slideTitle{font-size:15px;flex:1;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.progress{height:3px;background:#b7c9d6;position:fixed;bottom:63px;left:0;width:100%}.progress i{display:block;height:100%;background:var(--teal);transition:width .2s}.keyhint{font-size:12px;color:#6e8292}dialog{max-width:1100px;width:90%;max-height:85dvh;border:0;border-radius:15px;background:#f6f9fb;padding:30px;color:var(--ink)}dialog::backdrop{background:#082b48a0}dialog h3{font-size:25px}#tocList{display:grid;grid-template-columns:1fr 1fr;gap:10px}#tocList button{text-align:left;display:flex;gap:15px;align-items:center;font-size:16px;padding:13px}#tocList button.current{border-color:var(--teal);background:#deeeef}#tocList button span{color:var(--teal);font-weight:bold}#closeToc{float:right}#penLayer{position:absolute;inset:0;z-index:5;pointer-events:none;touch-action:none}#penLayer.enabled{pointer-events:auto;cursor:crosshair}.pen-active{background:#f7cf7a!important;color:#18344c!important}#toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#12334c;color:white;padding:10px 25px;border-radius:8px;z-index:20;display:none}.bullets{padding-left:30px}.em{color:var(--teal);font-weight:700}.img-row{display:flex;gap:20px;align-items:center}.img-row img{max-width:49%;max-height:250px;object-fit:contain}.line-prompt{font-size:23px;margin:12px 0;color:var(--blue)}.spot{border-bottom:3px solid var(--gold);padding-bottom:3px}.end-grid{margin-top:34px}.end-grid .panel{border-top:5px solid var(--teal)}@media(max-width:700px){header{height:auto;min-height:60px;padding:12px;gap:7px;flex-wrap:wrap}header strong{font-size:17px;width:100%;letter-spacing:0}header button{font-size:12px;padding:7px 10px}#viewport{height:calc(100dvh - 164px);overflow:auto;display:block}#stage{width:100%;height:auto;min-height:100%;transform:none!important;overflow:visible}.slide{position:relative;padding:25px 20px 45px;min-height:100%}.two,.cover .two,.three{grid-template-columns:1fr;gap:22px;height:auto}.eyebrow{font-size:13px;letter-spacing:1px}h1{font-size:49px}h2{font-size:29px;margin-bottom:20px}h3{font-size:23px}p,li,.question p,.lead{font-size:19px}.panel{padding:18px}.cover .subtitle{font-size:21px}.cover svg{height:290px}.cover .topics{gap:7px;flex-wrap:wrap}.cover .topics span{font-size:14px}.big-number{font-size:70px}.visual{height:300px}.control{font-size:15px;grid-template-columns:92px 1fr 58px;gap:7px}.control.select{grid-template-columns:92px 1fr}.actions button{font-size:15px}.answer,.compact .answer{font-size:18px}.formula{font-size:26px}.subfoot{left:20px;right:20px;font-size:10px;bottom:12px}.step span,.three p,.compact p,.compact li{font-size:18px}.readout{gap:13px;font-size:15px}.readout b{font-size:20px}.option{font-size:18px}.reveal{font-size:17px}.feedback{font-size:17px}.muted,small{font-size:15px}footer{padding:0 8px;gap:6px;height:66px}footer button{font-size:12px;padding:8px}#slideTitle,.keyhint,#pen,#clearPen{display:none}#pageCount{flex:1;min-width:45px;font-size:13px}.progress{bottom:63px}#tocList{grid-template-columns:1fr}table{font-size:15px}td,th{padding:10px}.sunrecord{gap:7px}.sunrecord div{padding:13px 5px}.sunrecord b{font-size:25px}.sunrecord span{font-size:15px}.source-image-grid img{height:120px}.cover .two>div:last-child{order:2}.caption{font-size:13px}}
 :root .controls{grid-template-columns:1fr 1fr;column-gap:22px}:root .controls .actions{grid-column:1/-1;margin-top:0}:root .control{grid-template-columns:112px 1fr 78px;font-size:18px;gap:9px}:root .control.select{grid-template-columns:112px 1fr}:root .wide .visual{height:395px}:root .wide .readout{font-size:18px;gap:15px}:root .wide .readout b{font-size:22px}:root .wide .answer{font-size:22px;padding:14px 18px}:root .wide .formula{font-size:30px;padding:7px 0}:root .wide .reveal{font-size:20px;margin-top:14px;padding:10px 17px}:root .wide .question p{font-size:25px}:root .wide p{font-size:24px}:root .wide .step span{font-size:24px}:root .wide .caption{font-size:17px}:root .wide .option{font-size:22px;padding:12px 16px}:root .wide .feedback{font-size:20px}@media(max-width:700px){:root .controls{grid-template-columns:1fr}:root .controls .actions{grid-column:auto}:root .control{font-size:15px;grid-template-columns:92px 1fr 58px}:root .control.select{grid-template-columns:92px 1fr}:root .wide .visual{height:300px}:root .wide p,:root .wide .question p,:root .wide .step span{font-size:19px}:root .wide .answer{font-size:18px}:root .wide .caption{font-size:13px}:root .wide .option{font-size:18px}}
 @media(max-width:700px){html,body{width:100%;overflow-x:hidden}.slide-body,.two>div,.three>div{min-width:0}.control input,.control select{min-width:0}.slide-body{width:100%}.two,.wide{grid-template-columns:minmax(0,1fr)}#stage,#content{max-width:100%}footer{width:100%}.visual{width:100%}.cover h1{font-size:40px}#penLayer{display:none}}
 @media(max-width:700px){#stage{width:100vw;max-width:100vw}.slide{width:100vw}header,footer{width:100vw}.slide-body h2{overflow-wrap:anywhere}.control{max-width:100%}}
@@ -94,8 +94,23 @@ body, .slide, h1, h2, h3, .flowbar, .flowbar button, .eyebrow, .subfoot,
 }
 sup, sub {
   font-family: 'Times New Roman', Times, serif !important;
-  font-size: 0.72em;
-  line-height: 0;
+  font-size: 0.72em !important;
+  line-height: 0 !important;
+  white-space: nowrap !important;
+}
+sub span, sub i, sub b,
+sup span, sup i, sup b,
+.fraction span, .fraction i, .frac span, .frac i {
+  font-size: inherit !important;
+}
+.tri-sym {
+  font-family: 'Songti SC', 'SimSun', serif !important;
+  font-style: normal !important;
+  font-size: 0.80em !important;
+  display: inline-block;
+  transform: translateY(-0.07em);
+  margin: 0 -0.06em 0 -0.04em;
+  line-height: 1 !important;
 }
 .fraction, .frac {
   display: inline-flex;
@@ -118,23 +133,32 @@ sup, sub {
   padding: 1px 0.22em 0;
 }
 .sqrt {
-  display: inline-flex;
-  align-items: baseline;
+  display: inline-flex !important;
+  align-items: baseline !important;
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
   font-weight: inherit;
   margin: 0 1px;
+  white-space: nowrap !important;
 }
 .sqrt::before {
-  content: "√";
-  font-size: 1.05em;
+  content: "\221A";
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+  font-size: 1.06em;
   line-height: 1;
-  margin-right: 1px;
+  margin-right: -0.04em;
 }
 .sqrt > span {
-  border-top: 1.8px solid currentColor;
-  padding: 0 2px;
-  line-height: 1.05;
+  border-top: 1.7px solid currentColor !important;
+  padding: 0 2px 0 1px !important;
+  line-height: 1.04 !important;
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+}
+.sqrt > span i.m {
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: italic !important;
 }
 .overline {
   border-top: 1.8px solid currentColor;
@@ -713,12 +737,24 @@ body #inkToolbar.ink-floating #inkExit {
   border-right: 2px solid #2e4775;
 }
 .flow-brand {
-  font-size: 18px;
-  font-weight: 700;
-  color: #7dd3fc;
-  letter-spacing: 0.5px;
-  margin-right: 4px;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #7dd3fc !important;
+  letter-spacing: 0.5px !important;
+  margin: 0 4px 0 0 !important;
   white-space: nowrap;
+  display: inline-flex !important;
+  align-items: center;
+}
+.flow-lectures span,
+.flowbar .num,
+.flowbar i.m {
+  display: inline !important;
+  margin: 0 !important;
+  letter-spacing: 0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  color: inherit !important;
 }
 .flowbar button.flow-lec-btn {
   flex: none !important;
@@ -876,6 +912,154 @@ body #inkToolbar.ink-floating #inkExit {
 .cover:after {
   display: none !important;
 }
+.slide.cover {
+  padding: 68px 64px 42px !important;
+  background:
+    radial-gradient(circle at 85% 48%, rgba(48, 69, 128, 0.06) 0%, transparent 52%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+.std-cover {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1.22fr 0.95fr;
+  gap: 54px;
+  align-items: center;
+  padding: 12px 16px;
+}
+.std-cover-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.std-cover-chapter {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  font-family: "SimSun", "Songti SC", serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #304580;
+  letter-spacing: 1px;
+  margin-bottom: 18px;
+  padding-left: 14px;
+  border-left: 5px solid #267d88;
+  line-height: 1.3;
+}
+.std-cover-title-wrap {
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #dbe3f0;
+  position: relative;
+}
+.std-cover-title-wrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 140px;
+  height: 4px;
+  background: #304580;
+  border-radius: 2px;
+}
+.std-cover-num {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 56px;
+  font-weight: 700;
+  color: #267d88;
+  line-height: 1.05;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.std-cover-title {
+  font-family: "STZhongsong", "Songti SC", "SimSun", serif !important;
+  font-size: 54px !important;
+  font-weight: 700 !important;
+  color: #152238 !important;
+  line-height: 1.24 !important;
+  letter-spacing: 1.5px !important;
+  margin: 0 !important;
+}
+.std-cover-goals {
+  background: #f8fafc;
+  border: 1.5px solid #d5dfed;
+  border-left: 6px solid #304580;
+  border-radius: 12px;
+  padding: 24px 30px;
+  box-shadow: 0 6px 20px rgba(21, 34, 56, 0.04);
+}
+.std-cover-goals-title {
+  font-family: "SimSun", "Songti SC", serif;
+  font-size: 27px;
+  font-weight: 700;
+  color: #304580;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+.std-cover-goal-row {
+  font-family: "SimSun", "Songti SC", serif;
+  font-size: 25px;
+  line-height: 1.72;
+  color: #1e293b;
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.std-cover-goal-row + .std-cover-goal-row {
+  margin-top: 14px;
+}
+.std-cover-goal-row .g-idx {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 25px;
+  font-weight: 700;
+  color: #304580;
+  flex: none;
+}
+.std-cover-goal-row .goal-focus {
+  color: #b4222c;
+  font-weight: 700;
+}
+.std-cover-goal-row .goal-hard {
+  color: #b45309;
+  font-weight: 700;
+}
+.std-cover-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.std-cover-emblem-frame {
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #26437e 0%, #172a54 68%, #101e3d 100%);
+  box-shadow:
+    0 20px 45px rgba(23, 42, 84, 0.20),
+    inset 0 0 0 10px rgba(255, 255, 255, 0.10),
+    inset 0 0 0 12px rgba(231, 168, 49, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  position: relative;
+}
+.std-cover-emblem-frame svg {
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+}
+.std-cover-emblem-caption {
+  margin-top: 18px;
+  font-family: "SimSun", "Songti SC", serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 2px;
+}
 .cover .topics {
   display: grid !important;
   grid-template-columns: repeat(3, 1fr) !important;
@@ -922,37 +1106,85 @@ h2 {
   justify-content: center;
   width: auto !important;
   height: auto !important;
-  min-width: 125px !important;
+  min-width: 108px !important;
   min-height: 36px;
-  padding: 0 12px;
+  padding: 1px 14px;
   margin: 0 4px;
-  border-bottom: 3px solid #2563eb !important;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border-bottom: 2.5px solid #334155 !important;
+  background: rgba(241, 245, 249, 0.72);
+  color: #dc2626;
   border-radius: 6px 6px 0 0;
-  font-size: 25px;
-  font-weight: 700;
+  font-size: 27px;
+  font-weight: 800;
   cursor: pointer;
   vertical-align: baseline;
   white-space: nowrap !important;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   user-select: none;
 }
+.screen-blank.choice-blank {
+  min-width: 64px !important;
+  border-bottom: none !important;
+  background: rgba(241, 245, 249, 0.65);
+  border-radius: 6px;
+  padding: 0 10px;
+}
 .screen-blank:hover {
-  background: #dbeafe;
+  background: #e0f2fe;
+  border-bottom-color: #2563eb !important;
 }
 .screen-blank:not(.filled)::after {
-  content: "❓点击填空";
+  content: "点击显隐";
   font-family: 'SimSun', 'Songti SC', serif;
   font-style: normal;
-  font-size: 18px;
-  color: #2563eb;
-  font-weight: 700;
+  font-size: 15px;
+  color: #94a3b8;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.screen-blank.choice-blank:not(.filled)::after {
+  content: "　";
+}
+@keyframes ansBlankPop {
+  0% { transform: scale(0.92); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
 }
 .screen-blank.filled {
-  background: #dcfce7;
-  border-bottom-color: #16a34a !important;
-  color: #15803d;
+  display: inline-block !important;
+  text-align: center !important;
+  line-height: 1.25 !important;
+  background: #fff1f2 !important;
+  border: 1.5px solid #fda4af !important;
+  border-bottom: 3.5px solid #e11d48 !important;
+  color: #dc2626 !important;
+  border-radius: 7px !important;
+  padding: 2px 16px !important;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.15) !important;
+  animation: ansBlankPop 0.22s ease-out;
+}
+.screen-blank.choice-blank.filled {
+  background: #fff1f2 !important;
+  border: 1.5px solid #fda4af !important;
+  border-bottom: 2.5px solid #e11d48 !important;
+  color: #dc2626 !important;
+  border-radius: 6px !important;
+  padding: 0 12px !important;
+}
+.screen-blank.filled *,
+.screen-blank.filled .num,
+.screen-blank.filled .m,
+.screen-blank.filled .math,
+.screen-blank.filled .fraction > span {
+  color: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+.stem-opt-correct {
+  background: #fff1f2 !important;
+  color: #dc2626 !important;
+  border: 1.5px solid #fda4af !important;
+  border-radius: 6px !important;
+  padding: 1px 8px !important;
+  font-weight: 800 !important;
 }
 .prob-badge {
   display: inline-block;
@@ -1048,52 +1280,118 @@ h2 {
   color: #1e3a8a !important;
 }
 
-/* ================= 分步渐进式探索控制条与阶段解锁样式 ================= */
+/* ================= 分步渐进式探索控制条与阶段解锁样式（极简去按钮化课堂交互） ================= */
 .step-ctrl-bar {
-  display: grid;
-  grid-template-columns: auto 1.4fr auto auto;
-  gap: 7px;
-  background: #eff6ff;
-  border: 1.5px solid #93c5fd;
-  border-radius: 9px;
-  padding: 7px 10px;
-  margin-bottom: 6px;
+  display: flex !important;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px dashed #e2e8f0;
+  border-radius: 0;
+  padding: 2px 4px 6px;
+  margin-bottom: 6px;
+}
+.step-progress-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.step-hint-label {
+  font-family: 'SimSun', 'Songti SC', 'Microsoft YaHei', sans-serif;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #475569;
+  margin-right: 2px;
+}
+.step-dot-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-height: 28px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  border: 1.5px solid #cbd5e1 !important;
+  background: #f8fafc !important;
+  color: #64748b !important;
+  font-family: 'Times New Roman', serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.step-dot-pill:hover {
+  border-color: #3b82f6 !important;
+  color: #1d4ed8 !important;
+  background: #eff6ff !important;
+}
+.step-dot-pill.done {
+  background: #dbeafe !important;
+  border-color: #60a5fa !important;
+  color: #1e40af !important;
+}
+.step-dot-pill.current {
+  background: #2563eb !important;
+  border-color: #1d4ed8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+.step-sub-hint {
+  font-family: 'SimSun', 'Songti SC', sans-serif;
+  font-size: 15px;
+  color: #64748b;
+  margin-left: 4px;
+}
+.step-ghost-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .step-btn {
   font-family: 'SimSun', 'Songti SC', 'Microsoft YaHei', sans-serif !important;
-  font-size: 18.5px !important;
+  font-size: 15.5px !important;
   font-weight: 700 !important;
-  padding: 7px 12px !important;
-  border-radius: 7px !important;
-  border: 1.5px solid #cbd5e1 !important;
-  background: #ffffff !important;
-  color: #1e293b !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid #cbd5e1 !important;
+  background: #f8fafc !important;
+  color: #475569 !important;
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
   text-align: center;
 }
 .step-btn:hover:not(:disabled) {
-  background: #f1f5f9 !important;
-  border-color: #64748b !important;
+  background: #eff6ff !important;
+  border-color: #60a5fa !important;
+  color: #1d4ed8 !important;
+}
+/* 常态下隐藏显眼的“上一步/下一步”按钮，直接点击步骤卡片或空格键展开；仅在放大全屏图象模式下显示紧凑步进钮 */
+.step-btn.prev,
+.step-btn.next {
+  display: none !important;
+}
+body.canvas-zoom-mode .step-btn.prev,
+body.canvas-zoom-mode .step-btn.next {
+  display: inline-flex !important;
+  align-items: center;
 }
 .step-btn.next {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
-  color: #ffffff !important;
-  border-color: #1e40af !important;
-  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
-}
-.step-btn.next:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1d4ed8, #1e3a8a) !important;
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-color: #93c5fd !important;
 }
 .step-btn.all {
-  background: #ecfdf5 !important;
-  color: #047857 !important;
-  border-color: #6ee7b7 !important;
+  background: #f0fdf4 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
 }
 .step-btn.all:hover:not(:disabled) {
-  background: #d1fae5 !important;
+  background: #dcfce7 !important;
 }
 .step-btn.rst {
   background: #fff7ed !important;
@@ -1101,9 +1399,7 @@ h2 {
   border-color: #fdba74 !important;
 }
 .step-btn:disabled {
-  opacity: 0.45 !important;
-  cursor: not-allowed !important;
-  box-shadow: none !important;
+  display: none !important;
 }
 
 .thm-stage-reveal {
@@ -1153,6 +1449,7 @@ h2 {
 
 /* 右侧笔记栏、互动切换按钮与公式框（大屏大字号） */
 .screen-notes {
+  display: block !important;
   overflow-y: auto !important;
   padding-right: 6px;
 }
@@ -1160,10 +1457,13 @@ h2 {
 .screen-notes:has(.answer:not([hidden])) > .controls {
   display: grid !important;
   position: sticky !important;
-  top: 0 !important;
+  top: -14px !important;
+  margin-top: -14px !important;
+  padding-top: 14px !important;
   z-index: 5 !important;
-  background: linear-gradient(180deg, #ffffff 90%, rgba(255, 255, 255, 0)) !important;
-  padding-bottom: 4px !important;
+  background: #ffffff !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
 }
 .screen-notes .controls {
   gap: 6px !important;
@@ -1214,30 +1514,94 @@ h2 {
   padding: 9px 14px !important;
   gap: 12px !important;
   border-radius: 10px;
-  transition: all 0.2s;
   position: relative;
-  animation: stepFadeIn 0.22s ease-out;
-}
-@keyframes stepFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  cursor: pointer;
+  opacity: 1 !important;
 }
 .screen-notes .step.step-locked {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  background: #f8fafc !important;
+  border: 1.5px dashed #cbd5e1 !important;
+  border-left: 5px solid #94a3b8 !important;
+  padding: 11px 16px !important;
+  cursor: pointer !important;
+  user-select: none;
+  opacity: 0.92;
+}
+.screen-notes .step.step-locked.step-next-up {
+  background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%) !important;
+  border: 1.5px dashed #60a5fa !important;
+  border-left: 5px solid #2563eb !important;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08) !important;
+}
+.screen-notes .step.step-locked:hover {
+  background: #dbeafe !important;
+  border-color: #3b82f6 !important;
+  transform: translateX(2px);
+}
+.screen-notes .step.step-locked > span {
   display: none !important;
+}
+.screen-notes .step.step-locked::after {
+  content: attr(data-lock-msg);
+  font-family: 'Times New Roman', 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
+  font-size: 21.5px;
+  font-weight: 700;
+  color: #475569;
+  flex: 1;
+  line-height: 1.35;
+}
+.screen-notes .step.step-locked.step-next-up::after {
+  color: #1e3a8a;
 }
 .screen-notes .step.step-active {
   background: #f0f9ff;
   border-left: 5px solid #2563eb;
 }
-.screen-notes .step b {
+.screen-notes .step > b {
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
   font-size: 25px !important;
   color: #1e3a8a !important;
 }
-.screen-notes .step span {
+.screen-notes .step > span {
   font-size: 24px !important;
   line-height: 1.46 !important;
+}
+.screen-notes .step > span b {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-weight: 700 !important;
+  color: inherit;
+}
+.screen-notes .step > span > b:first-child {
+  color: #1e3a8a;
+}
+.step-sub-part.sub-step-locked > * {
+  display: none !important;
+}
+.step-sub-part.sub-step-locked {
+  display: inline-flex !important;
+  align-items: center;
+  padding: 2px 12px;
+  margin-left: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1.5px dashed #3b82f6;
+  color: #1d4ed8 !important;
+  font-family: 'SimSun', 'Songti SC', serif !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.step-sub-part.sub-step-locked::after {
+  content: attr(data-sub-hint);
 }
 .screen-notes .answer {
   font-size: 24px !important;
@@ -1548,7 +1912,35 @@ tfoot tr.prob-tr-masked td:first-child {
   cursor: pointer;
 }
 .prob-step-card.step-locked {
+  display: block !important;
+  background: #f8fafc !important;
+  border: 1.5px dashed #cbd5e1 !important;
+  border-left: 5px solid #94a3b8 !important;
+  opacity: 0.92;
+  user-select: none;
+}
+.prob-step-card.step-locked.step-next-up {
+  background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%) !important;
+  border: 1.5px dashed #60a5fa !important;
+  border-left: 5px solid #2563eb !important;
+  opacity: 1;
+}
+.prob-step-card.step-locked:hover {
+  background: #dbeafe !important;
+  border-color: #3b82f6 !important;
+}
+.prob-step-card.step-locked .prob-step-math {
   display: none !important;
+}
+.prob-step-card.step-locked .prob-step-head {
+  margin-bottom: 0 !important;
+}
+.prob-step-card.step-locked .prob-step-head::after {
+  content: "点击展开 ▸";
+  margin-left: auto;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2563eb;
 }
 .prob-step-head {
   display: flex;
@@ -1842,10 +2234,10 @@ body[data-font-scale="xlarge"] .screen-notes > * {
   border-left: 6px solid #1e3a8a;
   border-radius: 10px;
 }
-.screen-lower.layout-a .step b {
+.screen-lower.layout-a .step > b {
   font-size: 27px !important;
 }
-.screen-lower.layout-a .step span {
+.screen-lower.layout-a .step > span {
   font-size: 27px !important;
   line-height: 1.52 !important;
 }
@@ -1868,6 +2260,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-notes {
   order: 1 !important;
+  grid-column: 1 !important;
   background: #ffffff;
   border: 1.5px solid #cbd5e1;
   border-radius: 14px;
@@ -1876,6 +2269,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-media {
   order: 2 !important;
+  grid-column: 2 !important;
   background: #ffffff;
   border: 2px solid #0d9488;
   border-radius: 14px;
@@ -1911,10 +2305,10 @@ body[data-font-scale="xlarge"] .screen-notes > * {
   border-left: 5px solid #2563eb;
   border-radius: 10px;
 }
-.screen-lower.layout-b .step b {
+.screen-lower.layout-b .step > b {
   font-size: 25px !important;
 }
-.screen-lower.layout-b .step span {
+.screen-lower.layout-b .step > span {
   font-size: 25px !important;
   line-height: 1.48 !important;
 }
@@ -1952,10 +2346,10 @@ body[data-font-scale="xlarge"] .screen-notes > * {
   border-left: 5px solid #1e3a8a;
   border-radius: 10px;
 }
-.screen-lower.layout-c .step b {
+.screen-lower.layout-c .step > b {
   font-size: 25.5px !important;
 }
-.screen-lower.layout-c .step span {
+.screen-lower.layout-c .step > span {
   font-size: 25.5px !important;
   line-height: 1.46 !important;
 }
@@ -2070,7 +2464,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
   border-left: 5px solid #0d9488;
   border-radius: 10px;
 }
-.screen-lower.layout-d .step span {
+.screen-lower.layout-d .step > span {
   font-size: 24px !important;
   line-height: 1.46 !important;
 }
@@ -2360,7 +2754,903 @@ body.canvas-zoom-mode .step-btn.zoom {
   border-color: #0f766e !important;
 }
 
-</style></head><body><header><strong><span class="num">AMC10</span>数论专题</strong><button data-chapter="1">第一讲 · 质因数与因数</button><button data-chapter="2">第二讲 · 不定方程与进制</button><button data-chapter="3">第三讲 · 整除与同余</button><button id="toc">课程目录</button></header><main id="viewport"><div id="stage"><div id="content"></div><canvas id="penLayer" width="1600" height="900" aria-label="课堂批注画布"></canvas></div></main><div class="progress"><i id="progress"></i></div><footer><button id="prev">← 上一页</button><span id="pageCount"></span><button id="next">下一页 →</button><button id="fontScaleBtn" class="font-scale-btn" type="button" title="切换教室大屏字号档位">🔍 字号：大屏标准</button><span id="slideTitle"></span><span class="keyhint">← → 翻页 · F 全屏 · M 目录</span><button id="pen">批注</button><button id="clearPen">清除批注</button><button id="effects">翻页特效</button><button id="remote">翻页笔</button><button id="fullscreen">全屏</button></footer><section id="inkToolbar" aria-label="课堂批注工具" hidden><div class="ink-group"><button data-ink-tool="pen" title="随速度或触控笔压力变化">钢笔</button><button data-ink-tool="marker">签字笔</button><button data-ink-tool="highlight">荧光笔</button><button data-ink-tool="eraser">橡皮擦</button></div><span class="ink-divider"></span><div class="ink-group ink-palette"><button type="button" class="ink-swatch" data-ink-color="#d94040" style="--swatch:#d94040" aria-label="红色" title="红色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#384d8f" style="--swatch:#384d8f" aria-label="靛蓝" title="靛蓝" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#118575" style="--swatch:#118575" aria-label="绿色" title="绿色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#252b37" style="--swatch:#252b37" aria-label="黑色" title="黑色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#e29a19" style="--swatch:#e29a19" aria-label="橙色" title="橙色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#9652ae" style="--swatch:#9652ae" aria-label="紫色" title="紫色" aria-pressed="false"></button><input type="color" id="inkCustomColor" value="#d94040" aria-label="自选笔迹颜色" title="自选颜色"></div><span class="ink-divider"></span><label>粗细<input id="inkSize" type="range" min="2" max="12" step="1" value="5" aria-label="笔迹粗细"><output id="inkSizeValue">5</output></label><div class="ink-group"><button id="inkUndo" title="撤销 Ctrl+Z">撤销</button><button id="inkRedo" title="重做 Ctrl+Shift+Z">重做</button><button id="inkClear">清空本页</button><button id="inkClose">完成</button></div><div id="inkMode" aria-live="polite"></div></section><dialog id="transitionDialog" aria-label="翻页特效设置"><button id="transitionClose">关闭 ×</button><h3>翻页特效</h3><p>选择课堂的翻页方式。主题联动会在进入新教学环节时，用光束揭开下一页。</p><div id="transitionChoices"></div><div class="transition-options"><label>动画节奏<select id="transitionSpeed" aria-label="动画节奏"><option value="420">利落 · 0.42 秒</option><option value="650">标准 · 0.65 秒</option><option value="900">舒展 · 0.9 秒</option></select></label><button id="transitionPreview">预览当前效果</button></div><p id="transitionMotionNote" hidden>系统已设置减少动态效果，课件会直接翻页。</p></dialog><dialog id="remoteDialog" aria-label="翻页笔按键设置"><button id="remoteClose">关闭 ×</button><h3>翻页笔联动</h3><p>连接翻页笔的接收器或蓝牙，让浏览器中的课件保持当前活动窗口。常见的上一页、下一页键可直接使用。</p><div id="remoteRows"></div><p id="remoteStatus" role="status"></p><button id="remoteReset">恢复默认按键</button><p class="remote-note">清空只影响当前页批注，可以撤销。也可用键盘 C 清空、F 或 F5 切换全屏。<br>绑定需要按键向浏览器发送键盘信号；仅控制硬件的激光开关不能绑定。</p></dialog><dialog id="tocDialog"><button id="closeToc">关闭 ×</button><h3>课程目录</h3><p style="font-size:15px;margin-bottom:20px">按学案问题顺序编排 · 点击可直接跳转</p><div id="tocList"></div></dialog><dialog id="imageDialog" aria-label="图片放大查看"><button id="closeImage">关闭 ×</button><img id="largeImage" alt="放大图片"></dialog><div id="toast" role="status"></div><script>
+/* ================= SVG 配图内字体与公式规范（严禁无衬线体与纯文本分式） ================= */
+.screen-media svg text,
+.screen-lab svg text,
+.visual svg text {
+  font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
+}
+.visual foreignObject svg,
+.screen-lab foreignObject svg {
+  width: auto !important;
+  height: auto !important;
+}
+.svg-fo-card {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background: rgba(248, 250, 252, 0.95);
+  border: 1.5px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.32;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+.svg-fo-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #0f172a;
+  text-shadow:
+    -1.5px -1.5px 0 #ffffff,
+     1.5px -1.5px 0 #ffffff,
+    -1.5px  1.5px 0 #ffffff,
+     1.5px  1.5px 0 #ffffff,
+     0px   -2px   0 #ffffff,
+     0px    2px   0 #ffffff,
+    -2px    0px   0 #ffffff,
+     2px    0px   0 #ffffff;
+}
+.svg-fo-card i.m,
+.svg-fo-label i.m {
+  font-family: "Times New Roman", Times, serif !important;
+  font-style: italic !important;
+}
+.svg-fo-card .num,
+.svg-fo-label .num {
+  font-family: "Times New Roman", Times, serif !important;
+  font-style: normal !important;
+}
+.svg-fo-card sub,
+.svg-fo-label sub {
+  font-size: 0.76em !important;
+  vertical-align: -0.22em !important;
+  line-height: 0 !important;
+}
+.svg-fo-card sup,
+.svg-fo-label sup {
+  font-size: 0.74em !important;
+  vertical-align: 0.36em !important;
+  line-height: 0 !important;
+}
+.svg-fo-card .fraction,
+.svg-fo-label .fraction {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  margin: 0 2px !important;
+  line-height: 1.05 !important;
+  font-size: 0.9em !important;
+}
+.svg-fo-card .fraction > span:first-child,
+.svg-fo-label .fraction > span:first-child {
+  border-bottom: 1.5px solid currentColor !important;
+  padding: 0 3px 1px !important;
+  width: 100%;
+  text-align: center;
+}
+.svg-fo-card .fraction > span:last-child,
+.svg-fo-label .fraction > span:last-child {
+  padding: 1px 3px 0 !important;
+  width: 100%;
+  text-align: center;
+}
+
+/* 题干与步骤区标准教材数据表格样式（杜绝全局 th 深蓝底白字与左对齐污染） */
+.screen-stem table,
+.screen-notes table,
+table.stem-data-table {
+  width: 86% !important;
+  max-width: 960px !important;
+  margin: 6px auto 8px !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  font-size: 20px !important;
+  line-height: 1.35 !important;
+  background: #ffffff !important;
+  border: 1.5px solid #94a3b8 !important;
+}
+.screen-stem table th,
+.screen-stem table td,
+.screen-notes table th,
+.screen-notes table td,
+table.stem-data-table th,
+table.stem-data-table td {
+  border: 1.5px solid #cbd5e1 !important;
+  padding: 5px 10px !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  font-size: 20px !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+.screen-stem table th,
+.screen-notes table th,
+table.stem-data-table th,
+.screen-stem table tr > td:first-child:has(i.m),
+table.stem-data-table tr > th:first-child {
+  background: #eef2ff !important;
+  color: #1e3a8a !important;
+  font-weight: 700 !important;
+  width: 110px !important;
+}
+
+</style></head><body><header><strong>2.2.2 反比例函数的图象（2）</strong><button id="toc">课程目录</button></header><main id="viewport"><div id="stage"><div id="content"></div><canvas id="penLayer" width="1600" height="900" aria-label="课堂批注画布"></canvas></div></main><div class="progress"><i id="progress"></i></div><footer><button id="prev">← 上一页</button><span id="pageCount"></span><button id="next">下一页 →</button><button id="fontScaleBtn" class="font-scale-btn" type="button" title="切换教室大屏字号档位">🔍 字号：大屏标准</button><span id="slideTitle"></span><span class="keyhint">← → 翻页 · F 全屏 · M 目录</span><button id="pen">批注</button><button id="clearPen">清除批注</button><button id="effects">翻页特效</button><button id="remote">翻页笔</button><button id="fullscreen">全屏</button></footer><section id="inkToolbar" aria-label="课堂批注工具" hidden><div class="ink-group"><button data-ink-tool="pen" title="随速度或触控笔压力变化">钢笔</button><button data-ink-tool="marker">签字笔</button><button data-ink-tool="highlight">荧光笔</button><button data-ink-tool="eraser">橡皮擦</button></div><span class="ink-divider"></span><div class="ink-group ink-palette"><button type="button" class="ink-swatch" data-ink-color="#d94040" style="--swatch:#d94040" aria-label="红色" title="红色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#384d8f" style="--swatch:#384d8f" aria-label="靛蓝" title="靛蓝" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#118575" style="--swatch:#118575" aria-label="绿色" title="绿色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#252b37" style="--swatch:#252b37" aria-label="黑色" title="黑色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#e29a19" style="--swatch:#e29a19" aria-label="橙色" title="橙色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#9652ae" style="--swatch:#9652ae" aria-label="紫色" title="紫色" aria-pressed="false"></button><input type="color" id="inkCustomColor" value="#d94040" aria-label="自选笔迹颜色" title="自选颜色"></div><span class="ink-divider"></span><label>粗细<input id="inkSize" type="range" min="2" max="12" step="1" value="5" aria-label="笔迹粗细"><output id="inkSizeValue">5</output></label><div class="ink-group"><button id="inkUndo" title="撤销 Ctrl+Z">撤销</button><button id="inkRedo" title="重做 Ctrl+Shift+Z">重做</button><button id="inkClear">清空本页</button><button id="inkClose">完成</button></div><div id="inkMode" aria-live="polite"></div></section><dialog id="transitionDialog" aria-label="翻页特效设置"><button id="transitionClose">关闭 ×</button><h3>翻页特效</h3><p>选择课堂的翻页方式。主题联动会在进入新教学环节时，用光束揭开下一页。</p><div id="transitionChoices"></div><div class="transition-options"><label>动画节奏<select id="transitionSpeed" aria-label="动画节奏"><option value="420">利落 · 0.42 秒</option><option value="650">标准 · 0.65 秒</option><option value="900">舒展 · 0.9 秒</option></select></label><button id="transitionPreview">预览当前效果</button></div><p id="transitionMotionNote" hidden>系统已设置减少动态效果，课件会直接翻页。</p></dialog><dialog id="remoteDialog" aria-label="翻页笔按键设置"><button id="remoteClose">关闭 ×</button><h3>翻页笔联动</h3><p>连接翻页笔的接收器或蓝牙，让浏览器中的课件保持当前活动窗口。常见的上一页、下一页键可直接使用。</p><div id="remoteRows"></div><p id="remoteStatus" role="status"></p><button id="remoteReset">恢复默认按键</button><p class="remote-note">清空只影响当前页批注，可以撤销。也可用键盘 C 清空、F 或 F5 切换全屏。<br>绑定需要按键向浏览器发送键盘信号；仅控制硬件的激光开关不能绑定。</p></dialog><dialog id="tocDialog"><button id="closeToc">关闭 ×</button><h3>课程目录</h3><p style="font-size:15px;margin-bottom:20px">按学案问题顺序编排 · 点击可直接跳转</p><div id="tocList"></div></dialog><dialog id="imageDialog" aria-label="图片放大查看"><button id="closeImage">关闭 ×</button><img id="largeImage" alt="放大图片"></dialog><div id="toast" role="status"></div><script>
+// ================= 全局基础工具与 SVG 数学公式正斜体规范引擎（前置挂载，供所有分块脚本直接调用） =================
+window.isManualOverride = function(st, key) {
+  return Boolean(st && st.manualOverrides && st.manualOverrides[key]);
+};
+window.setManualOverride = function(st, key) {
+  if (!st) return;
+  if (!st.manualOverrides) st.manualOverrides = {};
+  st.manualOverrides[key] = true;
+};
+window.clearManualOverrides = function(st) {
+  if (!st) return;
+  st.manualBlocks = {};
+  st.manualCells = {};
+  st.manualNotes = {};
+  st.manualProbNodes = {};
+  st.manualOverrides = {};
+};
+window.svgAutoFormatText = function(rawText, baseSize) {
+  if (rawText === null || rawText === undefined) return '';
+  let str = String(rawText);
+  if (str.includes('<tspan')) return str;
+  const fs = Number(baseSize || 14);
+  const subFs = Math.max(9.5, Math.round(fs * 0.75 * 10) / 10);
+  const subDy = Math.round(fs * 0.26 * 10) / 10;
+  const supDy = Math.round(fs * 0.36 * 10) / 10;
+
+  str = str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  str = str.replace(/([\u4e00-\u9fff])\s+([A-Za-z0-9|△▱∠⊥∥∽=+\-(])/g, '$1$2');
+  str = str.replace(/([A-Za-z0-9|△▱∠⊥∥∽)])\s+([\u4e00-\u9fff])/g, '$1$2');
+  str = str.replace(/(\d)\s+(cm|mm|km|kg|mg|kPa|Pa|min|s|m|h|g|t|N|A|V|W|Ω|°C)(?![A-Za-z])/g, '$1$2');
+
+  function escSvg(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  let pendingDy = 0;
+  function consumeDyAttr(extraDy = 0, forceFs = null) {
+    const totalDy = Math.round((pendingDy + extraDy) * 10) / 10;
+    const hadPending = Math.abs(pendingDy) > 0.01;
+    pendingDy = 0;
+    let attr = '';
+    if (Math.abs(totalDy) > 0.01) attr += ` dy="${totalDy}"`;
+    if (forceFs !== null) attr += ` font-size="${forceFs}"`;
+    else if (hadPending) attr += ` font-size="${fs}"`;
+    return attr;
+  }
+
+  function formatFlatTokens(seg, isSubOrSup = false) {
+    if (!seg) return '';
+    const tokenRe = /(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
+    let out = '';
+    let m;
+    const baseTokenFs = isSubOrSup ? subFs : fs;
+    while ((m = tokenRe.exec(seg)) !== null) {
+      const tk = m[0];
+      const idx = m.index;
+      const prevChar = idx > 0 ? seg.slice(0, idx).replace(/\s+$/, '').slice(-1) : '';
+      const isUnitAfterSlashOrDigit = /^[mshgtNAVWJL]$/.test(tk) && (prevChar === '/' || /[0-9]/.test(prevChar));
+      const safeTk = escSvg(tk);
+      const dyAttr = isSubOrSup ? '' : consumeDyAttr(0, null);
+      if (tk === '△') {
+        const triFs = Math.round(baseTokenFs * 0.80 * 10) / 10;
+        out += `<tspan${dyAttr} font-family="'Songti SC', 'SimSun', serif" font-style="normal" font-size="${triFs}">${safeTk}</tspan>`;
+      } else if (/^(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
+        out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${baseTokenFs}">${safeTk}</tspan>`;
+      } else if (/^[A-Za-z]+$/.test(tk)) {
+        out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="italic" font-size="${baseTokenFs}">${safeTk}</tspan>`;
+      } else if (/^[\u4e00-\u9fff，。：；？！、（）“”]+$/.test(tk)) {
+        out += `<tspan${dyAttr} font-family="'Songti SC', 'SimSun', 'STSong', serif" font-style="normal" font-size="${baseTokenFs}">${safeTk}</tspan>`;
+      } else {
+        out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${baseTokenFs}">${safeTk}</tspan>`;
+      }
+    }
+    return out;
+  }
+
+  const subMap = { '₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9','ₙ':'n' };
+  const supMap = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9' };
+  const masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)|√\(([^)]+)\)|√([0-9A-Za-z]+)/g;
+
+  let result = '';
+  let lastIdx = 0;
+  let match;
+  while ((match = masterRe.exec(str)) !== null) {
+    if (match.index > lastIdx) {
+      result += formatFlatTokens(str.slice(lastIdx, match.index), false);
+    }
+    if (match[1] !== undefined) {
+      const prefixSub = match[1];
+      const lettersSub = match[2] || '';
+      const sAttr = consumeDyAttr(0, null);
+      result += `<tspan${sAttr} font-family="'Times New Roman', Times, serif" font-style="italic">S</tspan>`;
+      result += `<tspan dy="${subDy}" font-size="${subFs}">` +
+        formatFlatTokens(prefixSub + lettersSub, true) +
+        `</tspan>`;
+      pendingDy = -subDy;
+    } else if (match[3] !== undefined) {
+      const subStr = match[3].split('').map(c => subMap[c] || c).join('');
+      const subAttr = consumeDyAttr(subDy, subFs);
+      result += `<tspan${subAttr}>` +
+        formatFlatTokens(subStr, true) +
+        `</tspan>`;
+      pendingDy = -subDy;
+    } else if (match[4] !== undefined) {
+      const supStr = match[4].split('').map(c => supMap[c] || c).join('');
+      const supAttr = consumeDyAttr(-supDy, subFs);
+      result += `<tspan${supAttr}>` +
+        formatFlatTokens(supStr, true) +
+        `</tspan>`;
+      pendingDy = supDy;
+    } else if (match[5] !== undefined || match[6] !== undefined) {
+      const radContent = match[5] !== undefined ? match[5] : match[6];
+      const rAttr = consumeDyAttr(0, null);
+      result += `<tspan${rAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}">√</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}" text-decoration="overline">` +
+        formatFlatTokens(radContent, false) +
+        `</tspan>`;
+    }
+    lastIdx = masterRe.lastIndex;
+  }
+  if (lastIdx < str.length) {
+    result += formatFlatTokens(str.slice(lastIdx), false);
+  }
+  return result;
+};
+window.svgFoCard = function(x, y, w, h, innerHtml, extraStyle = '') {
+  return `<foreignObject x="${x}" y="${y}" width="${w}" height="${h}" style="overflow:visible;">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-fo-card" style="${extraStyle}">${innerHtml}</div>
+  </foreignObject>`;
+};
+window.svgFoLabel = function(x, y, w, h, innerHtml, extraStyle = '') {
+  return `<foreignObject x="${x}" y="${y}" width="${w}" height="${h}" style="overflow:visible;">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-fo-label" style="width:100%;height:100%;${extraStyle}">${innerHtml}</div>
+  </foreignObject>`;
+};
+
+// ================= 章节统一主题徽章插画与标准封面渲染引擎（一章一图，零重复工作量） =================
+window.getChapterCoverEmblem = function(themeKey) {
+  const ox = 210, oy = 210, sc = 44;
+  function hypPts(k, x0, x1) {
+    const pts = [];
+    for (let i = 0; i <= 50; i++) {
+      const x = x0 + (x1 - x0) * (i / 50);
+      const y = k / x;
+      pts.push(`${(ox + x * sc).toFixed(1)},${(oy - y * sc).toFixed(1)}`);
+    }
+    return pts.join(' ');
+  }
+  const qx = ox + 1.5 * sc, qy = oy - (1.8 / 1.5) * sc;
+  return `<svg viewBox="0 0 420 420">
+    <circle cx="210" cy="210" r="192" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
+    <circle cx="210" cy="210" r="142" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="1" stroke-dasharray="5,5"/>
+    <circle cx="210" cy="210" r="88" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="1" stroke-dasharray="4,4"/>
+    <!-- 对称轴 y=x 与 y=-x -->
+    <line x1="65" y1="355" x2="355" y2="65" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" stroke-dasharray="6,5"/>
+    <line x1="65" y1="65" x2="355" y2="355" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" stroke-dasharray="6,5"/>
+    <!-- 基准矩形 PAOB 与直角三角形 -->
+    <rect x="${ox}" y="${qy.toFixed(1)}" width="${(qx - ox).toFixed(1)}" height="${(oy - qy).toFixed(1)}" fill="rgba(245,184,65,0.22)" stroke="#f5b841" stroke-width="1.8"/>
+    <polygon points="${ox},${oy} ${qx.toFixed(1)},${qy.toFixed(1)} ${qx.toFixed(1)},${oy}" fill="rgba(94,234,212,0.24)" stroke="#5eead4" stroke-width="1.5"/>
+    <!-- 坐标轴 xOy -->
+    <line x1="36" y1="210" x2="384" y2="210" stroke="rgba(255,255,255,0.82)" stroke-width="2"/>
+    <polygon points="388,210 376,204.5 376,215.5" fill="rgba(255,255,255,0.85)"/>
+    <line x1="210" y1="384" x2="210" y2="36" stroke="rgba(255,255,255,0.82)" stroke-width="2"/>
+    <polygon points="210,32 204.5,44 215.5,44" fill="rgba(255,255,255,0.85)"/>
+    <!-- 二、四象限双曲线 (k < 0) -->
+    <polyline fill="none" stroke="#5eead4" stroke-width="2.4" stroke-opacity="0.72" stroke-dasharray="6,4" points="${hypPts(-1.8, -3.5, -0.52)}"/>
+    <polyline fill="none" stroke="#5eead4" stroke-width="2.4" stroke-opacity="0.72" stroke-dasharray="6,4" points="${hypPts(-1.8, 0.52, 3.5)}"/>
+    <!-- 一、三象限主双曲线 (k > 0) -->
+    <polyline fill="none" stroke="#f5b841" stroke-width="3.4" stroke-linecap="round" points="${hypPts(1.8, 0.50, 3.6)}"/>
+    <polyline fill="none" stroke="#f5b841" stroke-width="3.4" stroke-linecap="round" points="${hypPts(1.8, -3.6, -0.50)}"/>
+    <!-- 特征点 P 與对称点 P' -->
+    <line x1="${(2 * ox - qx).toFixed(1)}" y1="${(2 * oy - qy).toFixed(1)}" x2="${qx.toFixed(1)}" y2="${qy.toFixed(1)}" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-dasharray="4,4"/>
+    <circle cx="${qx.toFixed(1)}" cy="${qy.toFixed(1)}" r="5" fill="#f5b841" stroke="#172a54" stroke-width="2"/>
+    <circle cx="${(2 * ox - qx).toFixed(1)}" cy="${(2 * oy - qy).toFixed(1)}" r="4.5" fill="#f5b841" stroke="#172a54" stroke-width="1.8"/>
+    <!-- 坐标轴与解析式标注 -->
+    <text x="372" y="232" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#ffffff">x</text>
+    <text x="222" y="52" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#ffffff">y</text>
+    <text x="192" y="230" font-family="'Times New Roman', serif" font-style="italic" font-size="18" font-weight="700" fill="rgba(255,255,255,0.9)">O</text>
+    <text x="${(qx + 10).toFixed(1)}" y="${(qy - 8).toFixed(1)}" font-family="'Times New Roman', serif" font-style="italic" font-size="18" font-weight="700" fill="#fde68a">P</text>
+    <g transform="translate(278, 86)">
+      <text x="0" y="0" font-family="'Times New Roman', serif" font-style="italic" font-size="22" font-weight="700" fill="#fde68a">y</text>
+      <text x="16" y="0" font-family="'Times New Roman', serif" font-size="22" font-weight="700" fill="#fde68a">=</text>
+      <text x="44" y="-9" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#fde68a" text-anchor="middle">k</text>
+      <line x1="32" y1="-4" x2="56" y2="-4" stroke="#fde68a" stroke-width="2.2"/>
+      <text x="44" y="15" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#fde68a" text-anchor="middle">x</text>
+    </g>
+  </svg>`;
+};
+
+window.renderStandardCover = function(cfg = {}) {
+  const chapter = cfg.chapter || (window.COURSEWARE_BRAND ? `${window.COURSEWARE_BRAND} · 反比例函数` : '北师大版九年级数学上册 · 反比例函数');
+  const num = cfg.num || '';
+  const title = cfg.title || '';
+  const caption = cfg.caption || '反比例函数 · 图象与几何性质';
+  const goals = Array.isArray(cfg.goals) ? cfg.goals : [];
+  const goalsHTML = goals.map((g, i) => `
+    <div class="std-cover-goal-row">
+      <span class="g-idx">${i + 1}.</span>
+      <span>${g}</span>
+    </div>
+  `).join('');
+
+  return `
+    <div class="std-cover">
+      <div class="std-cover-left">
+        <div class="std-cover-chapter">${chapter}</div>
+        <div class="std-cover-title-wrap">
+          ${num ? `<div class="std-cover-num">${num}</div>` : ''}
+          <h1 class="std-cover-title">${title}</h1>
+        </div>
+        <div class="std-cover-goals">
+          <div class="std-cover-goals-title">【学习目标】</div>
+          ${goalsHTML}
+        </div>
+      </div>
+      <div class="std-cover-right">
+        <div class="std-cover-emblem-frame">
+          ${window.getChapterCoverEmblem(cfg.chapterTheme || 'inverse_proportional')}
+        </div>
+        <div class="std-cover-emblem-caption">${caption}</div>
+      </div>
+    </div>
+  `;
+};
+
+// ================= 数学真实坐标系 SVG 确定性绘图底座（SeewoCoordCanvas，杜绝口算像素与图形画错） =================
+window.createCoordCanvas = function(arg1 = {}, arg2, arg3) {
+  const opts = (typeof arg1 === 'number')
+    ? Object.assign({ width: arg1, height: arg2 }, arg3 || {})
+    : (arg1 || {});
+  const W = opts.width || 560;
+  const H = opts.height || 430;
+  const pad = Object.assign({ left: 46, right: 36, top: 36, bottom: 38 }, opts.padding || {});
+  const xMin = opts.xRange ? opts.xRange[0] : (opts.xMin !== undefined ? opts.xMin : -5);
+  const xMax = opts.xRange ? opts.xRange[1] : (opts.xMax !== undefined ? opts.xMax : 5);
+  const yMin = opts.yRange ? opts.yRange[0] : (opts.yMin !== undefined ? opts.yMin : -4);
+  const yMax = opts.yRange ? opts.yRange[1] : (opts.yMax !== undefined ? opts.yMax : 4);
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+  const rawScaleX = plotW / (xMax - xMin);
+  const rawScaleY = plotH / (yMax - yMin);
+  const spanRatio = (xMax - xMin) / Math.max(1e-6, yMax - yMin);
+  const equalAspect = opts.equalAspect !== undefined
+    ? Boolean(opts.equalAspect)
+    : (!opts.xStep && !opts.yStep && opts.xMin === undefined && spanRatio >= 0.85 && spanRatio <= 1.45 && (xMax - xMin) <= 16);
+  const scaleX = equalAspect ? Math.min(rawScaleX, rawScaleY) : rawScaleX;
+  const scaleY = equalAspect ? Math.min(rawScaleX, rawScaleY) : rawScaleY;
+  const ox = pad.left + (-xMin) * scaleX + (equalAspect ? (plotW - (xMax - xMin) * scaleX) / 2 : 0);
+  const oy = pad.top + yMax * scaleY + (equalAspect ? (plotH - (yMax - yMin) * scaleY) / 2 : 0);
+  const els = [];
+
+  function px(x) { return ox + x * scaleX; }
+  function py(y) { return oy - y * scaleY; }
+  function pt(p) { return Array.isArray(p) ? [px(p[0]), py(p[1])] : [px(p.x), py(p.y)]; }
+
+  const api = {
+    W, H, ox, oy, scaleX, scaleY, px, py, pt,
+    sx: px, sy: py, X: px, Y: py,
+    raw(svgSnippet) { if (svgSnippet) els.push(svgSnippet); return this; },
+    add(svgSnippet) { if (svgSnippet) els.push(svgSnippet); return this; },
+    drawAxes(cfg = {}) {
+      const x0 = px(xMin), x1 = px(xMax), y0 = py(yMin), y1 = py(yMax);
+      const axisColor = cfg.color || '#1e293b';
+      const xStep = cfg.xStep || opts.xStep || 1;
+      const yStep = cfg.yStep || opts.yStep || 1;
+      if (cfg.showGrid) {
+        for (let gx = Math.ceil(xMin / xStep) * xStep; gx <= xMax + 1e-6; gx += xStep) {
+          if (Math.abs(gx) < 1e-6) continue;
+          els.push(`<line x1="${px(gx).toFixed(1)}" y1="${y1.toFixed(1)}" x2="${px(gx).toFixed(1)}" y2="${y0.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`);
+        }
+        for (let gy = Math.ceil(yMin / yStep) * yStep; gy <= yMax + 1e-6; gy += yStep) {
+          if (Math.abs(gy) < 1e-6) continue;
+          els.push(`<line x1="${x0.toFixed(1)}" y1="${py(gy).toFixed(1)}" x2="${x1.toFixed(1)}" y2="${py(gy).toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`);
+        }
+      }
+      if (cfg.showTicks || opts.xStep || opts.yStep) {
+        for (let gx = Math.ceil(xMin / xStep) * xStep; gx <= xMax - xStep * 0.3; gx += xStep) {
+          if (Math.abs(gx) < 1e-6 || gx < 0) continue;
+          els.push(`<line x1="${px(gx).toFixed(1)}" y1="${oy.toFixed(1)}" x2="${px(gx).toFixed(1)}" y2="${(oy - 5).toFixed(1)}" stroke="${axisColor}" stroke-width="1.5"/>`);
+          els.push(`<text x="${px(gx).toFixed(1)}" y="${(oy + 19).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">${Math.round(gx * 100) / 100}</text>`);
+        }
+        for (let gy = Math.ceil(yMin / yStep) * yStep; gy <= yMax - yStep * 0.3; gy += yStep) {
+          if (Math.abs(gy) < 1e-6 || gy < 0) continue;
+          els.push(`<line x1="${ox.toFixed(1)}" y1="${py(gy).toFixed(1)}" x2="${(ox + 5).toFixed(1)}" y2="${py(gy).toFixed(1)}" stroke="${axisColor}" stroke-width="1.5"/>`);
+          els.push(`<text x="${(ox - 7).toFixed(1)}" y="${(py(gy) + 4).toFixed(1)}" text-anchor="end" font-size="13" font-weight="600" fill="#475569">${Math.round(gy * 100) / 100}</text>`);
+        }
+      }
+      els.push(`<line x1="${x0.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${axisColor}" stroke-width="2"/>`);
+      els.push(`<polygon points="${(x1 + 6).toFixed(1)},${oy.toFixed(1)} ${(x1 - 7).toFixed(1)},${(oy - 4.8).toFixed(1)} ${(x1 - 7).toFixed(1)},${(oy + 4.8).toFixed(1)}" fill="${axisColor}"/>`);
+      els.push(`<line x1="${ox.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${ox.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${axisColor}" stroke-width="2"/>`);
+      els.push(`<polygon points="${ox.toFixed(1)},${(y1 - 6).toFixed(1)} ${(ox - 4.8).toFixed(1)},${(y1 + 7).toFixed(1)} ${(ox + 4.8).toFixed(1)},${(y1 + 7).toFixed(1)}" fill="${axisColor}"/>`);
+      els.push(`<text x="${(x1 - 4).toFixed(1)}" y="${(oy + 24).toFixed(1)}" text-anchor="end" font-size="16" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.xLabel || opts.xLabel || 'x', 16)}</text>`);
+      els.push(`<text x="${(ox + 12).toFixed(1)}" y="${(y1 + 14).toFixed(1)}" font-size="16" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.yLabel || opts.yLabel || 'y', 16)}</text>`);
+      if (cfg.showOrigin !== false) {
+        const oxOff = cfg.originOffset ? cfg.originOffset[0] : -16;
+        const oyOff = cfg.originOffset ? cfg.originOffset[1] : 20;
+        els.push(`<text x="${(ox + oxOff).toFixed(1)}" y="${(oy + oyOff).toFixed(1)}" font-size="16" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText('O', 16)}</text>`);
+      }
+      return this;
+    },
+    drawHyperbola(k, cfg = {}) {
+      const color = cfg.color || '#1e293b';
+      const width = cfg.width || 2.5;
+      const dash = cfg.dash ? ` stroke-dasharray="${cfg.dash}"` : '';
+      const branches = cfg.branches || ['pos', 'neg'];
+      const stepCount = 70;
+      branches.forEach(br => {
+        const domMin = br === 'pos' ? Math.max(0.15, cfg.xMin || 0.25) : Math.min(-0.15, cfg.xMin || xMin + 0.2);
+        const domMax = br === 'pos' ? Math.min(xMax - 0.15, cfg.xMax || xMax - 0.2) : Math.min(-0.15, cfg.xMax || -0.25);
+        const pts = [];
+        for (let i = 0; i <= stepCount; i++) {
+          const x = domMin + (domMax - domMin) * (i / stepCount);
+          const y = k / x;
+          if (y < yMin + 0.15 || y > yMax - 0.15) continue;
+          pts.push(`${px(x).toFixed(1)},${py(y).toFixed(1)}`);
+        }
+        if (pts.length > 1) {
+          els.push(`<polyline fill="none" stroke="${color}" stroke-width="${width}"${dash} stroke-linecap="round" points="${pts.join(' ')}"/>`);
+        }
+      });
+      return this;
+    },
+    curve(fn, domMin, domMax, colorOrCfg, widthArg, dashArg) {
+      const cfg = (typeof colorOrCfg === 'object' && colorOrCfg !== null) ? colorOrCfg : { stroke: colorOrCfg, width: widthArg, dash: dashArg };
+      const color = cfg.stroke || cfg.color || '#1e293b';
+      const width = cfg.width || 2.6;
+      const dash = cfg.dash ? ` stroke-dasharray="${cfg.dash}"` : '';
+      const stepCount = 80;
+      const pts = [];
+      for (let i = 0; i <= stepCount; i++) {
+        const x = domMin + (domMax - domMin) * (i / stepCount);
+        const y = fn(x);
+        if (!Number.isFinite(y) || y < yMin - (yMax - yMin) * 0.2 || y > yMax + (yMax - yMin) * 0.2) continue;
+        pts.push(`${px(x).toFixed(1)},${py(y).toFixed(1)}`);
+      }
+      if (pts.length > 1) {
+        els.push(`<polyline fill="none" stroke="${color}" stroke-width="${width}"${dash} stroke-linecap="round" points="${pts.join(' ')}"/>`);
+      }
+      return this;
+    },
+    shadedRegion(fn, x1, x2, fill = 'rgba(37,99,235,0.12)') {
+      const stepCount = 40;
+      const pts = [`${px(x1).toFixed(1)},${py(0).toFixed(1)}`];
+      for (let i = 0; i <= stepCount; i++) {
+        const x = x1 + (x2 - x1) * (i / stepCount);
+        const y = fn(x);
+        if (Number.isFinite(y)) pts.push(`${px(x).toFixed(1)},${py(y).toFixed(1)}`);
+      }
+      pts.push(`${px(x2).toFixed(1)},${py(0).toFixed(1)}`);
+      els.push(`<polygon points="${pts.join(' ')}" fill="${fill}" stroke="none"/>`);
+      return this;
+    },
+    drawPolygon(mathPts, cfg = {}) {
+      const svgPts = mathPts.map(p => {
+        const [sx, sy] = pt(p);
+        return `${sx.toFixed(1)},${sy.toFixed(1)}`;
+      }).join(' ');
+      const fill = cfg.fill || 'rgba(37,99,235,0.16)';
+      const stroke = cfg.stroke || '#2563eb';
+      const width = cfg.width !== undefined ? cfg.width : 2.2;
+      const dash = cfg.dash ? ` stroke-dasharray="${cfg.dash}"` : '';
+      els.push(`<polygon points="${svgPts}" fill="${fill}" stroke="${stroke}" stroke-width="${width}"${dash} stroke-linejoin="round"/>`);
+      return this;
+    },
+    polygon(mathPts, fillOrCfg, strokeArg, widthArg) {
+      const cfg = (typeof fillOrCfg === 'object' && fillOrCfg !== null) ? fillOrCfg : { fill: fillOrCfg, stroke: strokeArg || 'none', width: widthArg !== undefined ? widthArg : (strokeArg ? 2 : 0) };
+      return this.drawPolygon(mathPts, cfg);
+    },
+    drawSegment(p1, p2, cfg = {}) {
+      const [x1, y1] = pt(p1), [x2, y2] = pt(p2);
+      const color = cfg.stroke || cfg.color || '#475569';
+      const width = cfg.width || 1.8;
+      const dash = cfg.dash ? ` stroke-dasharray="${cfg.dash}"` : '';
+      els.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="${width}"${dash} stroke-linecap="round"/>`);
+      return this;
+    },
+    line(x1, y1, x2, y2, colorOrCfg, widthArg, dashArg) {
+      const cfg = (typeof colorOrCfg === 'object' && colorOrCfg !== null) ? colorOrCfg : { color: colorOrCfg, width: widthArg, dash: dashArg };
+      return this.drawSegment([x1, y1], [x2, y2], cfg);
+    },
+    drawRightAngle(vertex, p1, p2, size = 9, color = '#475569') {
+      const [vx, vy] = pt(vertex), [x1, y1] = pt(p1), [x2, y2] = pt(p2);
+      const d1 = Math.hypot(x1 - vx, y1 - vy) || 1;
+      const d2 = Math.hypot(x2 - vx, y2 - vy) || 1;
+      const u1x = (x1 - vx) / d1 * size, u1y = (y1 - vy) / d1 * size;
+      const u2x = (x2 - vx) / d2 * size, u2y = (y2 - vy) / d2 * size;
+      els.push(`<polyline fill="none" stroke="${color}" stroke-width="1.5" points="${(vx + u1x).toFixed(1)},${(vy + u1y).toFixed(1)} ${(vx + u1x + u2x).toFixed(1)},${(vy + u1y + u2y).toFixed(1)} ${(vx + u2x).toFixed(1)},${(vy + u2y).toFixed(1)}"/>`);
+      return this;
+    },
+    drawPoint(mathPt, cfg = {}) {
+      const [sx, sy] = pt(mathPt);
+      const r = cfg.r !== undefined ? cfg.r : 4.5;
+      const color = cfg.color || '#1e293b';
+      if (r > 0) {
+        els.push(`<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${r}" fill="${color}" stroke="#ffffff" stroke-width="1.5"/>`);
+      }
+      if (cfg.label) {
+        const dx = cfg.dx !== undefined ? cfg.dx : 8;
+        const dy = cfg.dy !== undefined ? cfg.dy : -8;
+        const fs = cfg.fontSize || 16;
+        const anchor = cfg.anchor || (dx < -2 ? 'end' : 'start');
+        els.push(`<text x="${(sx + dx).toFixed(1)}" y="${(sy + dy).toFixed(1)}" text-anchor="${anchor}" font-size="${fs}" font-weight="700" fill="${cfg.labelColor || color}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.label, fs)}</text>`);
+      }
+      return this;
+    },
+    point(xOrPt, yOrCfg, labelArg, colorOrCfg, dxArg, dyArg, rArg) {
+      if (Array.isArray(xOrPt)) return this.drawPoint(xOrPt, yOrCfg || {});
+      const cfg = (typeof colorOrCfg === 'object' && colorOrCfg !== null)
+        ? Object.assign({ label: labelArg }, colorOrCfg)
+        : { label: labelArg, color: colorOrCfg, dx: dxArg, dy: dyArg, r: rArg };
+      return this.drawPoint([xOrPt, yOrCfg], cfg);
+    },
+    projPoint(x, y, label, cfg = {}) {
+      const color = cfg.color || '#1e293b';
+      const dashColor = cfg.dashColor || '#64748b';
+      this.drawSegment([x, y], [x, 0], { color: dashColor, width: 1.5, dash: '4,3' });
+      this.drawSegment([x, y], [0, y], { color: dashColor, width: 1.5, dash: '4,3' });
+      if (cfg.showTickX) {
+        els.push(`<text x="${px(x).toFixed(1)}" y="${(oy + 19).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="${color}" stroke="#ffffff" stroke-width="4.5" paint-order="stroke">${Math.round(x * 100) / 100}</text>`);
+      }
+      if (cfg.showTickY) {
+        els.push(`<text x="${(ox - 7).toFixed(1)}" y="${(py(y) + 4).toFixed(1)}" text-anchor="end" font-size="13" font-weight="700" fill="${color}" stroke="#ffffff" stroke-width="4.5" paint-order="stroke">${Math.round(y * 100) / 100}</text>`);
+      }
+      return this.drawPoint([x, y], Object.assign({}, cfg, { label }));
+    },
+    drawText(mathPt, textStr, cfg = {}) {
+      const [sx, sy] = pt(mathPt);
+      const fs = cfg.fontSize || cfg.size || 16;
+      const anchor = cfg.anchor || 'middle';
+      const color = cfg.fill || cfg.color || '#1e293b';
+      els.push(`<text x="${sx.toFixed(1)}" y="${sy.toFixed(1)}" text-anchor="${anchor}" font-size="${fs}" font-weight="${cfg.weight || 700}" fill="${color}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(textStr, fs)}</text>`);
+      return this;
+    },
+    text(x, y, textStr, colorOrCfg, sizeArg, anchorArg, weightArg) {
+      if (typeof colorOrCfg === 'object' && colorOrCfg !== null) {
+        const fs = colorOrCfg.size || colorOrCfg.fontSize || 15;
+        const anchor = colorOrCfg.anchor || 'start';
+        const color = colorOrCfg.fill || colorOrCfg.color || '#1e293b';
+        const weight = colorOrCfg.weight || 700;
+        els.push(`<text x="${Number(x).toFixed(1)}" y="${Number(y).toFixed(1)}" text-anchor="${anchor}" font-size="${fs}" font-weight="${weight}" fill="${color}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(textStr, fs)}</text>`);
+        return this;
+      }
+      return this.drawText([x, y], textStr, { color: colorOrCfg, fontSize: sizeArg, anchor: anchorArg, weight: weightArg });
+    },
+    drawFoCard(x, y, w, h, innerHtml, extraStyle = '') {
+      els.push(window.svgFoCard(x, y, w, h, innerHtml, extraStyle));
+      return this;
+    },
+    toSvg(extraAttr = '') {
+      return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;max-height:100%;display:block;" ${extraAttr}>${els.join('\n')}</svg>`;
+    },
+    done(extraAttr = '') {
+      return this.toSvg(extraAttr);
+    }
+  };
+
+  if (opts.xStep || opts.yStep || opts.autoAxes) {
+    api.drawAxes({ showGrid: opts.showGrid !== false, showTicks: true, xLabel: opts.xLabel, yLabel: opts.yLabel });
+  }
+
+  return api;
+};
+
+// ================= 声明式课件页面构建器（window.defineSlide，强制 1对1 步数/填空/图形同步契约） =================
+window.formatInlineMathHTML = function(rawStr) {
+  if (!rawStr) return '';
+  const s = String(rawStr);
+  if (/<(span|i|sup|sub|b)\b/i.test(s)) return s;
+  let clean = s
+    .replace(/([\u4e00-\u9fff])\s+([A-Za-z0-9△▱∠⊥∥∽≌=+\-√])/g, '$1$2')
+    .replace(/([A-Za-z0-9△▱∠⊥∥∽≌²³)])\s+([\u4e00-\u9fff])/g, '$1$2')
+    .replace(/\s*([=+\-∶:∽≌∥⊥⇒])\s*/g, '$1');
+  function fmtAtom(seg) {
+    return seg.replace(/([0-9]+(?:\.[0-9]+)?)?√\(([^)]+)\)|([0-9]+(?:\.[0-9]+)?)?√([0-9A-Za-z²³+\-]+)|Rt△|△|[A-Za-z]+|[0-9]+(?:\.[0-9]+)?|[²³]|[=+\-±×÷·:∶∠⊥∥∽≌°⇒/]/g, (m, c1, radParen, c2, radBare) => {
+      if (radParen !== undefined || radBare !== undefined) {
+        const coef = c1 || c2 || '';
+        const inner = radParen !== undefined ? radParen : radBare;
+        const coefHtml = coef ? `<span class="num">${coef}</span>` : '';
+        return `<span style="white-space:nowrap;">${coefHtml}<span class="sqrt"><span>${fmtAtom(inner)}</span></span></span>`;
+      }
+      if (m === 'Rt△') return '<span class="num">Rt</span><span class="tri-sym">△</span>';
+      if (m === '△') return '<span class="tri-sym">△</span>';
+      if (m === '²') return '<sup><span class="num">2</span></sup>';
+      if (m === '³') return '<sup><span class="num">3</span></sup>';
+      if (/^[A-Za-z]+$/.test(m)) return `<i class="m">${m}</i>`;
+      return `<span class="num">${m}</span>`;
+    });
+  }
+  return fmtAtom(clean);
+};
+
+window.defineSlide = function(cfg) {
+  window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
+  window.UNIT1_SIMS = window.UNIT1_SIMS || {};
+  if (cfg.cover) {
+    window.UNIT1_THEOREM_SLIDES.push({
+      lesson: cfg.lesson || 1,
+      phase: 0,
+      navTag: cfg.navTag || '课时导览',
+      section: cfg.section || '课时导览',
+      title: cfg.title || window.COURSEWARE_TITLE || '',
+      cover: true,
+      html: cfg.html || window.renderStandardCover(cfg)
+    });
+    return;
+  }
+  const layout = cfg.layout || 'layout-b';
+  const steps = Array.isArray(cfg.steps) ? cfg.steps : [];
+  const maxStep = steps.length;
+  const simName = cfg.sim || (`autoSim_${window.UNIT1_THEOREM_SLIDES.length + 1}`);
+  const stepsHTML = steps.map((st, idx) => {
+    const num = idx + 1;
+    const badge = String(num).padStart(2, '0');
+    let stTitle = '', bodyPart = '';
+    if (Array.isArray(st)) {
+      stTitle = st[0] || '';
+      bodyPart = st[1] || '';
+    } else if (typeof st === 'object' && st !== null) {
+      stTitle = st.title || '';
+      bodyPart = st.html || st.body || st.text || '';
+    } else {
+      bodyPart = String(st || '');
+    }
+    const fmtTitle = window.formatInlineMathHTML(stTitle);
+    const titlePart = fmtTitle ? `<b>步骤<span class="num">${num}</span>（${fmtTitle}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
+    return `<div class="step step-locked"><b>${badge}</b><span>${titlePart}${bodyPart}</span></div>`;
+  }).join('\n          ');
+
+  const mediaBlock = layout === 'layout-a' ? '' : `
+        <div class="screen-media">
+          <div class="screen-lab">
+            <div id="scene" class="visual" style="padding:8px;align-items:stretch;justify-content:center;"></div>
+          </div>
+        </div>`;
+
+  const slideHTML = `
+    <div class="screen-page lab-visible">
+      <div class="screen-stem">
+        ${cfg.stem || ''}
+      </div>
+      <div class="screen-lower ${layout}">
+        <div class="screen-notes">
+          <div id="controls" class="controls"></div>
+          ${stepsHTML}
+        </div>${mediaBlock}
+      </div>
+    </div>
+  `;
+
+  window.UNIT1_THEOREM_SLIDES.push({
+    lesson: cfg.lesson || 1,
+    phase: typeof cfg.phase === 'number' ? cfg.phase : 1,
+    navTag: cfg.navTag || '',
+    section: cfg.section || '',
+    title: cfg.title || '',
+    cover: false,
+    sim: simName,
+    html: slideHTML
+  });
+
+  window.UNIT1_SIMS[simName] = function(state, isInit) {
+    if (isInit) {
+      state.step = 0;
+      clearManualOverrides(state);
+      const defaultState = cfg.state || cfg.initState;
+      if (defaultState && typeof defaultState === 'object') {
+        Object.keys(defaultState).forEach(k => { state[k] = defaultState[k]; });
+      }
+      if (typeof cfg.onInit === 'function') cfg.onInit(state);
+    }
+    const root = activeRoot();
+    if (root && !root.slider) {
+      root.slider = window.slider;
+      root.modeButtons = window.modeButtons;
+      root.stepBar = window.stepBar;
+    }
+    const step = Number(state.step || 0);
+    const controls = root.querySelector('#controls');
+    if (controls) {
+      const extraCtrl = typeof cfg.controls === 'function' ? (cfg.controls(step, state, root) || '') : '';
+      controls.innerHTML = stepBar(step, maxStep) + extraCtrl;
+    }
+    const scene = root.querySelector('#scene');
+    if (scene && typeof cfg.renderScene === 'function') {
+      scene.innerHTML = cfg.renderScene(step, state, root) || '';
+    }
+  };
+};
+
+// ================= 一题多图（图(1)~图(k)）总览与单图自动放大标准容器（杜绝多图与步骤脱节） =================
+window.renderMultiPanelScene = function(step, panels, opts = {}) {
+  const W = opts.width || 560;
+  const H = opts.height || 430;
+  const list = Array.isArray(panels) ? panels : [];
+  if (!list.length) return `<svg viewBox="0 0 ${W} ${H}"></svg>`;
+
+  if (!step || step <= 0) {
+    const n = list.length;
+    const cols = n <= 2 ? 2 : (n === 3 ? 3 : (n === 4 ? 2 : 3));
+    const rows = Math.ceil(n / cols);
+    const padX = 12, padY = 10, gapX = 10, gapY = 10;
+    const cellW = Math.floor((W - padX * 2 - gapX * (cols - 1)) / cols);
+    const cellH = Math.floor((H - padY * 2 - gapY * (rows - 1)) / rows);
+    const cells = list.map((p, idx) => {
+      const r = Math.floor(idx / cols);
+      const itemsInRow = (r === rows - 1 && n % cols !== 0) ? (n % cols) : cols;
+      const rowW = itemsInRow * cellW + (itemsInRow - 1) * gapX;
+      const startX = Math.floor((W - rowW) / 2);
+      const c = idx % cols;
+      const x0 = startX + c * (cellW + gapX);
+      const y0 = padY + r * (cellH + gapY);
+      const gotoStep = p.targetStep || (Array.isArray(p.steps) ? p.steps[0] : (idx + 1));
+      const inner = typeof p.render === 'function' ? p.render({ x0, y0, w: cellW, h: cellH, zoomed: false, step: 0 }) : '';
+      return `<g data-step-goto="${gotoStep}" style="cursor:pointer;">
+        <rect x="${x0}" y="${y0}" width="${cellW}" height="${cellH}" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        ${p.title ? `<text x="${(x0 + cellW / 2).toFixed(1)}" y="${(y0 + 20).toFixed(1)}" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">${window.svgAutoFormatText(p.title, 13.5)}</text>` : ''}
+        ${inner}
+      </g>`;
+    }).join('\n');
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;max-height:100%;display:block;">${cells}</svg>`;
+  }
+
+  let activePanel = list.find(p => Array.isArray(p.steps) ? p.steps.includes(step) : p.targetStep === step);
+  if (!activePanel) activePanel = list[Math.min(list.length - 1, Math.max(0, step - 1))];
+  const zoomedInner = typeof activePanel.render === 'function'
+    ? activePanel.render({ x0: 14, y0: 12, w: W - 28, h: H - 24, zoomed: true, step })
+    : '';
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;max-height:100%;display:block;">
+    <rect x="14" y="12" width="${W - 28}" height="${H - 24}" rx="12" fill="#ffffff" stroke="#93c5fd" stroke-width="1.8"/>
+    ${activePanel.title ? `<text x="${(W / 2).toFixed(1)}" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#1e3a8a">${window.svgAutoFormatText(activePanel.title, 16)}</text>` : ''}
+    ${zoomedInner}
+    <g data-step-goto="0" style="cursor:pointer;">
+      <rect x="${W - 148}" y="20" width="122" height="26" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+      <text x="${W - 87}" y="38" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d4ed8">${window.svgAutoFormatText('⊞ 返回多图总览', 12.5)}</text>
+    </g>
+  </svg>`;
+};
+
+// ================= 波利亚级（Polya-Grade）SVG 几何图示清晰标注引擎（100% 纯原生 SVG 图元，严禁嵌套子 <svg>） =================
+// 1. 顶部色彩图例条（纯 SVG 绘制，彻底杜绝 .visual svg 样式污染导致图标放大）
+window.svgLegendBar = function(items, opts = {}) {
+  const list = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!list.length) return '';
+  const x = opts.x !== undefined ? opts.x : 12;
+  const y = opts.y !== undefined ? opts.y : 6;
+  const w = opts.width || 516;
+  const h = opts.height || 28;
+  const cy = y + h / 2;
+  const fs = opts.fontSize || 12.5;
+
+  function estTextW(str) {
+    let tw = 0;
+    const s = String(str || '');
+    for (let i = 0; i < s.length; i++) {
+      tw += fs * (s.charCodeAt(i) > 127 ? 0.92 : 0.54);
+    }
+    return tw;
+  }
+
+  const measured = list.map(it => {
+    const type = it.type || 'angle';
+    const iconW = type === 'dash' ? 18 : (type === 'line' ? 16 : 15);
+    const rawTxt = String(it.text || it.html || '').replace(/<[^>]+>/g, '');
+    const tw = estTextW(rawTxt);
+    return { it, type, iconW, rawTxt, tw, totalW: iconW + 4 + tw };
+  });
+
+  const gap = 16;
+  const sumW = measured.reduce((acc, m) => acc + m.totalW, 0) + gap * (measured.length - 1);
+  let curX = x + Math.max(8, (w - sumW) / 2);
+
+  let out = `<g class="svg-legend-bar">`;
+  out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="rgba(248,250,252,0.96)" stroke="#cbd5e1" stroke-width="1.2"/>`;
+
+  measured.forEach((m, idx) => {
+    const color = m.it.color || '#2563eb';
+    if (m.type === 'angle') {
+      out += `<path d="M ${(curX + 13).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 1).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 10).toFixed(1)} ${(cy - 5).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+      out += `<path d="M ${(curX + 8).toFixed(1)} ${(cy + 5).toFixed(1)} A 6.5 6.5 0 0 0 ${(curX + 6.3).toFixed(1)} ${(cy - 0.8).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.5"/>`;
+    } else if (m.type === 'dash') {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 18).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/>`;
+    } else if (m.type === 'tri') {
+      out += `<polygon points="${(curX + 7).toFixed(1)},${(cy - 5.5).toFixed(1)} ${(curX + 1).toFixed(1)},${(cy + 5).toFixed(1)} ${(curX + 13).toFixed(1)},${(cy + 5).toFixed(1)}" fill="${m.it.fill || 'rgba(234,88,12,0.22)'}" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>`;
+    } else {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 16).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-linecap="round"/>`;
+    }
+    const tx = curX + m.iconW + 4;
+    const ty = cy + 4.5;
+    out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    curX += m.totalW + gap;
+    if (idx < measured.length - 1) {
+      const sepX = curX - gap / 2;
+      out += `<line x1="${sepX.toFixed(1)}" y1="${(y + 6).toFixed(1)}" x2="${sepX.toFixed(1)}" y2="${(y + h - 6).toFixed(1)}" stroke="#cbd5e1" stroke-width="1.2"/>`;
+    }
+  });
+
+  out += `</g>`;
+  return out;
+};
+
+// 2. 数字角直观标注（支持同顶点阶梯半径与纯数字 1, 2, 3, 4, 5 标注，配角平分线引线防挤压）
+window.svgNumberedAngle = function(v, pStart, pEnd, numStr, opts = {}) {
+  const radius = opts.radius || 28;
+  const color = opts.color || '#2563eb';
+  const fill = opts.fill || 'none';
+  const labelDist = opts.labelDist || (radius + 13);
+  const dx1 = pStart[0] - v[0], dy1 = pStart[1] - v[1];
+  const dx2 = pEnd[0] - v[0], dy2 = pEnd[1] - v[1];
+  let a1 = Math.atan2(dy1, dx1);
+  let a2 = Math.atan2(dy2, dx2);
+  let diff = a2 - a1;
+  while (diff <= -Math.PI) diff += Math.PI * 2;
+  while (diff > Math.PI) diff -= Math.PI * 2;
+  const sweep = diff > 0 ? 1 : 0;
+  const sx = v[0] + Math.cos(a1) * radius;
+  const sy = v[1] + Math.sin(a1) * radius;
+  const ex = v[0] + Math.cos(a2) * radius;
+  const ey = v[1] + Math.sin(a2) * radius;
+  let out = '';
+  if (fill && fill !== 'none') {
+    out += `<path d="M ${v[0].toFixed(1)} ${v[1].toFixed(1)} L ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)} Z" fill="${fill}" stroke="none"/>`;
+  }
+  out += `<path d="M ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)}" fill="none" stroke="${color}" stroke-width="2.1"/>`;
+  if (numStr !== undefined && numStr !== null && String(numStr) !== '') {
+    const midA = a1 + diff / 2 + (opts.angleShift || 0);
+    const lx = v[0] + Math.cos(midA) * labelDist + (opts.dx || 0);
+    const ly = v[1] + Math.sin(midA) * labelDist + 4.5 + (opts.dy || 0);
+    if (opts.leader) {
+      const mx = v[0] + Math.cos(midA) * (radius * 0.75);
+      const my = v[1] + Math.sin(midA) * (radius * 0.75);
+      const tx = v[0] + Math.cos(midA) * (labelDist - 7) + (opts.dx || 0);
+      const ty = v[1] + Math.sin(midA) * (labelDist - 7) + (opts.dy || 0);
+      out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="${color}" stroke-width="1.3"/>`;
+    }
+    const inner = window.svgAutoFormatText(String(numStr), opts.fontSize || 14);
+    out += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${opts.fontSize || 14}" fill="${color}" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${inner}</text>`;
+  }
+  return out;
+};
+
+// 3. 求解目标/关键结论引线气泡框（如“求 BC = ?”或“BC = 4√3”）
+window.svgCalloutTag = function(anchorPt, boxRect, innerHtml, opts = {}) {
+  const color = opts.color || '#15803d';
+  const bg = opts.bg || '#f0fdf4';
+  const [ax, ay] = anchorPt;
+  const [bx, by, bw, bh] = boxRect;
+  const cy = by + bh / 2;
+  const startX = ax < bx ? bx : (ax > bx + bw ? bx + bw : bx + bw / 2);
+  return `<g>
+    <line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${startX.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="1.8"/>
+    <circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="3.2" fill="${color}"/>
+    <foreignObject x="${bx}" y="${by}" width="${bw}" height="${bh}" style="overflow:visible;">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;box-sizing:border-box;background:${bg};border:1.8px solid ${color};border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-family:'Times New Roman','Songti SC','SimSun',serif;font-size:14.5px;font-weight:700;color:${color};white-space:nowrap;box-shadow:0 2px 5px rgba(15,23,42,0.06);">${innerHtml}</div>
+    </foreignObject>
+  </g>`;
+};
+
+
+
+
+
 
 
 // ==================== Chunk 1: 封面、情境引入与新知探究 (Slides 1 - 6) ====================
@@ -2370,6 +3660,14 @@ window.SLIDES_CHUNK1 = window.UNIT1_THEOREM_SLIDES;
 window.SIMS_CHUNK1 = window.UNIT1_SIMS;
 window.SLIDES_CHUNK = window.UNIT1_THEOREM_SLIDES;
 window.SIMS_CHUNK = window.UNIT1_SIMS;
+window.COURSEWARE_BRAND = '反比例函数';
+window.COURSEWARE_TITLE = '2.2.2 反比例函数图象(2)';
+window.COURSEWARE_PHASES = [
+  ['① 情境引入', '图象特征回顾激活'],
+  ['② 新知探究', '增减性与k的几何意义'],
+  ['③ 新知应用', '第1—6题典例精析'],
+  ['④ 分层训练', '训练1—2与课堂小结']
+];
 
 // 注入补充样式：确保 <em> 与 .frac (.num / .den) 及笔记卡片严格符合数学排版规范
 if (typeof document !== 'undefined' && document.head && !document.getElementById('chunk1-math-style')) {
@@ -2451,7 +3749,7 @@ if (typeof document !== 'undefined' && document.head && !document.getElementById
 function svgStackedFrac(x, y, numText, denText, color = '#1d4ed8', signText = '', lhsText = 'y') {
   const hasSign = Boolean(signText);
   const eqText = lhsText ? `<tspan font-style="italic">${lhsText}</tspan> = ${signText}` : signText;
-  const fracCx = lhsText ? (hasSign ? 50 : 35) : (hasSign ? 22 : 10);
+  const fracCx = lhsText ? (hasSign ? 56 : 38) : (hasSign ? 26 : 12);
   const lineHalf = Math.max(9, Math.max(String(numText).length, String(denText).length) * 5.5);
   const denIsVar = /^[a-zA-Z]$/.test(String(denText).trim());
   const numIsVar = /^[a-zA-Z]$/.test(String(numText).trim());
@@ -3095,7 +4393,7 @@ Object.assign(window.UNIT1_SIMS, {
     const showCompare = (step >= 3 || mode === 'm2');
 
     scene.innerHTML = `
-      <svg viewBox="0 0 520 430" style="width:100%;height:100%;max-height:100%;display:block;" aria-label="探究k<0时的三个反比例函数图象与性质归纳">
+      <svg viewBox="0 0 520 430" style="width:100%;height:100%;max-height:100%;display:block;" aria-label="探究k&lt;0时的三个反比例函数图象与性质归纳">
         <defs>
           <marker id="arrAxisKNeg" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#1e293b"/>
@@ -3131,7 +4429,7 @@ Object.assign(window.UNIT1_SIMS, {
         <line x1="52" y1="${oy}" x2="472" y2="${oy}" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arrAxisKNeg)"/>
         <line x1="${ox}" y1="418" x2="${ox}" y2="128" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arrAxisKNeg)"/>
         <text x="478" y="${oy + 5}" font-family="'Times New Roman', serif" font-style="italic" font-size="17" font-weight="700" fill="#1e293b">x</text>
-        <text x="${ox + 8}" y="138" font-family="'Times New Roman', serif" font-style="italic" font-size="17" font-weight="700" fill="#1e293b">y</text>
+        <text x="${ox - 14}" y="138" font-family="'Times New Roman', serif" font-style="italic" font-size="17" font-weight="700" fill="#1e293b">y</text>
         <text x="${ox - 14}" y="${oy + 16}" font-family="'Times New Roman', serif" font-style="italic" font-size="15" font-weight="700" fill="#1e293b">O</text>
 
         ${showCompare ? `
@@ -3274,7 +4572,7 @@ Object.assign(window.UNIT1_SIMS, {
         <!-- 双曲线 y = 4/x -->
         <polyline points="${q1Pts.join(' ')}" fill="none" stroke="#2563eb" stroke-width="3.6" stroke-linecap="round"/>
         <polyline points="${q3Pts.join(' ')}" fill="none" stroke="#2563eb" stroke-width="3.6" stroke-linecap="round"/>
-        ${svgStackedFrac(368, 92, '4', 'x', '#1d4ed8', '', 'y')}
+        ${svgStackedFrac(405, 130, '4', 'x', '#1d4ed8', '', 'y')}
 
         <!-- 点 A 与 点 B 投影虚线及坐标点 -->
         <line x1="${cx(xA)}" y1="${oy}" x2="${cx(xA)}" y2="${cy(yA)}" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="4,3"/>
@@ -3300,7 +4598,7 @@ Object.assign(window.UNIT1_SIMS, {
             <text x="124" y="24" text-anchor="middle" font-family="'SimSun', serif" font-size="14.5" font-weight="700" fill="${isCross ? '#991b1b' : '#166534'}">${isCross ? '✗ 跨象限反例（结论不成立！）' : '✓ 同一象限内（结论成立）'}</text>
             <text x="16" y="50" font-family="'SimSun', serif" font-size="14" font-weight="700" fill="#1e293b">自变量：<tspan font-family="'Times New Roman', serif" font-style="italic">x</tspan><tspan font-size="10" dy="3">1</tspan><tspan dy="-3"> = ${xA.toFixed(1)} &lt; </tspan><tspan font-family="'Times New Roman', serif" font-style="italic">x</tspan><tspan font-size="10" dy="3">2</tspan><tspan dy="-3"> = ${xB.toFixed(1)}（增大）</tspan></text>
             <text x="16" y="75" font-family="'SimSun', serif" font-size="14" font-weight="700" fill="${isCross ? '#dc2626' : '#15803d'}">函数值：<tspan font-family="'Times New Roman', serif" font-style="italic">y</tspan><tspan font-size="10" dy="3">1</tspan><tspan dy="-3"> = ${yA.toFixed(1)} ${yA < yB ? '&lt;' : '&gt;'} </tspan><tspan font-family="'Times New Roman', serif" font-style="italic">y</tspan><tspan font-size="10" dy="3">2</tspan><tspan dy="-3"> = ${yB.toFixed(1)}（${yA < yB ? '反而增大!' : '减小'}）</tspan></text>
-            <text x="16" y="96" font-family="'SimSun', serif" font-size="12.5" font-weight="700" fill="#475569">${isCross ? '原因：第三象限 y<0，第一象限 y>0' : '原因：同在第一象限，x增大则y减小'}</text>
+            <text x="16" y="96" font-family="'SimSun', serif" font-size="12.5" font-weight="700" fill="#475569">${isCross ? '原因：第三象限 y&lt;0，第一象限 y&gt;0' : '原因：同在第一象限，x增大则y减小'}</text>
           </g>
         ` : ''}
       </svg>
@@ -4668,15 +5966,7 @@ Object.assign(window.UNIT1_SIMS, {
               分支在第二象限 &rArr; <tspan font-family="'Times New Roman',serif" font-style="italic">k</tspan><tspan font-family="'Times New Roman',serif">&lt;0</tspan>
             </text>
           </g>
-        ` : `
-          <!-- Step 0: Blank coordinate plane prompt (zero curve spoiler) -->
-          <g transform="translate(115, 32)">
-            <rect x="0" y="0" width="230" height="34" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
-            <text x="115" y="22" text-anchor="middle" font-size="13.5" font-weight="700" fill="#475569">
-              思考：在 <tspan font-family="'Times New Roman',serif">-3&le;</tspan><tspan font-family="'Times New Roman',serif" font-style="italic">x</tspan><tspan font-family="'Times New Roman',serif">&le;-1</tspan> 上 <tspan font-family="'Times New Roman',serif" font-style="italic">y</tspan> 最大值为 <tspan font-family="'Times New Roman',serif">6</tspan>，图象在哪个象限？
-            </text>
-          </g>
-        `}
+        ` : ''}
 
         ${step >= 2 ? `
           <!-- Step 2: Endpoint (-3, 2) and maximum endpoint P(-1, 6), plus 2D stacked fraction formula y = -6/x -->
@@ -4887,7 +6177,7 @@ Object.assign(window.UNIT1_SIMS, {
         <text x="${ox - 20}" y="28" font-family="'Times New Roman',serif" font-style="italic" font-size="19" font-weight="700" fill="#0f172a">y</text>
         <text x="${ox - 18}" y="${oy + 22}" font-family="'Times New Roman',serif" font-style="italic" font-size="18" font-weight="700" fill="#0f172a">O</text>
 
-        <!-- Two Hyperbola Branches: y = -1/x (x<0) and y = 4/x (x>0) -->
+        <!-- Two Hyperbola Branches: y = -1/x and y = 4/x -->
         <path d="${curveQ2}" fill="none" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round"/>
         <path d="${curveQ1}" fill="none" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round"/>
 
@@ -5008,25 +6298,23 @@ queueMicrotask(() => {
 });
 
 
+const COURSE_RAW_TITLE = "2.2.2 反比例函数的图象（2）";
+function formatCourseTitleHTML(rawTitle) {
+  return String(rawTitle || '').replace(/([0-9]+(?:\.[0-9]+)*)|([A-Za-z]+)/g, (m, numPart, alphaPart) => {
+    if (numPart) return `<span class="num">${numPart}</span>`;
+    return `<i class="m">${alphaPart}</i>`;
+  });
+}
+const DEFAULT_LESSON_PHASES = [
+  ['① 情境引入', '核心面积激活'],
+  ['② 新知探究', '核心问题深度探究'],
+  ['③ 新知应用', '典例剖析与变式'],
+  ['④ 分层训练', '综合实战与小结']
+];
 const PHASES_BY_LESSON = {
-  1: [
-    ['① 专题导览', '必背常数分解'],
-    ['② 六大定理', '定理<span class="num">1—6</span>精讲'],
-    ['③ 真题精讲', '例<span class="num">1—</span>例<span class="num">4</span>剖析'],
-    ['④ 随堂演练', '练<span class="num">1—</span>练<span class="num">4</span>实战']
-  ],
-  2: [
-    ['① 专题导览', '四大破题武器'],
-    ['② 四大定理', '定理<span class="num">1—4</span>精讲'],
-    ['③ 真题精讲', '例<span class="num">5—</span>例<span class="num">9</span>剖析'],
-    ['④ 随堂演练', '练<span class="num">5—</span>练<span class="num">8</span>实战']
-  ],
-  3: [
-    ['① 专题导览', '整除与同余体系'],
-    ['② 五大定理', '定理<span class="num">1—3</span>精讲'],
-    ['③ 真题精讲', '例<span class="num">10—</span>例<span class="num">14</span>剖析'],
-    ['④ 随堂演练', '练<span class="num">9—12</span>与总结']
-  ]
+  1: window.COURSEWARE_PHASES || DEFAULT_LESSON_PHASES,
+  2: window.COURSEWARE_PHASES || DEFAULT_LESSON_PHASES,
+  3: window.COURSEWARE_PHASES || DEFAULT_LESSON_PHASES
 };
 const PHASES = PHASES_BY_LESSON[1];
 function phaseOf(s){
@@ -5037,24 +6325,23 @@ function phaseOf(s){
   return 1;
 }
 function getPhasePair(s){
-  const list = PHASES_BY_LESSON[s.lesson] || PHASES_BY_LESSON[1];
+  const list = window.COURSEWARE_PHASES || PHASES_BY_LESSON[s.lesson] || DEFAULT_LESSON_PHASES;
   return list[phaseOf(s)] || list[0];
 }
-const LECTURE_TABS = [
-  [1, '第一讲·质因数'],
-  [2, '第二讲·因式与进制'],
-  [3, '第三讲·整除与同余']
+const LECTURE_TABS = window.COURSEWARE_LECTURE_TABS || [
+  [1, formatCourseTitleHTML(window.COURSEWARE_TITLE || COURSE_RAW_TITLE)]
 ];
 const flowbar = s => {
-  const phases = PHASES_BY_LESSON[s.lesson] || PHASES_BY_LESSON[1];
+  const phases = window.COURSEWARE_PHASES || PHASES_BY_LESSON[s.lesson] || DEFAULT_LESSON_PHASES;
   const curPhase = phaseOf(s);
+  const brandLabel = window.COURSEWARE_BRAND || '章节课题';
   const lecBtns = LECTURE_TABS.map(([num, label]) =>
-    `<button type="button" class="flow-lec-btn ${s.lesson===num?'active':''}" data-chapter="${num}" title="切换到${label}">${label}</button>`
+    `<button type="button" class="flow-lec-btn ${s.lesson===num?'active':''}" data-chapter="${num}" title="返回本课首页">${label}</button>`
   ).join('');
   const phaseBtns = phases.map((p, i) =>
     `<button type="button" class="flow-phase-btn ${curPhase===i?'active':''}" data-phase="${i}" aria-current="${curPhase===i?'step':'false'}"><b>${p[0]}</b><span>${p[1]}</span></button>`
   ).join('');
-  return `<nav class="flowbar" aria-label="AMC10数论三讲与四环节导航"><div class="flow-lectures"><span class="flow-brand"><span class="num">AMC10</span>数论</span>${lecBtns}</div><div class="flow-phases">${phaseBtns}</div></nav>`;
+  return `<nav class="flowbar" aria-label="课堂教学四环节导航"><div class="flow-lectures"><span class="flow-brand">${brandLabel}</span>${lecBtns}</div><div class="flow-phases">${phaseBtns}</div></nav>`;
 };
 function eyebrowBar(s){
   const curPhase = phaseOf(s);
@@ -5076,7 +6363,10 @@ const fmt=(v,n=2)=>Number(v).toFixed(n);
 function slider(key,label,min,max,value,step=1,unit=''){
   if (simState[key] === undefined) simState[key]=value;
   const plain = String(label).replace(/<[^>]*>/g, '');
-  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${simState[key]}" step="${step}" aria-label="${plain}"><output data-value="${key}">${simState[key]}${unit}</output></label>`;
+  const curVal = simState[key];
+  const numVal = Number(curVal);
+  const dispVal = (!isNaN(numVal) && !Number.isInteger(numVal)) ? numVal.toFixed(2) : curVal;
+  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${curVal}" step="${step}" aria-label="${plain}"><output data-value="${key}">${dispVal}${unit}</output></label>`;
 }
 function select(key,label,options,value){
   if (simState[key] === undefined) simState[key]=value;
@@ -5087,6 +6377,16 @@ function actions(items, activeKey){
   const cur = activeKey || simState.action || 'm0';
   return `<div class="actions">${items.map(([k,t])=>`<button type="button" data-action="${k}" class="${cur===k?'active-act':''}">${t}</button>`).join('')}</div>`;
 }
+function modeButtons(key, curVal, items){
+  if (curVal !== undefined) simState[key] = curVal;
+  else if (simState[key] === undefined && items && items.length) simState[key] = items[0][0];
+  const active = curVal !== undefined ? curVal : simState[key];
+  return `<div class="actions">${items.map(([v, label, syncStep]) => `<button type="button" data-mode-key="${key}" data-mode-val="${v}" ${syncStep !== undefined ? `data-sync-step="${syncStep}"` : ''} class="${String(active) === String(v) ? 'active-act' : ''}">${label}</button>`).join('')}</div>`;
+}
+window.slider = slider;
+window.select = select;
+window.actions = actions;
+window.modeButtons = modeButtons;
 
 // ================= 分步渐进式探索全局组件（去AI化、1对1精准点按引擎） =================
 window._blockSeq = 0;
@@ -5113,6 +6413,72 @@ function clearManualOverrides(st) {
   st.manualCells = {};
   st.manualNotes = {};
   st.manualProbNodes = {};
+  st.manualOverrides = {};
+}
+const isManualOverride = window.isManualOverride;
+const setManualOverride = window.setManualOverride;
+
+function normalizeSvgMathInRoot(root) {
+  if (!root) return;
+  root.querySelectorAll('svg text').forEach(textEl => {
+    if (textEl.children.length > 0) return;
+    const raw = textEl.textContent || '';
+    if (!raw.trim()) return;
+    const fs = parseFloat(textEl.getAttribute('font-size') || '14') || 14;
+    textEl.setAttribute('font-style', 'normal');
+    textEl.setAttribute('font-family', "'Times New Roman', 'Songti SC', 'SimSun', serif");
+    textEl.innerHTML = window.svgAutoFormatText(raw, fs);
+  });
+  root.querySelectorAll('[data-ans]').forEach(el => {
+    const ans = el.getAttribute('data-ans') || '';
+    if (ans.includes('△') && !ans.includes('tri-sym')) {
+      el.setAttribute('data-ans', ans.replace(/△/g, "<span class='tri-sym'>△</span>"));
+    }
+  });
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue || !node.nodeValue.includes('△')) return NodeFilter.FILTER_REJECT;
+      const p = node.parentElement;
+      if (!p) return NodeFilter.FILTER_REJECT;
+      if (p.classList && p.classList.contains('tri-sym')) return NodeFilter.FILTER_REJECT;
+      if (p.closest('script, style')) return NodeFilter.FILTER_REJECT;
+      if (p.closest('svg') && !p.closest('foreignObject')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const textNodes = [];
+  let cur;
+  while ((cur = walker.nextNode())) textNodes.push(cur);
+  textNodes.forEach(tn => {
+    const frag = document.createDocumentFragment();
+    const parts = tn.nodeValue.split('△');
+    parts.forEach((part, idx) => {
+      if (part) frag.appendChild(document.createTextNode(part));
+      if (idx < parts.length - 1) {
+        const sp = document.createElement('span');
+        sp.className = 'tri-sym';
+        sp.textContent = '△';
+        frag.appendChild(sp);
+      }
+    });
+    tn.parentNode.replaceChild(frag, tn);
+  });
+  root.querySelectorAll('sub, sup').forEach(subEl => {
+    const p = subEl.parentElement;
+    if (!p || p.dataset.nowrapSub === '1' || p.classList.contains('screen-blank')) return;
+    const prev = subEl.previousElementSibling;
+    if (prev && prev.nextSibling === subEl && (prev.tagName === 'I' || prev.classList.contains('m') || prev.classList.contains('num'))) {
+      const wrap = document.createElement('span');
+      wrap.dataset.nowrapSub = '1';
+      wrap.style.whiteSpace = 'nowrap';
+      p.insertBefore(wrap, prev);
+      wrap.appendChild(prev);
+      wrap.appendChild(subEl);
+      if (wrap.nextSibling && wrap.nextSibling.nodeType === 1 && (wrap.nextSibling.tagName === 'SUP' || wrap.nextSibling.tagName === 'SUB')) {
+        wrap.appendChild(wrap.nextSibling);
+      }
+    }
+  });
 }
 
 function runSimFn(fn, state, isInit) {
@@ -5120,24 +6486,42 @@ function runSimFn(fn, state, isInit) {
   window._blockSeq = 0;
   window._cellSeq = 0;
   window._blockMinSteps = {};
-  fn(state, isInit);
+  if (typeof fn === 'function') {
+    fn(state, isInit);
+  } else if (fn && typeof fn.render === 'function') {
+    if (isInit && typeof fn.init === 'function') fn.init(state);
+    fn.render(state);
+  }
+  normalizeSvgMathInRoot(activeRoot());
 }
 
 function stepBar(step, maxStep = 3) {
   const s = Math.min(maxStep, Math.max(0, Number(step || 0)));
   const canReset = s > 0 || hasAnyManual(simState);
-  const nextLabel = s >= maxStep ? `✓ 已完成` : `▶ 下一步`;
   const hasLab = Boolean(activeRoot() && activeRoot().querySelector('.screen-lab'));
   const isZoomed = document.body.classList.contains('canvas-zoom-mode');
-  const zoomBtnHTML = hasLab
-    ? `<button type="button" class="step-btn zoom" onclick="window.toggleCanvasZoom(event)">${isZoomed ? '🗗 退出全屏' : '🔍 放大图象'}</button>`
+  const dots = Array.from({ length: maxStep }, (_, i) => {
+    const idx = i + 1;
+    const cls = idx === s ? 'current' : (idx < s ? 'done' : '');
+    return `<button type="button" class="step-dot-pill ${cls}" data-jump-step="${idx}" title="点击跳转至步骤 ${idx}">${idx}</button>`;
+  }).join('');
+  const hintTxt = s >= maxStep ? '✓ 已全部展开（答案已同步填入题干）' : '点击下方步骤卡片或按空格键逐步展开';
+  const zoomBtnHTML = (hasLab && isZoomed)
+    ? `<button type="button" class="step-btn zoom" onclick="window.toggleCanvasZoom(event)">🗗 退出全屏</button>`
     : '';
   return `<div class="step-ctrl-bar ${hasLab ? 'has-zoom' : ''}" data-max-step="${maxStep}">
-    <button type="button" class="step-btn prev" data-action="prevStep" ${s <= 0 ? 'disabled' : ''}>◀ 上一步</button>
-    <button type="button" class="step-btn next" data-action="nextStep" ${s >= maxStep ? 'disabled' : ''}>${nextLabel}</button>
-    <button type="button" class="step-btn all" data-action="completeTable" ${s >= maxStep ? 'disabled' : ''}>全部展开</button>
-    <button type="button" class="step-btn rst" data-action="reset" ${!canReset ? 'disabled' : ''}>重置</button>
-    ${zoomBtnHTML}
+    <div class="step-progress-group">
+      <span class="step-hint-label">💡 推导进度</span>
+      ${dots}
+      <span class="step-sub-hint">${hintTxt}</span>
+    </div>
+    <div class="step-ghost-actions">
+      <button type="button" class="step-btn prev" data-action="prevStep" ${s <= 0 ? 'disabled' : ''}>◀ 上一步</button>
+      <button type="button" class="step-btn next" data-action="nextStep" ${s >= maxStep ? 'disabled' : ''}>下一步 ▸</button>
+      <button type="button" class="step-btn all" data-action="completeTable" ${s >= maxStep ? 'disabled' : ''}>全部展开</button>
+      <button type="button" class="step-btn rst" data-action="reset" ${!canReset ? 'disabled' : ''}>↺ 重置</button>
+      ${zoomBtnHTML}
+    </div>
   </div>`;
 }
 
@@ -5183,6 +6567,7 @@ window.unlockSingleCell = function(cIdx, ev) {
 window.advanceSimStep = function(targetStep) {
   if (!currentSimType || !ALL_SIMS[currentSimType]) return;
   simState.step = Math.max(Number(simState.step || 0), Number(targetStep || 1));
+  simState.manualOverrides = {};
   runSimFn(ALL_SIMS[currentSimType], simState, false);
   syncSlideProgression(simState);
   bindSimControls(currentSimType);
@@ -5191,9 +6576,16 @@ window.advanceSimStep = function(targetStep) {
 // 同步右侧笔记步骤、题干填空与结论框（严格限定在 #content 内，避免翻页动画残留节点干扰）
 function syncSlideProgression(state) {
   const root = activeRoot();
-  const s = Number(state.step || 0);
+  let highestManual = 0;
+  if (state && state.manualNotes) {
+    Object.keys(state.manualNotes).forEach(k => {
+      if (state.manualNotes[k]) highestManual = Math.max(highestManual, Number(k) + 1);
+    });
+  }
+  const s = Math.max(Number(state.step || 0), highestManual);
   const barEl = root.querySelector('.step-ctrl-bar');
-  const maxStep = barEl ? Number(barEl.dataset.maxStep || 3) : 3;
+  const noteSteps = root.querySelectorAll('.screen-notes > .step, .screen-notes .step');
+  const maxStep = barEl ? Number(barEl.dataset.maxStep || Math.max(3, noteSteps.length)) : Math.max(3, noteSteps.length);
 
   // 0. 定理页画布顶部对齐，避免分步展开时上下跳动
   const canvasInner = root.querySelector('.screen-canvas > div');
@@ -5202,11 +6594,13 @@ function syncSlideProgression(state) {
     canvasInner.style.paddingTop = '8px';
   }
 
-  // 1. 同步题干中的 .screen-blank 填空
+  // 1. 同步题干中的 .screen-blank 填空与选择题括号答案
   const allBlanks = root.querySelectorAll('.screen-stem .screen-blank[data-ans]');
   const totalBlanks = allBlanks.length;
   allBlanks.forEach((blank, idx) => {
-    const unlockAt = totalBlanks <= 1 ? maxStep : Math.max(1, Math.ceil((idx + 1) * maxStep / totalBlanks));
+    const unlockAt = blank.dataset.step
+      ? Number(blank.dataset.step)
+      : (totalBlanks <= 1 ? maxStep : Math.max(1, Math.ceil((idx + 1) * maxStep / totalBlanks)));
     if (s >= unlockAt) {
       blank.innerHTML = blank.dataset.ans;
       blank.classList.add('filled');
@@ -5216,32 +6610,69 @@ function syncSlideProgression(state) {
     }
   });
 
-  // 2. 同步定理页右侧 .screen-notes > .step（保留真实知识点标题，去除AI废话）
-  const noteSteps = root.querySelectorAll('.screen-notes > .step');
+  // 2. 同步右侧 .screen-notes > .step（保留真实知识点标题，支持直接点击步骤卡片推进步骤与动态图，支持单卡片多子步 data-step-start/end 与 .step-sub-part）
+  let foundNextLocked = false;
   noteSteps.forEach((stepEl, idx) => {
-    const reqStep = idx + 1;
+    const startS = Number(stepEl.dataset.stepStart || (idx + 1));
+    const endS = Number(stepEl.dataset.stepEnd || startS);
     const isManualNote = Boolean(state.manualNotes && state.manualNotes[idx]);
     const spanEl = stepEl.querySelector('span');
     const rawTxt = spanEl ? spanEl.textContent.trim() : '';
-    const topicTitle = /[:：]/.test(rawTxt) ? rawTxt.split(/[:：]/)[0].trim() : `要点 ${reqStep}`;
-    stepEl.dataset.lockMsg = `${topicTitle}  ·  展开 ▸`;
-    if (isManualNote || s >= reqStep) {
-      stepEl.classList.remove('step-locked');
-      stepEl.classList.toggle('step-active', s === reqStep || isManualNote);
+    const topicTitle = /[:：]/.test(rawTxt) ? rawTxt.split(/[:：]/)[0].trim() : `步骤 ${idx + 1}`;
+    stepEl.querySelectorAll('.step-sub-part[data-sub-step]').forEach(part => {
+      const subReq = Number(part.dataset.subStep || endS);
+      if (s >= subReq) {
+        part.classList.remove('sub-step-locked');
+      } else {
+        part.classList.add('sub-step-locked');
+        if (!part.dataset.subHint) {
+          part.dataset.subHint = '点击继续展开下一空 ▸';
+        }
+      }
+    });
+    if (isManualNote || s >= startS) {
+      stepEl.classList.remove('step-locked', 'step-next-up');
+      stepEl.classList.toggle('step-active', (s >= startS && s <= endS) || isManualNote);
+      stepEl.dataset.lockMsg = `${topicTitle}`;
+      if (s >= startS && s < endS) {
+        foundNextLocked = true;
+      }
     } else {
       stepEl.classList.add('step-locked');
       stepEl.classList.remove('step-active');
+      if (!foundNextLocked) {
+        foundNextLocked = true;
+        stepEl.classList.add('step-next-up');
+        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开下一步 ▸`;
+      } else {
+        stepEl.classList.remove('step-next-up');
+        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开 ▸`;
+      }
     }
     stepEl.onclick = e => {
-      if (stepEl.classList.contains('step-locked')) {
-        if (e && e.stopPropagation) e.stopPropagation();
-        if (!state.manualNotes) state.manualNotes = {};
-        state.manualNotes[idx] = true;
-        syncSlideProgression(state);
-        if (currentSimType) bindSimControls(currentSimType);
+      if (e && e.stopPropagation) e.stopPropagation();
+      const curS = Number(state.step || 0);
+      if (curS < startS) {
+        state.step = startS;
+      } else if (curS >= startS && curS < endS) {
+        state.step = curS + 1;
+      } else {
+        state.step = startS;
       }
+      state.manualOverrides = {};
+      if (state.manualNotes) {
+        Object.keys(state.manualNotes).forEach(k => {
+          if (Number(k) > idx) delete state.manualNotes[k];
+        });
+      }
+      if (currentSimType && ALL_SIMS[currentSimType]) {
+        runSimFn(ALL_SIMS[currentSimType], state, false);
+      }
+      syncSlideProgression(state);
+      if (currentSimType) bindSimControls(currentSimType);
     };
   });
+  normalizeSvgMathInRoot(root);
 
   // 3. 同步底部结论框 .answer 与自动视口滚动对齐
   const ansBox = root.querySelector('.screen-notes .answer');
@@ -5257,10 +6688,18 @@ function syncSlideProgression(state) {
   }
   const sn = root.querySelector('.screen-notes');
   if (sn) {
-    if (s === 0 && !hasAnyManual(state)) {
+    if ((s === 0 && !hasAnyManual(state)) || maxStep <= 2) {
       sn.scrollTop = 0;
-    } else if (s >= maxStep && sn.scrollHeight > sn.clientHeight + 4) {
-      sn.scrollTop = sn.scrollHeight;
+    } else {
+      const activeEl = sn.querySelector('.step.step-active');
+      if (activeEl && sn.scrollHeight > sn.clientHeight + 4) {
+        const elBottom = activeEl.offsetTop + activeEl.offsetHeight;
+        if (elBottom > sn.scrollTop + sn.clientHeight) {
+          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 8);
+        } else if (activeEl.offsetTop < sn.scrollTop) {
+          sn.scrollTop = Math.max(0, activeEl.offsetTop - 8);
+        }
+      }
     }
   }
 }
@@ -5540,11 +6979,12 @@ function convertProblemToPPTSlide(p, probIdx) {
 
     // 同步右侧 .prob-step-card 分步推导卡片（未展开时点击展开卡片，已展开时再次点击直接揭晓卡片内的蓝色算式）
     const stepCards = root.querySelectorAll('.screen-notes .prob-step-card');
+    let foundNextProbLocked = false;
     stepCards.forEach((card, idx) => {
       const reqStep = totalSteps > 0 ? Math.max(1, Math.round((idx + 1) * dynMaxStep / totalSteps)) : (idx + 1);
       const isManualCard = Boolean(state.manualNotes && state.manualNotes[idx]);
       if (isManualCard || step >= idx + 1 || step >= dynMaxStep) {
-        card.classList.remove('step-locked');
+        card.classList.remove('step-locked', 'step-next-up');
         card.querySelectorAll('.cloze').forEach(c => {
           if (step >= dynMaxStep) {
             c.classList.add('revealed');
@@ -5552,11 +6992,18 @@ function convertProblemToPPTSlide(p, probIdx) {
         });
       } else {
         card.classList.add('step-locked');
+        if (!foundNextProbLocked) {
+          foundNextProbLocked = true;
+          card.classList.add('step-next-up');
+        } else {
+          card.classList.remove('step-next-up');
+        }
         card.querySelectorAll('.cloze').forEach(c => c.classList.remove('revealed'));
       }
       card.onclick = e => {
         if (card.classList.contains('step-locked')) {
           e.stopPropagation();
+          state.step = Math.max(Number(state.step || 0), reqStep);
           if (!state.manualNotes) state.manualNotes = {};
           state.manualNotes[idx] = true;
           runSimFn(PROBLEM_SIMS[simName], state, false);
@@ -5606,7 +7053,7 @@ const ALL_SIMS = Object.assign(
 
 function initSim(type){
   currentSimType = type;
-  simState = { step: 0, mode: 0, action: 'm0', manualBlocks: {}, manualCells: {}, manualNotes: {}, manualProbNodes: {} };
+  simState = { step: 0, mode: 0, action: 'm0', manualBlocks: {}, manualCells: {}, manualNotes: {}, manualProbNodes: {}, manualOverrides: {} };
   const fn = ALL_SIMS[type];
   if (!fn) return;
   runSimFn(fn, simState, true);
@@ -5625,8 +7072,12 @@ function bindSimControls(type){
     inp.oninput = e => {
       const k = e.target.dataset.key;
       simState[k] = isNaN(+e.target.value) ? e.target.value : +e.target.value;
+      if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       const out = ctrlBox.querySelector(`output[data-value="${k}"]`);
-      if (out) out.textContent = e.target.value;
+      if (out) {
+        const nv = Number(e.target.value);
+        out.textContent = (!isNaN(nv) && !Number.isInteger(nv)) ? nv.toFixed(2) : e.target.value;
+      }
       // 拖动滑块时屏蔽 controls.innerHTML 重建，保持滑块焦点不断连
       Object.defineProperty(ctrlBox, 'innerHTML', {
         configurable: true,
@@ -5635,7 +7086,6 @@ function bindSimControls(type){
       });
       try {
         runSimFn(fn, simState, false);
-        syncSlideProgression(simState);
       } finally {
         delete ctrlBox.innerHTML;
       }
@@ -5651,6 +7101,40 @@ function bindSimControls(type){
     sel.onchange = e => {
       const k = e.target.dataset.key;
       simState[k] = e.target.value;
+      if (typeof setManualOverride === 'function') setManualOverride(simState, k);
+      runSimFn(fn, simState, false);
+      syncSlideProgression(simState);
+      bindSimControls(type);
+    };
+  });
+
+  ctrlBox.querySelectorAll('[data-jump-step]').forEach(dot => {
+    dot.onclick = e => {
+      e.stopPropagation();
+      const targetS = Number(dot.dataset.jumpStep || 1);
+      simState.step = targetS;
+      simState.manualOverrides = {};
+      if (simState.manualNotes) {
+        Object.keys(simState.manualNotes).forEach(k => {
+          if (Number(k) + 1 > targetS) delete simState.manualNotes[k];
+        });
+      }
+      runSimFn(fn, simState, false);
+      syncSlideProgression(simState);
+      bindSimControls(type);
+    };
+  });
+
+  ctrlBox.querySelectorAll('[data-mode-key]').forEach(mBtn => {
+    mBtn.onclick = e => {
+      e.stopPropagation();
+      const k = mBtn.dataset.modeKey;
+      const v = mBtn.dataset.modeVal;
+      simState[k] = (typeof simState[k] === 'number') ? (isNaN(+v) ? v : +v) : v;
+      if (mBtn.dataset.syncStep !== undefined) {
+        simState.step = Math.max(Number(simState.step || 0), Number(mBtn.dataset.syncStep));
+      }
+      if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       runSimFn(fn, simState, false);
       syncSlideProgression(simState);
       bindSimControls(type);
@@ -5680,9 +7164,11 @@ function bindSimControls(type){
           }
         }
         simState.step = nextS;
+        simState.manualOverrides = {};
       } else if (act === 'prevStep') {
         const prevS = Math.max(0, Number(simState.step || 0) - 1);
         simState.step = prevS;
+        simState.manualOverrides = {};
         if (simState.manualBlocks) {
           Object.keys(simState.manualBlocks).forEach(k => {
             if ((window._blockMinSteps[k] || 99) > prevS) delete simState.manualBlocks[k];
@@ -5700,6 +7186,7 @@ function bindSimControls(type){
         }
       } else if (act === 'completeTable') {
         simState.step = maxStep;
+        simState.manualOverrides = {};
       } else if (act === 'reset') {
         simState.step = 0;
         clearManualOverrides(simState);
@@ -6093,7 +7580,7 @@ function setupScreen(){
   fitContent();
 }
 
-function render(){cancelAnimationFrame(raf);playing=false;const s=slides[index];$('#content').innerHTML=`<section class="slide ${s.cover?'cover':''}">${flowbar(s)}${s.cover?eyebrowBar(s):`<div class="slide-head-bar"><h2>${s.title}</h2>${eyebrowBar(s)}</div>`}<div class="slide-body">${s.html}</div><div class="subfoot"><span><span class="num">AMC10</span>竞赛准备（<span class="num">3</span>）：数论 · ${s.lesson===1?'第一讲：质因数分解、因数公式与<span class="num">gcd/lcm</span>':(s.lesson===2?'第二讲：因式分解、不定方程与进制转换':'第三讲：整除特征、无限循环小数与同余模运算')}</span><span>${String(index+1).padStart(2,'0')} / ${slides.length}</span></div></section>`;$('#pageCount').textContent=`${index+1} / ${slides.length}`;$('#slideTitle').innerHTML=`第<span class="num">${s.lesson}</span>讲 · ${s.title}`;$('#prev').disabled=index===0;$('#next').disabled=index===slides.length-1;$('#progress').style.width=((index+1)/slides.length*100)+'%';document.querySelectorAll('[data-chapter]').forEach(b=>b.classList.toggle('active',+b.dataset.chapter===s.lesson));if(s.sim)initSim(s.sim);setupScreen();fitContent();restoreInk();$('#viewport').scrollTop=0;location.hash='slide-'+(index+1);}
+function render(){cancelAnimationFrame(raf);playing=false;const s=slides[index];const courseFormatted=formatCourseTitleHTML(window.COURSEWARE_TITLE||COURSE_RAW_TITLE);$('#content').innerHTML=`<section class="slide ${s.cover?'cover':''}">${flowbar(s)}${s.cover?'':`<div class="slide-head-bar"><h2>${s.title}</h2>${eyebrowBar(s)}</div>`}<div class="slide-body">${s.html}</div><div class="subfoot"><span>${courseFormatted} · ${getPhasePair(s)[0]}</span><span>${String(index+1).padStart(2,'0')} / ${slides.length}</span></div></section>`;$('#pageCount').textContent=`${index+1} / ${slides.length}`;$('#slideTitle').innerHTML=`${getPhasePair(s)[0]} · ${s.title}`;$('#prev').disabled=index===0;$('#next').disabled=index===slides.length-1;$('#progress').style.width=((index+1)/slides.length*100)+'%';document.querySelectorAll('[data-chapter]').forEach(b=>b.classList.toggle('active',+b.dataset.chapter===s.lesson));if(s.sim)initSim(s.sim);else normalizeSvgMathInRoot(activeRoot());setupScreen();fitContent();restoreInk();$('#viewport').scrollTop=0;location.hash='slide-'+(index+1);}
 function fitContent(){const b=$('.slide-body');if(b)b.style.transform='none';}
 
 function go(n){transitionNavigate(n)}
@@ -6102,7 +7589,7 @@ function size(){if(innerWidth<=700){const b=$('.slide-body');if(b)b.style.transf
 $('#closeImage').onclick=()=>$('#imageDialog').close();$('#imageDialog').addEventListener('click',e=>{if(e.target===$('#imageDialog'))$('#imageDialog').close()});
 $('#prev').onclick=()=>go(index-1);$('#next').onclick=()=>go(index+1);
 document.addEventListener('click',e=>{if(e.target.tagName==='IMG'&&e.target.closest('.slide')){const picture=document.querySelector('#largeImage');picture.src=e.target.src;picture.alt=e.target.alt;$('#imageDialog').showModal();return;}const b=e.target.closest('button');if(!b)return;if(b.dataset.phase!==undefined){const phase=+b.dataset.phase;const found=slides.findIndex(v=>v.lesson===slides[index].lesson&&phaseOf(v)===phase);if(found>=0)go(found);return;}if(b.dataset.chapter)chapter(+b.dataset.chapter);if(b.dataset.jump)go(+b.dataset.jump);if(b.hasAttribute('data-reveal')){const a=b.nextElementSibling,opening=a.hidden;document.querySelectorAll('.answer').forEach(el=>el.hidden=true);document.querySelectorAll('[data-reveal]').forEach(el=>el.setAttribute('aria-expanded','false'));a.hidden=!opening;b.setAttribute('aria-expanded',String(opening));fitContent()}if(b.dataset.option!==undefined){const q=b.closest('.quiz'),correct=+q.dataset.correct,pick=+b.dataset.option;q.querySelectorAll('button').forEach(el=>el.classList.remove('correct','wrong'));b.classList.add(pick===correct?'correct':'wrong');q.nextElementSibling.textContent=pick===correct?q.nextElementSibling.dataset.explain:'再想一想：先检查光线特点和题目条件。';fitContent();}if(b.dataset.tree!==undefined){const ok=b.dataset.tree==='3';$('#treeFeedback').textContent=ok?'正确。D 中影子同向，高树的影子更长，比例与高度一致。':'请再比较：影子是否同向？高树是否对应更长的影子？';b.style.borderColor=ok?'#15927f':'#d99a76';fitContent();}});
-$('#toc').onclick=()=>{const list=$('#tocList');const lecNames={1:'第一讲 · 质因数分解、因数公式与最大公约数 / 最小公倍数',2:'第二讲 · 数论因式分解、不定方程与进制转换',3:'第三讲 · 整除特征、无限循环小数与同余模运算'};list.innerHTML=slides.map((s,i)=>{const hdr=(i===0||slides[i-1].lesson!==s.lesson)?`<div class="toc-group-header"><span>${lecNames[s.lesson]||('第'+s.lesson+'讲')}</span><small style="font-size:13.5px;color:#475569;font-weight:600">点击词条直接跳转</small></div>`:'';return `${hdr}<button data-toc="${i}" class="${i===index?'current':''}"><span class="toc-idx">${String(i+1).padStart(2,'0')}</span><span class="toc-title-wrap">${s.title}</span><small class="phase-label">${getPhasePair(s)[0]}</small></button>`;}).join('');$('#tocDialog').showModal();requestAnimationFrame(()=>list.querySelector('.current')?.scrollIntoView({block:'nearest'}))};$('#closeToc').onclick=()=>$('#tocDialog').close();$('#tocList').onclick=e=>{const b=e.target.closest('[data-toc]');if(b){go(+b.dataset.toc);$('#tocDialog').close()}};
+$('#toc').onclick=()=>{const list=$('#tocList');list.innerHTML=slides.map((s,i)=>{const ph=phaseOf(s);const prevPh=i>0?phaseOf(slides[i-1]):-1;const pair=getPhasePair(s);const hdr=(i===0||ph!==prevPh)?`<div class="toc-group-header"><span>${pair[0]} · ${pair[1]}</span><small style="font-size:13.5px;color:#475569;font-weight:600">点击词条直接跳转</small></div>`:'';return `${hdr}<button data-toc="${i}" class="${i===index?'current':''}"><span class="toc-idx">${String(i+1).padStart(2,'0')}</span><span class="toc-title-wrap">${s.title}</span><small class="phase-label">${s.navTag||pair[0]}</small></button>`;}).join('');$('#tocDialog').showModal();requestAnimationFrame(()=>list.querySelector('.current')?.scrollIntoView({block:'nearest'}))};$('#closeToc').onclick=()=>$('#tocDialog').close();$('#tocList').onclick=e=>{const b=e.target.closest('[data-toc]');if(b){go(+b.dataset.toc);$('#tocDialog').close()}};
 $('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch(e){toast('可使用浏览器的 F11 键进入全屏')}};
 function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';setTimeout(()=>$('#toast').style.display='none',2500)}
 
@@ -6343,7 +7830,24 @@ $('#remote').onclick=()=>{learningAction=null;showRemoteBindings();$('#remoteSta
 $('#remoteClose').onclick=()=>$('#remoteDialog').close();$('#remoteDialog').addEventListener('close',()=>learningAction=null);
 $('#remoteRows').onclick=e=>{const b=e.target.closest('[data-learn]');if(!b)return;learningAction=b.dataset.learn;showRemoteBindings();$('#remoteStatus').textContent=`请按一次要用于“${remoteActions[learningAction]}”的翻页笔按键。按 Esc 取消。`};
 $('#remoteReset').onclick=()=>{remoteBindings={};learningAction=null;remoteSave();showRemoteBindings();$('#remoteStatus').textContent='已恢复默认：Page Up / Page Down 翻页，C 清空本页批注，F 或 F5 切换全屏。'};
-function runRemoteAction(action){if(action==='prev')go(index-1);if(action==='next')go(index+1);if(action==='clear'){const hasInk=inkPage().strokes.length>0;clearPen();toast(hasInk?'已清空本页批注，可在批注工具中撤销':'本页没有批注')}if(action==='fullscreen')$('#fullscreen').click()}
+function runRemoteAction(action, key){
+  if (action === 'next' && (key === 'Space' || key === 'Enter')) {
+    const root = activeRoot();
+    const barEl = root && root.querySelector('.step-ctrl-bar');
+    if (barEl && currentSimType && ALL_SIMS[currentSimType]) {
+      const maxStep = Number(barEl.dataset.maxStep || 3);
+      const curStep = Number(simState.step || 0);
+      if (curStep < maxStep) {
+        window.advanceSimStep(curStep + 1);
+        return;
+      }
+    }
+  }
+  if(action==='prev')go(index-1);
+  if(action==='next')go(index+1);
+  if(action==='clear'){const hasInk=inkPage().strokes.length>0;clearPen();toast(hasInk?'已清空本页批注，可在批注工具中撤销':'本页没有批注')}
+  if(action==='fullscreen')$('#fullscreen').click();
+}
 document.addEventListener('keydown',e=>{
  if(e.isComposing)return;const key=remoteKey(e);
  if($('#remoteDialog').open){
@@ -6360,17 +7864,17 @@ document.addEventListener('keydown',e=>{
  if(editing&&!['PageUp','PageDown','F5'].includes(e.code))return;
  let action=Object.entries(remoteBindings).find(([,k])=>k===key)?.[0];
  if(!action)action=Object.keys(remoteDefaults).find(a=>!remoteBindings[a]&&remoteDefaults[a].includes(key));
- if(action){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat)runRemoteAction(action);return}
+ if(action){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat)runRemoteAction(action, key);return}
  if(e.ctrlKey||e.altKey||e.metaKey)return;
  if(e.key==='Home'){e.preventDefault();go(0)}if(e.key==='End'){e.preventDefault();go(slides.length-1)}if(e.key.toLowerCase()==='m')$('#toc').click();
 },true);
 
-const transitionChoices={smart:['主题联动','普通翻页使用立体翻书，进入新环节时由光束揭幕。'],book:['立体翻书','纸页绕边缘翻转，光影随页面转动。'],beam:['光影扫幕','一束暖光扫过画面，逐渐揭开下一页。'],space:['空间旋转','页面沿空间转动，前后方向相互对应。'],fade:['柔和渐显','轻柔交替，适合连续讲解与练习。'],none:['关闭效果','立即翻页。']};
-const transitionSettings={effect:'smart',duration:650};
-try{const saved=JSON.parse(localStorage.getItem('projection-transitions-v1')||'{}');if(Object.hasOwn(transitionChoices,saved.effect))transitionSettings.effect=saved.effect;if([420,650,900].includes(saved.duration))transitionSettings.duration=saved.duration}catch(e){}
+const transitionChoices={none:['极速翻页（推荐）','零延迟瞬时切换，彻底消除大屏翻页卡顿。'],fade:['柔和渐显','轻柔交替，适合连续讲解与练习。'],smart:['主题联动','普通翻页使用立体翻书，进入新环节时由光束揭幕。'],book:['立体翻书','纸页绕边缘翻转，光影随页面转动。'],beam:['光影扫幕','一束暖光扫过画面，逐渐揭开下一页。'],space:['空间旋转','页面沿空间转动，前后方向相互对应。']};
+const transitionSettings={effect:'none',duration:420};
+try{const saved=JSON.parse(localStorage.getItem('projection-transitions-v2')||'{}');if(Object.hasOwn(transitionChoices,saved.effect))transitionSettings.effect=saved.effect;if([420,650,900].includes(saved.duration))transitionSettings.duration=saved.duration}catch(e){}
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let transitionRun=null,transitionSerial=0;
-function saveTransitionSettings(){try{localStorage.setItem('projection-transitions-v1',JSON.stringify(transitionSettings))}catch(e){}}
+function saveTransitionSettings(){try{localStorage.setItem('projection-transitions-v2',JSON.stringify(transitionSettings))}catch(e){}}
 function updateTransitionChoices(){
  $('#transitionChoices').innerHTML=Object.entries(transitionChoices).map(([key,[name,description]])=>`<button data-effect="${key}" class="effect-choice ${transitionSettings.effect===key?'selected':''}" aria-pressed="${transitionSettings.effect===key}"><span class="effect-mini effect-${key}" aria-hidden="true"><i></i><i></i></span><span><b>${name}</b><small>${description}</small></span><em>${transitionSettings.effect===key?'已选':'选择'}</em></button>`).join('');
  $('#transitionSpeed').value=transitionSettings.duration;$('#transitionMotionNote').hidden=!reducedMotion.matches;
@@ -6385,15 +7889,16 @@ function transitionSnapshot(){
  const sheet=document.createElement('div');sheet.className='transition-sheet';sheet.inert=true;sheet.setAttribute('aria-hidden','true');
  const copy=$('#content').cloneNode(true),mapping=new Map();
  copy.querySelectorAll('[id]').forEach(el=>{const id=el.id,next='fx'+transitionSerial+'-'+id;mapping.set(id,next);el.id=next});copy.removeAttribute('id');
- copy.querySelectorAll('*').forEach(el=>{for(const a of [...el.attributes]){if(a.name==='aria-live'||a.name.startsWith('data-'))el.removeAttribute(a.name);if(a.value.includes('url(#'))el.setAttribute(a.name,a.value.replace(/url\(#([^)]*)\)/g,(m,id)=>mapping.has(id)?`url(#${mapping.get(id)})`:m));if(['href','xlink:href'].includes(a.name)&&a.value.startsWith('#')&&mapping.has(a.value.slice(1)))el.setAttribute(a.name,'#'+mapping.get(a.value.slice(1)))}});
+ copy.querySelectorAll('*').forEach(el=>{for(const a of [...el.attributes]){if(a.name==='aria-live'||(a.name.startsWith('data-')&&a.name!=='data-lock-msg'&&a.name!=='data-lock-label'))el.removeAttribute(a.name);if(a.value.includes('url(#'))el.setAttribute(a.name,a.value.replace(/url\(#([^)]*)\)/g,(m,id)=>mapping.has(id)?`url(#${mapping.get(id)})`:m));if(['href','xlink:href'].includes(a.name)&&a.value.startsWith('#')&&mapping.has(a.value.slice(1)))el.setAttribute(a.name,'#'+mapping.get(a.value.slice(1)))}});
  copy.querySelectorAll('.slide').forEach(el=>el.style.animation='none');sheet.append(copy);
- const ink=document.createElement('canvas');ink.width=canvas.width;ink.height=canvas.height;ink.className='transition-ink';ink.getContext('2d').drawImage(canvas,0,0);sheet.append(ink);return sheet;
+ if(inkPage().strokes.length){const ink=document.createElement('canvas');ink.width=canvas.width;ink.height=canvas.height;ink.className='transition-ink';ink.getContext('2d').drawImage(canvas,0,0);sheet.append(ink);}return sheet;
 }
 function animateSlideChange(change,direction,effect){
  stopSlideTransition();
  if(effect==='none'||reducedMotion.matches||!Element.prototype.animate){change();return}
  const serial=++transitionSerial,layer=document.createElement('div');layer.className='transition-layer';layer.inert=true;layer.setAttribute('aria-hidden','true');
- const old=transitionSnapshot();layer.append(old);$('#stage').append(layer);change();
+ const old=transitionSnapshot();layer.append(old);$('#stage').append(layer);
+ try{change();}catch(err){console.error(err);layer.remove();return;}
  const live=$('#content'),width=$('#stage').clientWidth,d=direction>=0?1:-1,duration=transitionSettings.duration,ease='cubic-bezier(.23,.73,.18,1)';
  $('#stage').classList.add('transitioning');$('#penLayer').style.visibility='hidden';
  const animations=[],play=(el,frames,options={})=>{const a=el.animate(frames,{duration,easing:ease,fill:'both',...options});animations.push(a);return a};

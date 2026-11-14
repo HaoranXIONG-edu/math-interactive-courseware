@@ -133,23 +133,32 @@ sup span, sup i, sup b,
   padding: 1px 0.22em 0;
 }
 .sqrt {
-  display: inline-flex;
-  align-items: baseline;
+  display: inline-flex !important;
+  align-items: baseline !important;
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
   font-weight: inherit;
   margin: 0 1px;
+  white-space: nowrap !important;
 }
 .sqrt::before {
-  content: "√";
-  font-size: 1.05em;
+  content: "\221A";
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+  font-size: 1.06em;
   line-height: 1;
-  margin-right: 1px;
+  margin-right: -0.04em;
 }
 .sqrt > span {
-  border-top: 1.8px solid currentColor;
-  padding: 0 2px;
-  line-height: 1.05;
+  border-top: 1.7px solid currentColor !important;
+  padding: 0 2px 0 1px !important;
+  line-height: 1.04 !important;
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+}
+.sqrt > span i.m {
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: italic !important;
 }
 .overline {
   border-top: 1.8px solid currentColor;
@@ -1538,7 +1547,7 @@ body.canvas-zoom-mode .step-btn.next {
 }
 .screen-notes .step.step-locked::after {
   content: attr(data-lock-msg);
-  font-family: 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
+  font-family: 'Times New Roman', 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
   font-size: 21.5px;
   font-weight: 700;
   color: #475569;
@@ -1561,6 +1570,16 @@ body.canvas-zoom-mode .step-btn.next {
 .screen-notes .step > span {
   font-size: 24px !important;
   line-height: 1.46 !important;
+}
+.screen-notes .step > span b {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-weight: 700 !important;
+  color: inherit;
+}
+.screen-notes .step > span > b:first-child {
+  color: #1e3a8a;
 }
 .step-sub-part.sub-step-locked > * {
   display: none !important;
@@ -2241,6 +2260,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-notes {
   order: 1 !important;
+  grid-column: 1 !important;
   background: #ffffff;
   border: 1.5px solid #cbd5e1;
   border-radius: 14px;
@@ -2249,6 +2269,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-media {
   order: 2 !important;
+  grid-column: 2 !important;
   background: #ffffff;
   border: 2px solid #0d9488;
   border-radius: 14px;
@@ -2739,6 +2760,11 @@ body.canvas-zoom-mode .step-btn.zoom {
 .visual svg text {
   font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
 }
+.visual foreignObject svg,
+.screen-lab foreignObject svg {
+  width: auto !important;
+  height: auto !important;
+}
 .svg-fo-card {
   box-sizing: border-box;
   width: 100%;
@@ -2943,7 +2969,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
 
   const subMap = { '₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9','ₙ':'n' };
   const supMap = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9' };
-  const masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g;
+  const masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)|√\(([^)]+)\)|√([0-9A-Za-z]+)/g;
 
   let result = '';
   let lastIdx = 0;
@@ -2975,6 +3001,12 @@ window.svgAutoFormatText = function(rawText, baseSize) {
         formatFlatTokens(supStr, true) +
         `</tspan>`;
       pendingDy = supDy;
+    } else if (match[5] !== undefined || match[6] !== undefined) {
+      const radContent = match[5] !== undefined ? match[5] : match[6];
+      const rAttr = consumeDyAttr(0, null);
+      result += `<tspan${rAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}">√</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}" text-decoration="overline">` +
+        formatFlatTokens(radContent, false) +
+        `</tspan>`;
     }
     lastIdx = masterRe.lastIndex;
   }
@@ -3322,6 +3354,33 @@ window.createCoordCanvas = function(arg1 = {}, arg2, arg3) {
 };
 
 // ================= 声明式课件页面构建器（window.defineSlide，强制 1对1 步数/填空/图形同步契约） =================
+window.formatInlineMathHTML = function(rawStr) {
+  if (!rawStr) return '';
+  const s = String(rawStr);
+  if (/<(span|i|sup|sub|b)\b/i.test(s)) return s;
+  let clean = s
+    .replace(/([\u4e00-\u9fff])\s+([A-Za-z0-9△▱∠⊥∥∽≌=+\-√])/g, '$1$2')
+    .replace(/([A-Za-z0-9△▱∠⊥∥∽≌²³)])\s+([\u4e00-\u9fff])/g, '$1$2')
+    .replace(/\s*([=+\-∶:∽≌∥⊥⇒])\s*/g, '$1');
+  function fmtAtom(seg) {
+    return seg.replace(/([0-9]+(?:\.[0-9]+)?)?√\(([^)]+)\)|([0-9]+(?:\.[0-9]+)?)?√([0-9A-Za-z²³+\-]+)|Rt△|△|[A-Za-z]+|[0-9]+(?:\.[0-9]+)?|[²³]|[=+\-±×÷·:∶∠⊥∥∽≌°⇒/]/g, (m, c1, radParen, c2, radBare) => {
+      if (radParen !== undefined || radBare !== undefined) {
+        const coef = c1 || c2 || '';
+        const inner = radParen !== undefined ? radParen : radBare;
+        const coefHtml = coef ? `<span class="num">${coef}</span>` : '';
+        return `<span style="white-space:nowrap;">${coefHtml}<span class="sqrt"><span>${fmtAtom(inner)}</span></span></span>`;
+      }
+      if (m === 'Rt△') return '<span class="num">Rt</span><span class="tri-sym">△</span>';
+      if (m === '△') return '<span class="tri-sym">△</span>';
+      if (m === '²') return '<sup><span class="num">2</span></sup>';
+      if (m === '³') return '<sup><span class="num">3</span></sup>';
+      if (/^[A-Za-z]+$/.test(m)) return `<i class="m">${m}</i>`;
+      return `<span class="num">${m}</span>`;
+    });
+  }
+  return fmtAtom(clean);
+};
+
 window.defineSlide = function(cfg) {
   window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
   window.UNIT1_SIMS = window.UNIT1_SIMS || {};
@@ -3354,7 +3413,8 @@ window.defineSlide = function(cfg) {
     } else {
       bodyPart = String(st || '');
     }
-    const titlePart = stTitle ? `<b>步骤<span class="num">${num}</span>（${stTitle}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
+    const fmtTitle = window.formatInlineMathHTML(stTitle);
+    const titlePart = fmtTitle ? `<b>步骤<span class="num">${num}</span>（${fmtTitle}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
     return `<div class="step step-locked"><b>${badge}</b><span>${titlePart}${bodyPart}</span></div>`;
   }).join('\n          ');
 
@@ -3468,6 +3528,126 @@ window.renderMultiPanelScene = function(step, panels, opts = {}) {
   </svg>`;
 };
 
+// ================= 波利亚级（Polya-Grade）SVG 几何图示清晰标注引擎（100% 纯原生 SVG 图元，严禁嵌套子 <svg>） =================
+// 1. 顶部色彩图例条（纯 SVG 绘制，彻底杜绝 .visual svg 样式污染导致图标放大）
+window.svgLegendBar = function(items, opts = {}) {
+  const list = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!list.length) return '';
+  const x = opts.x !== undefined ? opts.x : 12;
+  const y = opts.y !== undefined ? opts.y : 6;
+  const w = opts.width || 516;
+  const h = opts.height || 28;
+  const cy = y + h / 2;
+  const fs = opts.fontSize || 12.5;
+
+  function estTextW(str) {
+    let tw = 0;
+    const s = String(str || '');
+    for (let i = 0; i < s.length; i++) {
+      tw += fs * (s.charCodeAt(i) > 127 ? 0.92 : 0.54);
+    }
+    return tw;
+  }
+
+  const measured = list.map(it => {
+    const type = it.type || 'angle';
+    const iconW = type === 'dash' ? 18 : (type === 'line' ? 16 : 15);
+    const rawTxt = String(it.text || it.html || '').replace(/<[^>]+>/g, '');
+    const tw = estTextW(rawTxt);
+    return { it, type, iconW, rawTxt, tw, totalW: iconW + 4 + tw };
+  });
+
+  const gap = 16;
+  const sumW = measured.reduce((acc, m) => acc + m.totalW, 0) + gap * (measured.length - 1);
+  let curX = x + Math.max(8, (w - sumW) / 2);
+
+  let out = `<g class="svg-legend-bar">`;
+  out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="rgba(248,250,252,0.96)" stroke="#cbd5e1" stroke-width="1.2"/>`;
+
+  measured.forEach((m, idx) => {
+    const color = m.it.color || '#2563eb';
+    if (m.type === 'angle') {
+      out += `<path d="M ${(curX + 13).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 1).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 10).toFixed(1)} ${(cy - 5).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+      out += `<path d="M ${(curX + 8).toFixed(1)} ${(cy + 5).toFixed(1)} A 6.5 6.5 0 0 0 ${(curX + 6.3).toFixed(1)} ${(cy - 0.8).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.5"/>`;
+    } else if (m.type === 'dash') {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 18).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/>`;
+    } else if (m.type === 'tri') {
+      out += `<polygon points="${(curX + 7).toFixed(1)},${(cy - 5.5).toFixed(1)} ${(curX + 1).toFixed(1)},${(cy + 5).toFixed(1)} ${(curX + 13).toFixed(1)},${(cy + 5).toFixed(1)}" fill="${m.it.fill || 'rgba(234,88,12,0.22)'}" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>`;
+    } else {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 16).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-linecap="round"/>`;
+    }
+    const tx = curX + m.iconW + 4;
+    const ty = cy + 4.5;
+    out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    curX += m.totalW + gap;
+    if (idx < measured.length - 1) {
+      const sepX = curX - gap / 2;
+      out += `<line x1="${sepX.toFixed(1)}" y1="${(y + 6).toFixed(1)}" x2="${sepX.toFixed(1)}" y2="${(y + h - 6).toFixed(1)}" stroke="#cbd5e1" stroke-width="1.2"/>`;
+    }
+  });
+
+  out += `</g>`;
+  return out;
+};
+
+// 2. 数字角直观标注（支持同顶点阶梯半径与纯数字 1, 2, 3, 4, 5 标注，配角平分线引线防挤压）
+window.svgNumberedAngle = function(v, pStart, pEnd, numStr, opts = {}) {
+  const radius = opts.radius || 28;
+  const color = opts.color || '#2563eb';
+  const fill = opts.fill || 'none';
+  const labelDist = opts.labelDist || (radius + 13);
+  const dx1 = pStart[0] - v[0], dy1 = pStart[1] - v[1];
+  const dx2 = pEnd[0] - v[0], dy2 = pEnd[1] - v[1];
+  let a1 = Math.atan2(dy1, dx1);
+  let a2 = Math.atan2(dy2, dx2);
+  let diff = a2 - a1;
+  while (diff <= -Math.PI) diff += Math.PI * 2;
+  while (diff > Math.PI) diff -= Math.PI * 2;
+  const sweep = diff > 0 ? 1 : 0;
+  const sx = v[0] + Math.cos(a1) * radius;
+  const sy = v[1] + Math.sin(a1) * radius;
+  const ex = v[0] + Math.cos(a2) * radius;
+  const ey = v[1] + Math.sin(a2) * radius;
+  let out = '';
+  if (fill && fill !== 'none') {
+    out += `<path d="M ${v[0].toFixed(1)} ${v[1].toFixed(1)} L ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)} Z" fill="${fill}" stroke="none"/>`;
+  }
+  out += `<path d="M ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)}" fill="none" stroke="${color}" stroke-width="2.1"/>`;
+  if (numStr !== undefined && numStr !== null && String(numStr) !== '') {
+    const midA = a1 + diff / 2 + (opts.angleShift || 0);
+    const lx = v[0] + Math.cos(midA) * labelDist + (opts.dx || 0);
+    const ly = v[1] + Math.sin(midA) * labelDist + 4.5 + (opts.dy || 0);
+    if (opts.leader) {
+      const mx = v[0] + Math.cos(midA) * (radius * 0.75);
+      const my = v[1] + Math.sin(midA) * (radius * 0.75);
+      const tx = v[0] + Math.cos(midA) * (labelDist - 7) + (opts.dx || 0);
+      const ty = v[1] + Math.sin(midA) * (labelDist - 7) + (opts.dy || 0);
+      out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="${color}" stroke-width="1.3"/>`;
+    }
+    const inner = window.svgAutoFormatText(String(numStr), opts.fontSize || 14);
+    out += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${opts.fontSize || 14}" fill="${color}" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${inner}</text>`;
+  }
+  return out;
+};
+
+// 3. 求解目标/关键结论引线气泡框（如“求 BC = ?”或“BC = 4√3”）
+window.svgCalloutTag = function(anchorPt, boxRect, innerHtml, opts = {}) {
+  const color = opts.color || '#15803d';
+  const bg = opts.bg || '#f0fdf4';
+  const [ax, ay] = anchorPt;
+  const [bx, by, bw, bh] = boxRect;
+  const cy = by + bh / 2;
+  const startX = ax < bx ? bx : (ax > bx + bw ? bx + bw : bx + bw / 2);
+  return `<g>
+    <line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${startX.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="1.8"/>
+    <circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="3.2" fill="${color}"/>
+    <foreignObject x="${bx}" y="${by}" width="${bw}" height="${bh}" style="overflow:visible;">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;box-sizing:border-box;background:${bg};border:1.8px solid ${color};border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-family:'Times New Roman','Songti SC','SimSun',serif;font-size:14.5px;font-weight:700;color:${color};white-space:nowrap;box-shadow:0 2px 5px rgba(15,23,42,0.06);">${innerHtml}</div>
+    </foreignObject>
+  </g>`;
+};
+
+
 
 
 
@@ -3476,12 +3656,12 @@ window.renderMultiPanelScene = function(step, panels, opts = {}) {
 window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
 window.UNIT1_SIMS = window.UNIT1_SIMS || {};
 window.COURSEWARE_BRAND = '反比例函数';
-window.COURSEWARE_TITLE = '2.3.1 反比例函数的应用（1）';
+window.COURSEWARE_TITLE = '2.3.1 反比例函数应用(1)';
 window.COURSEWARE_PHASES = [
   ['① 情境引入', '湿地铺板压强激活'],
   ['② 新知探究', '蓄电池与桔槔实验探究'],
-  ['③ 新知应用', '第<span class="num">1—5</span>题典例精析'],
-  ['④ 分层训练', '训练<span class="num">1—2</span>与课堂小结']
+  ['③ 新知应用', '第1—5题典例精析'],
+  ['④ 分层训练', '训练1—2与课堂小结']
 ];
 
 // =========================================================================
@@ -5397,7 +5577,10 @@ const fmt=(v,n=2)=>Number(v).toFixed(n);
 function slider(key,label,min,max,value,step=1,unit=''){
   if (simState[key] === undefined) simState[key]=value;
   const plain = String(label).replace(/<[^>]*>/g, '');
-  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${simState[key]}" step="${step}" aria-label="${plain}"><output data-value="${key}">${simState[key]}${unit}</output></label>`;
+  const curVal = simState[key];
+  const numVal = Number(curVal);
+  const dispVal = (!isNaN(numVal) && !Number.isInteger(numVal)) ? numVal.toFixed(2) : curVal;
+  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${curVal}" step="${step}" aria-label="${plain}"><output data-value="${key}">${dispVal}${unit}</output></label>`;
 }
 function select(key,label,options,value){
   if (simState[key] === undefined) simState[key]=value;
@@ -5409,8 +5592,9 @@ function actions(items, activeKey){
   return `<div class="actions">${items.map(([k,t])=>`<button type="button" data-action="${k}" class="${cur===k?'active-act':''}">${t}</button>`).join('')}</div>`;
 }
 function modeButtons(key, curVal, items){
-  if (simState[key] === undefined) simState[key] = curVal;
-  const active = simState[key] !== undefined ? simState[key] : curVal;
+  if (curVal !== undefined) simState[key] = curVal;
+  else if (simState[key] === undefined && items && items.length) simState[key] = items[0][0];
+  const active = curVal !== undefined ? curVal : simState[key];
   return `<div class="actions">${items.map(([v, label, syncStep]) => `<button type="button" data-mode-key="${key}" data-mode-val="${v}" ${syncStep !== undefined ? `data-sync-step="${syncStep}"` : ''} class="${String(active) === String(v) ? 'active-act' : ''}">${label}</button>`).join('')}</div>`;
 }
 window.slider = slider;
@@ -5718,18 +5902,16 @@ function syncSlideProgression(state) {
   }
   const sn = root.querySelector('.screen-notes');
   if (sn) {
-    if (s === 0 && !hasAnyManual(state)) {
+    if ((s === 0 && !hasAnyManual(state)) || maxStep <= 2) {
       sn.scrollTop = 0;
-    } else if (s >= maxStep && sn.scrollHeight > sn.clientHeight + 4) {
-      sn.scrollTop = sn.scrollHeight;
     } else {
       const activeEl = sn.querySelector('.step.step-active');
       if (activeEl && sn.scrollHeight > sn.clientHeight + 4) {
         const elBottom = activeEl.offsetTop + activeEl.offsetHeight;
         if (elBottom > sn.scrollTop + sn.clientHeight) {
-          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 12);
+          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 8);
         } else if (activeEl.offsetTop < sn.scrollTop) {
-          sn.scrollTop = Math.max(0, activeEl.offsetTop - 12);
+          sn.scrollTop = Math.max(0, activeEl.offsetTop - 8);
         }
       }
     }
@@ -6106,7 +6288,10 @@ function bindSimControls(type){
       simState[k] = isNaN(+e.target.value) ? e.target.value : +e.target.value;
       if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       const out = ctrlBox.querySelector(`output[data-value="${k}"]`);
-      if (out) out.textContent = e.target.value;
+      if (out) {
+        const nv = Number(e.target.value);
+        out.textContent = (!isNaN(nv) && !Number.isInteger(nv)) ? nv.toFixed(2) : e.target.value;
+      }
       // 拖动滑块时屏蔽 controls.innerHTML 重建，保持滑块焦点不断连
       Object.defineProperty(ctrlBox, 'innerHTML', {
         configurable: true,
@@ -6159,9 +6344,9 @@ function bindSimControls(type){
       e.stopPropagation();
       const k = mBtn.dataset.modeKey;
       const v = mBtn.dataset.modeVal;
-      simState[k] = isNaN(+v) ? v : +v;
+      simState[k] = (typeof simState[k] === 'number') ? (isNaN(+v) ? v : +v) : v;
       if (mBtn.dataset.syncStep !== undefined) {
-        simState.step = Number(mBtn.dataset.syncStep);
+        simState.step = Math.max(Number(simState.step || 0), Number(mBtn.dataset.syncStep));
       }
       if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       runSimFn(fn, simState, false);

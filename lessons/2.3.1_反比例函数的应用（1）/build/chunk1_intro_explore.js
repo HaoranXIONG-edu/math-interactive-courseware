@@ -1,12 +1,12 @@
 window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
 window.UNIT1_SIMS = window.UNIT1_SIMS || {};
 window.COURSEWARE_BRAND = '反比例函数';
-window.COURSEWARE_TITLE = '2.3.1 反比例函数的应用（1）';
+window.COURSEWARE_TITLE = '2.3.1 反比例函数应用(1)';
 window.COURSEWARE_PHASES = [
   ['① 情境引入', '湿地铺板压强激活'],
   ['② 新知探究', '蓄电池与桔槔实验探究'],
-  ['③ 新知应用', '第<span class="num">1—5</span>题典例精析'],
-  ['④ 分层训练', '训练<span class="num">1—2</span>与课堂小结']
+  ['③ 新知应用', '第1—5题典例精析'],
+  ['④ 分层训练', '训练1—2与课堂小结']
 ];
 
 // =========================================================================

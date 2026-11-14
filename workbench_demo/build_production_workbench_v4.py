@@ -14,13 +14,17 @@ import base64
 import os
 
 def generate_v4():
-    with open('/Users/xionghaoran/数学交互式课件/courseware_assets/exam_database.json', 'r', encoding='utf-8') as f:
+    demo_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.dirname(demo_dir)
+    assets_dir = os.path.join(repo_root, 'courseware_assets')
+
+    with open(os.path.join(assets_dir, 'exam_database.json'), 'r', encoding='utf-8') as f:
         exam_db = json.load(f)
 
-    with open('/Users/xionghaoran/数学交互式课件/courseware_assets/students_summary.json', 'r', encoding='utf-8') as f:
+    with open(os.path.join(assets_dir, 'students_summary.json'), 'r', encoding='utf-8') as f:
         students_summary = json.load(f)
 
-    with open('/Users/xionghaoran/数学交互式课件/courseware_assets/embedded_b64.json', 'r', encoding='utf-8') as f:
+    with open(os.path.join(assets_dir, 'embedded_b64.json'), 'r', encoding='utf-8') as f:
         b64_dict = json.load(f)
 
     # 确保第 3 题的选项配图包含 Base64 数据 URL
@@ -3187,15 +3191,12 @@ window.addEventListener('DOMContentLoaded', () => {{
 </html>
 """
 
-    out_file1 = '/Users/xionghaoran/数学交互式课件/One·ai_讲评工作台_动态演示.html'
-    out_file2 = '/Users/xionghaoran/数学交互式课件/智学网讲评模式_动态交互演示Demo.html'
+    out_file1 = os.path.join(demo_dir, 'One·ai_讲评工作台_动态演示.html')
 
     with open(out_file1, 'w', encoding='utf-8') as f:
         f.write(html)
-    with open(out_file2, 'w', encoding='utf-8') as f:
-        f.write(html)
 
-    print(f"Generated v3 successfully!\n- {out_file1}\n- {out_file2}")
+    print(f"Generated v4 successfully!\n- {out_file1}")
 
 if __name__ == '__main__':
     generate_v4()

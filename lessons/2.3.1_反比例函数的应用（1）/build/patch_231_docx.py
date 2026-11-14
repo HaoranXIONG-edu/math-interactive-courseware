@@ -20,7 +20,7 @@ SCRIPT_DIR = os.path.join(REPO_ROOT, ".agents", "skills", "math-interactive-cour
 sys.path.insert(0, SCRIPT_DIR)
 from docx_inplace_patcher import DocxWorksheetPatcher, W_NS, WP_NS, A_NS, R_NS
 
-SRC_DOCX = "/Users/xionghaoran/.gemini/antigravity/brain/8af58b38-6a7b-4412-a8d5-e675efab4539/.user_uploaded/media_1794392363273_b66df882.docx"
+SRC_DOCX = os.environ.get("SRC_DOCX", os.path.join(LESSON_DIR, "2.3.1_反比例函数的应用（1）_原学案.docx"))
 REDRAWN_DIR = os.path.join(BUILD_DIR, "redrawn_media")
 OUT_DOCX = os.path.join(LESSON_DIR, "2.3.1_反比例函数的应用（1）_学生学案_优化版.docx")
 

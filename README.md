@@ -5,7 +5,7 @@
 [![Platform](https://img.shields.io/badge/platform-Seewo%20%7C%20Web%20%7C%20iPad-orange.svg)]()
 
 > 本项目是一套专门面向**初中数学课堂教学、希沃（Seewo）白板大屏、Pad 触屏交互**的工业级学案优化与动态课件全自动化开发流水线。
-> 实现了从**原版 Word 学案原地无损精修（In-Place XML Patching）**到**单文件高帧率、纯原生、零剧透的交互式 HTML 动态讲解课件**的端到端生产闭环。
+> 实现了从**原版 Word 学案原地无损修补（In-Place XML Patching）**到**单文件高帧率、纯原生、渐进式呈现的交互式 HTML 动态讲解课件**的端到端生产闭环。
 
 ---
 
@@ -27,19 +27,19 @@
 
 ```mermaid
 flowchart TD
-  subgraph Stage1["第一阶段：学案原地体检与无损精修（定稿 .docx）"]
-    A[原版 Word 学案 .docx] --> B[inspect_docx_worksheet.py 自动化体检]
+  subgraph Stage1["第一阶段：学案结构解析与无损修补（定稿 .docx）"]
+    A[原版 Word 学案 .docx] --> B[inspect_docx_worksheet.py 结构解析与审计]
     B --> C[WMF/MathType 自动解码为 LaTeX 公式]
     B --> D[提取并审计配图分辨率/裁剪参数]
-    C & D --> E[数学可解性验算 & 零自由常数检查]
+    C & D --> E[数学可解性验算 & 零自由常数校验]
     E --> F[并发重绘 300 DPI 高清配图]
-    F --> G[docx_inplace_patcher.py 原地打补丁]
+    F --> G[docx_inplace_patcher.py 原地 XML 修补]
     G --> H[输出优化版学案 .docx 与修改清单]
   end
 
-  H --> Gate{{"🛑 强制暂停确认门禁<br/>用户审阅定稿"}}
+  H --> Gate{{"🛑 阶段确认门禁<br/>用户审阅定稿"}}
 
-  subgraph Stage2["第二阶段：1:1 动态课件生成（.html）"]
+  subgraph Stage2["第二阶段：1:1 动态课件编译（.html）"]
     Gate -->|用户确认定稿/回传微调| I[提取课时定稿蓝图]
     I --> J[多智能体并发编写 chunk1/chunk2/chunk3.js]
     J --> K[compile_seewo_courseware.py 一键编译]
@@ -49,11 +49,11 @@ flowchart TD
 ```
 
 ### 阶段一：学案结构解析与无损修补（.docx）
-1. **自动化体检与公式解码**：
+1. **结构解析与公式解码**：
    - 运行 `inspect_docx_worksheet.py`，全自动扫描文档结构；
    - 彻底解码遗留 MathType `<w:object>`（WMF 矢量碎片）与原生 `<m:oMath>`，转换为内联 `$LaTeX$` 公式；
-   - 过滤公式垃圾切片，仅导出真正的几何/函数配图，审计物理尺寸与 `<a:srcRect>` 裁剪边界。
-2. **数学可解性与几何零自由常数铁律（Mathematical Solvability）**：
+   - 过滤公式矢量碎片，仅导出有效几何/函数配图，审计物理尺寸与 `<a:srcRect>` 裁剪边界。
+2. **数学可解性与几何零自由常数规范（Mathematical Solvability）**：
    - 严禁随意设定无约束常数坐标；
    - 除动点（如 $A(x_0, k/x_0)$）外，垂足、交点、对称点坐标必须严格由已知条件方程推导计算；
    - 严格进行代数消元检验（确保所求面积/线段无无法消除的未知变量）；
@@ -62,7 +62,7 @@ flowchart TD
    - 严禁丢弃模板重新生成 docx。调用 `docx_inplace_patcher.py` 定点替换 `word/document.xml`；
    - 100% 保留页面边距、抬头页眉、四号（12pt）字号、1.5倍行距；
    - 彻底清空 `<mc:AlternateContent>` 浮动圆角归纳框下方被遮挡的废弃模板残留段落，同步更新 DrawingML 与 VML 双分支。
-4. **🛑 强制确认门禁**：
+4. **🛑 阶段确认门禁**：
    - 交付 `xxx_学生学案_优化版.docx` 及清单，明确向用户确认：“请确认学案是否定稿，确认后将 1:1 生成对应 HTML 课件”。
 
 ### 阶段二：基于定稿学案的 1:1 课件编译（.html）
@@ -118,7 +118,7 @@ flowchart TD
    - 已知边长及转移后的等量，紧贴线段标出数值（如 `4`）。
 5. **视觉渲染层级**：
    $$\text{底层柔和三角形色块} \longrightarrow \text{原题实线与辅助虚线} \longrightarrow \text{角弧/短杠/直角标} \longrightarrow \text{顶层顶点圆点/斜体字母/图例条}$$
-6. **图内公式 100% 采用标准二维上下叠置分式铁律（严禁单行斜杠 `/` 拼凑）**：
+6. **图内公式二维上下叠置分式规范（严禁单行斜杠 `/` 拼凑）**：
    - 设元边长（如 $NF = \frac{4}{3}(4-x)$、$BF = \frac{25-4x}{3}$）及模型比例（$\frac{PF}{PE} = \frac{4}{3}n$），一律调用 `window.svgFoLabel` 或在 `<foreignObject>` 中以 `.fraction` 渲染标准叠置分式，严禁在 `<text>` 中单行裸写 `4/3(4-x)` 或 `(25-4x)/3`；
    - 编译脚本内置 `BARE SLASH FRACTION IN SVG TEXT DETECTED` 语法门禁进行强制校验拦截。
 
@@ -126,11 +126,11 @@ flowchart TD
 
 ## 四、渐进式呈现与教学节奏控制规范
 
-1. **初始状态（`step = 0`）绝对纯净**：
+1. **初始状态（`step = 0`）留白控制**：
    - 进入页面时，所有推导步骤卡片默认隐藏，填空处保持留白；
-   - **坐标系防剧透**：对于原学案无配图、课件补充坐标系的题目，`step = 0` 时右侧**仅展示空白坐标轴与网格**，严禁提前画出双曲线或描出关键点；
-   - **几何图防剧透**：`step = 0` 严格还原原题，辅助线与色块在对应步骤触发时动态生长。
-2. **定性观察与严禁测量读数（Qualitative Observation Only）**：
+   - **坐标系初始状态**：对于原学案无配图、课件补充坐标系的题目，`step = 0` 时右侧**仅展示空白坐标轴与网格**，严禁提前画出双曲线或描出关键点；
+   - **几何图初始状态**：`step = 0` 严格还原原题，辅助线与色块在对应步骤触发时动态生长。
+2. **定性观察与禁用动态测量读数（Qualitative Observation Only）**：
    - 滑块（Slider）仅用于**定性拖动观察图形联动变化**（如观察点 $P$ 移动时矩形形态或相似三角形对应关系）；
    - **绝对禁止在滑块旁或画布上输出动态测量数值读数（如 `3.30`）**，避免干扰严谨的几何证明逻辑。
 3. **长题与多问拆页规范**：
@@ -142,7 +142,7 @@ flowchart TD
 
 ## 五、工具链接口与命令行使用说明
 
-### 1. 学案体检与配图审计 (`inspect_docx_worksheet.py`)
+### 1. 学案结构解析与配图审计 (`inspect_docx_worksheet.py`)
 ```bash
 python3 .agents/skills/math-interactive-courseware/scripts/inspect_docx_worksheet.py \
   "path/to/学案.docx" \
@@ -183,7 +183,7 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_coursew
 │   │   ├── seewo_shell_prefix.html             # 顶层交互容器、样式表、数学引擎库
 │   │   └── seewo_shell_suffix.html             # 播放控制条、快捷键、手写荧光笔
 │   └── scripts/                                # 核心自动化编译与修补工具
-│       ├── inspect_docx_worksheet.py           # 学案体检与 WMF/OMML 公式解码器
+│       ├── inspect_docx_worksheet.py           # 学案结构解析与 WMF/OMML 公式解码器
 │       ├── docx_inplace_patcher.py             # 原地无损 Word XML 补丁器
 │       ├── compile_seewo_courseware.py         # 课件一键编译器与契约门禁仿真器
 │       └── audit_figure_script.py              # 配图真实数学坐标与可解性校验器
@@ -198,8 +198,8 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_coursew
 ├── workbench_demo/                             # One·ai 讲评工作台动态演示与构建脚本
 │   ├── One·ai_讲评工作台_动态演示.html
 │   ├── build_production_workbench_v4.py
-│   ├── v4_js_patch.js
-│   └── archive/                                # 历史迭代脚本（v1–v3）
+│   └── v4_js_patch.js
+├── requirements.txt                            # Python 运行环境依赖声明
 ├── LICENSE
 └── README.md
 ```

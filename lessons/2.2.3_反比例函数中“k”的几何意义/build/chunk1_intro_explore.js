@@ -1,11 +1,12 @@
 window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
 window.UNIT1_SIMS = window.UNIT1_SIMS || {};
 window.COURSEWARE_BRAND = '反比例函数';
+window.COURSEWARE_TITLE = '2.2.3 “k”的几何意义';
 window.COURSEWARE_PHASES = [
   ['① 情境引入', '核心面积激活'],
-  ['② 新知探究', '问题<span class="num">1—4</span>模型探究'],
-  ['③ 新知应用', '第<span class="num">1—5</span>题典例精析'],
-  ['④ 分层训练', '训练<span class="num">1—3</span>与课堂小结']
+  ['② 新知探究', '问题1—4模型探究'],
+  ['③ 新知应用', '第1—5题典例精析'],
+  ['④ 分层训练', '训练1—3与课堂小结']
 ];
 
 // ================= SVG 辅助绘制函数（标准二维分式、白描边防压线、坐标轴） =================

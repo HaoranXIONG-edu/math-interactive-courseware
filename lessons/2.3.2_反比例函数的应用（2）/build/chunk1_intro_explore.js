@@ -1,12 +1,12 @@
 window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
 window.UNIT1_SIMS = window.UNIT1_SIMS || {};
 window.COURSEWARE_BRAND = '北师大版九上 · 第二章';
-window.COURSEWARE_TITLE = '2.3.2 反比例函数的应用（2）';
+window.COURSEWARE_TITLE = '2.3.2 反比例函数应用(2)';
 window.COURSEWARE_PHASES = [
   ['① 情境引入', '一次与反比例交点激活'],
-  ['② 新知探究·问题1', '电子秤复合电路建模'],
-  ['③ 新知探究·问题2', '图形间距离与隔音屏障'],
-  ['④ 新知探究·问题3', '崂山矿泉水供需与小结']
+  ['② 问题1探究', '电子秤复合电路建模'],
+  ['③ 问题2探究', '图形间距离与隔音屏障'],
+  ['④ 问题3探究', '崂山矿泉水供需与小结']
 ];
 
 (function () {

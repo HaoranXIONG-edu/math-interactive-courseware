@@ -5,6 +5,14 @@ window.SLIDES_CHUNK1 = window.UNIT1_THEOREM_SLIDES;
 window.SIMS_CHUNK1 = window.UNIT1_SIMS;
 window.SLIDES_CHUNK = window.UNIT1_THEOREM_SLIDES;
 window.SIMS_CHUNK = window.UNIT1_SIMS;
+window.COURSEWARE_BRAND = '反比例函数';
+window.COURSEWARE_TITLE = '2.2.2 反比例函数图象(2)';
+window.COURSEWARE_PHASES = [
+  ['① 情境引入', '图象特征回顾激活'],
+  ['② 新知探究', '增减性与k的几何意义'],
+  ['③ 新知应用', '第1—6题典例精析'],
+  ['④ 分层训练', '训练1—2与课堂小结']
+];
 
 // 注入补充样式：确保 <em> 与 .frac (.num / .den) 及笔记卡片严格符合数学排版规范
 if (typeof document !== 'undefined' && document.head && !document.getElementById('chunk1-math-style')) {
@@ -86,7 +94,7 @@ if (typeof document !== 'undefined' && document.head && !document.getElementById
 function svgStackedFrac(x, y, numText, denText, color = '#1d4ed8', signText = '', lhsText = 'y') {
   const hasSign = Boolean(signText);
   const eqText = lhsText ? `<tspan font-style="italic">${lhsText}</tspan> = ${signText}` : signText;
-  const fracCx = lhsText ? (hasSign ? 50 : 35) : (hasSign ? 22 : 10);
+  const fracCx = lhsText ? (hasSign ? 56 : 38) : (hasSign ? 26 : 12);
   const lineHalf = Math.max(9, Math.max(String(numText).length, String(denText).length) * 5.5);
   const denIsVar = /^[a-zA-Z]$/.test(String(denText).trim());
   const numIsVar = /^[a-zA-Z]$/.test(String(numText).trim());
@@ -730,7 +738,7 @@ Object.assign(window.UNIT1_SIMS, {
     const showCompare = (step >= 3 || mode === 'm2');
 
     scene.innerHTML = `
-      <svg viewBox="0 0 520 430" style="width:100%;height:100%;max-height:100%;display:block;" aria-label="探究k<0时的三个反比例函数图象与性质归纳">
+      <svg viewBox="0 0 520 430" style="width:100%;height:100%;max-height:100%;display:block;" aria-label="探究k&lt;0时的三个反比例函数图象与性质归纳">
         <defs>
           <marker id="arrAxisKNeg" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#1e293b"/>
@@ -766,7 +774,7 @@ Object.assign(window.UNIT1_SIMS, {
         <line x1="52" y1="${oy}" x2="472" y2="${oy}" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arrAxisKNeg)"/>
         <line x1="${ox}" y1="418" x2="${ox}" y2="128" stroke="#1e293b" stroke-width="2.2" marker-end="url(#arrAxisKNeg)"/>
         <text x="478" y="${oy + 5}" font-family="'Times New Roman', serif" font-style="italic" font-size="17" font-weight="700" fill="#1e293b">x</text>
-        <text x="${ox + 8}" y="138" font-family="'Times New Roman', serif" font-style="italic" font-size="17" font-weight="700" fill="#1e293b">y</text>
+        <text x="${ox - 14}" y="138" font-family="'Times New Roman', serif" font-style="italic" font-size="17" font-weight="700" fill="#1e293b">y</text>
         <text x="${ox - 14}" y="${oy + 16}" font-family="'Times New Roman', serif" font-style="italic" font-size="15" font-weight="700" fill="#1e293b">O</text>
 
         ${showCompare ? `
@@ -909,7 +917,7 @@ Object.assign(window.UNIT1_SIMS, {
         <!-- 双曲线 y = 4/x -->
         <polyline points="${q1Pts.join(' ')}" fill="none" stroke="#2563eb" stroke-width="3.6" stroke-linecap="round"/>
         <polyline points="${q3Pts.join(' ')}" fill="none" stroke="#2563eb" stroke-width="3.6" stroke-linecap="round"/>
-        ${svgStackedFrac(368, 92, '4', 'x', '#1d4ed8', '', 'y')}
+        ${svgStackedFrac(405, 130, '4', 'x', '#1d4ed8', '', 'y')}
 
         <!-- 点 A 与 点 B 投影虚线及坐标点 -->
         <line x1="${cx(xA)}" y1="${oy}" x2="${cx(xA)}" y2="${cy(yA)}" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="4,3"/>
@@ -935,7 +943,7 @@ Object.assign(window.UNIT1_SIMS, {
             <text x="124" y="24" text-anchor="middle" font-family="'SimSun', serif" font-size="14.5" font-weight="700" fill="${isCross ? '#991b1b' : '#166534'}">${isCross ? '✗ 跨象限反例（结论不成立！）' : '✓ 同一象限内（结论成立）'}</text>
             <text x="16" y="50" font-family="'SimSun', serif" font-size="14" font-weight="700" fill="#1e293b">自变量：<tspan font-family="'Times New Roman', serif" font-style="italic">x</tspan><tspan font-size="10" dy="3">1</tspan><tspan dy="-3"> = ${xA.toFixed(1)} &lt; </tspan><tspan font-family="'Times New Roman', serif" font-style="italic">x</tspan><tspan font-size="10" dy="3">2</tspan><tspan dy="-3"> = ${xB.toFixed(1)}（增大）</tspan></text>
             <text x="16" y="75" font-family="'SimSun', serif" font-size="14" font-weight="700" fill="${isCross ? '#dc2626' : '#15803d'}">函数值：<tspan font-family="'Times New Roman', serif" font-style="italic">y</tspan><tspan font-size="10" dy="3">1</tspan><tspan dy="-3"> = ${yA.toFixed(1)} ${yA < yB ? '&lt;' : '&gt;'} </tspan><tspan font-family="'Times New Roman', serif" font-style="italic">y</tspan><tspan font-size="10" dy="3">2</tspan><tspan dy="-3"> = ${yB.toFixed(1)}（${yA < yB ? '反而增大!' : '减小'}）</tspan></text>
-            <text x="16" y="96" font-family="'SimSun', serif" font-size="12.5" font-weight="700" fill="#475569">${isCross ? '原因：第三象限 y<0，第一象限 y>0' : '原因：同在第一象限，x增大则y减小'}</text>
+            <text x="16" y="96" font-family="'SimSun', serif" font-size="12.5" font-weight="700" fill="#475569">${isCross ? '原因：第三象限 y&lt;0，第一象限 y&gt;0' : '原因：同在第一象限，x增大则y减小'}</text>
           </g>
         ` : ''}
       </svg>

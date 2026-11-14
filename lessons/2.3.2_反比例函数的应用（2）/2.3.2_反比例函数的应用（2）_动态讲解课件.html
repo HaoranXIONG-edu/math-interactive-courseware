@@ -133,23 +133,32 @@ sup span, sup i, sup b,
   padding: 1px 0.22em 0;
 }
 .sqrt {
-  display: inline-flex;
-  align-items: baseline;
+  display: inline-flex !important;
+  align-items: baseline !important;
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
   font-weight: inherit;
   margin: 0 1px;
+  white-space: nowrap !important;
 }
 .sqrt::before {
-  content: "√";
-  font-size: 1.05em;
+  content: "\221A";
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+  font-size: 1.06em;
   line-height: 1;
-  margin-right: 1px;
+  margin-right: -0.04em;
 }
 .sqrt > span {
-  border-top: 1.8px solid currentColor;
-  padding: 0 2px;
-  line-height: 1.05;
+  border-top: 1.7px solid currentColor !important;
+  padding: 0 2px 0 1px !important;
+  line-height: 1.04 !important;
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+}
+.sqrt > span i.m {
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: italic !important;
 }
 .overline {
   border-top: 1.8px solid currentColor;
@@ -1538,7 +1547,7 @@ body.canvas-zoom-mode .step-btn.next {
 }
 .screen-notes .step.step-locked::after {
   content: attr(data-lock-msg);
-  font-family: 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
+  font-family: 'Times New Roman', 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
   font-size: 21.5px;
   font-weight: 700;
   color: #475569;
@@ -1561,6 +1570,16 @@ body.canvas-zoom-mode .step-btn.next {
 .screen-notes .step > span {
   font-size: 24px !important;
   line-height: 1.46 !important;
+}
+.screen-notes .step > span b {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-weight: 700 !important;
+  color: inherit;
+}
+.screen-notes .step > span > b:first-child {
+  color: #1e3a8a;
 }
 .step-sub-part.sub-step-locked > * {
   display: none !important;
@@ -2241,6 +2260,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-notes {
   order: 1 !important;
+  grid-column: 1 !important;
   background: #ffffff;
   border: 1.5px solid #cbd5e1;
   border-radius: 14px;
@@ -2249,6 +2269,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-media {
   order: 2 !important;
+  grid-column: 2 !important;
   background: #ffffff;
   border: 2px solid #0d9488;
   border-radius: 14px;
@@ -2739,6 +2760,11 @@ body.canvas-zoom-mode .step-btn.zoom {
 .visual svg text {
   font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
 }
+.visual foreignObject svg,
+.screen-lab foreignObject svg {
+  width: auto !important;
+  height: auto !important;
+}
 .svg-fo-card {
   box-sizing: border-box;
   width: 100%;
@@ -2943,7 +2969,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
 
   const subMap = { '₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9','ₙ':'n' };
   const supMap = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9' };
-  const masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g;
+  const masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)|√\(([^)]+)\)|√([0-9A-Za-z]+)/g;
 
   let result = '';
   let lastIdx = 0;
@@ -2975,6 +3001,12 @@ window.svgAutoFormatText = function(rawText, baseSize) {
         formatFlatTokens(supStr, true) +
         `</tspan>`;
       pendingDy = supDy;
+    } else if (match[5] !== undefined || match[6] !== undefined) {
+      const radContent = match[5] !== undefined ? match[5] : match[6];
+      const rAttr = consumeDyAttr(0, null);
+      result += `<tspan${rAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}">√</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}" text-decoration="overline">` +
+        formatFlatTokens(radContent, false) +
+        `</tspan>`;
     }
     lastIdx = masterRe.lastIndex;
   }
@@ -3322,6 +3354,33 @@ window.createCoordCanvas = function(arg1 = {}, arg2, arg3) {
 };
 
 // ================= 声明式课件页面构建器（window.defineSlide，强制 1对1 步数/填空/图形同步契约） =================
+window.formatInlineMathHTML = function(rawStr) {
+  if (!rawStr) return '';
+  const s = String(rawStr);
+  if (/<(span|i|sup|sub|b)\b/i.test(s)) return s;
+  let clean = s
+    .replace(/([\u4e00-\u9fff])\s+([A-Za-z0-9△▱∠⊥∥∽≌=+\-√])/g, '$1$2')
+    .replace(/([A-Za-z0-9△▱∠⊥∥∽≌²³)])\s+([\u4e00-\u9fff])/g, '$1$2')
+    .replace(/\s*([=+\-∶:∽≌∥⊥⇒])\s*/g, '$1');
+  function fmtAtom(seg) {
+    return seg.replace(/([0-9]+(?:\.[0-9]+)?)?√\(([^)]+)\)|([0-9]+(?:\.[0-9]+)?)?√([0-9A-Za-z²³+\-]+)|Rt△|△|[A-Za-z]+|[0-9]+(?:\.[0-9]+)?|[²³]|[=+\-±×÷·:∶∠⊥∥∽≌°⇒/]/g, (m, c1, radParen, c2, radBare) => {
+      if (radParen !== undefined || radBare !== undefined) {
+        const coef = c1 || c2 || '';
+        const inner = radParen !== undefined ? radParen : radBare;
+        const coefHtml = coef ? `<span class="num">${coef}</span>` : '';
+        return `<span style="white-space:nowrap;">${coefHtml}<span class="sqrt"><span>${fmtAtom(inner)}</span></span></span>`;
+      }
+      if (m === 'Rt△') return '<span class="num">Rt</span><span class="tri-sym">△</span>';
+      if (m === '△') return '<span class="tri-sym">△</span>';
+      if (m === '²') return '<sup><span class="num">2</span></sup>';
+      if (m === '³') return '<sup><span class="num">3</span></sup>';
+      if (/^[A-Za-z]+$/.test(m)) return `<i class="m">${m}</i>`;
+      return `<span class="num">${m}</span>`;
+    });
+  }
+  return fmtAtom(clean);
+};
+
 window.defineSlide = function(cfg) {
   window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
   window.UNIT1_SIMS = window.UNIT1_SIMS || {};
@@ -3354,7 +3413,8 @@ window.defineSlide = function(cfg) {
     } else {
       bodyPart = String(st || '');
     }
-    const titlePart = stTitle ? `<b>步骤<span class="num">${num}</span>（${stTitle}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
+    const fmtTitle = window.formatInlineMathHTML(stTitle);
+    const titlePart = fmtTitle ? `<b>步骤<span class="num">${num}</span>（${fmtTitle}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
     return `<div class="step step-locked"><b>${badge}</b><span>${titlePart}${bodyPart}</span></div>`;
   }).join('\n          ');
 
@@ -3468,6 +3528,126 @@ window.renderMultiPanelScene = function(step, panels, opts = {}) {
   </svg>`;
 };
 
+// ================= 波利亚级（Polya-Grade）SVG 几何图示清晰标注引擎（100% 纯原生 SVG 图元，严禁嵌套子 <svg>） =================
+// 1. 顶部色彩图例条（纯 SVG 绘制，彻底杜绝 .visual svg 样式污染导致图标放大）
+window.svgLegendBar = function(items, opts = {}) {
+  const list = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!list.length) return '';
+  const x = opts.x !== undefined ? opts.x : 12;
+  const y = opts.y !== undefined ? opts.y : 6;
+  const w = opts.width || 516;
+  const h = opts.height || 28;
+  const cy = y + h / 2;
+  const fs = opts.fontSize || 12.5;
+
+  function estTextW(str) {
+    let tw = 0;
+    const s = String(str || '');
+    for (let i = 0; i < s.length; i++) {
+      tw += fs * (s.charCodeAt(i) > 127 ? 0.92 : 0.54);
+    }
+    return tw;
+  }
+
+  const measured = list.map(it => {
+    const type = it.type || 'angle';
+    const iconW = type === 'dash' ? 18 : (type === 'line' ? 16 : 15);
+    const rawTxt = String(it.text || it.html || '').replace(/<[^>]+>/g, '');
+    const tw = estTextW(rawTxt);
+    return { it, type, iconW, rawTxt, tw, totalW: iconW + 4 + tw };
+  });
+
+  const gap = 16;
+  const sumW = measured.reduce((acc, m) => acc + m.totalW, 0) + gap * (measured.length - 1);
+  let curX = x + Math.max(8, (w - sumW) / 2);
+
+  let out = `<g class="svg-legend-bar">`;
+  out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="rgba(248,250,252,0.96)" stroke="#cbd5e1" stroke-width="1.2"/>`;
+
+  measured.forEach((m, idx) => {
+    const color = m.it.color || '#2563eb';
+    if (m.type === 'angle') {
+      out += `<path d="M ${(curX + 13).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 1).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 10).toFixed(1)} ${(cy - 5).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+      out += `<path d="M ${(curX + 8).toFixed(1)} ${(cy + 5).toFixed(1)} A 6.5 6.5 0 0 0 ${(curX + 6.3).toFixed(1)} ${(cy - 0.8).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.5"/>`;
+    } else if (m.type === 'dash') {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 18).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/>`;
+    } else if (m.type === 'tri') {
+      out += `<polygon points="${(curX + 7).toFixed(1)},${(cy - 5.5).toFixed(1)} ${(curX + 1).toFixed(1)},${(cy + 5).toFixed(1)} ${(curX + 13).toFixed(1)},${(cy + 5).toFixed(1)}" fill="${m.it.fill || 'rgba(234,88,12,0.22)'}" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>`;
+    } else {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 16).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-linecap="round"/>`;
+    }
+    const tx = curX + m.iconW + 4;
+    const ty = cy + 4.5;
+    out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    curX += m.totalW + gap;
+    if (idx < measured.length - 1) {
+      const sepX = curX - gap / 2;
+      out += `<line x1="${sepX.toFixed(1)}" y1="${(y + 6).toFixed(1)}" x2="${sepX.toFixed(1)}" y2="${(y + h - 6).toFixed(1)}" stroke="#cbd5e1" stroke-width="1.2"/>`;
+    }
+  });
+
+  out += `</g>`;
+  return out;
+};
+
+// 2. 数字角直观标注（支持同顶点阶梯半径与纯数字 1, 2, 3, 4, 5 标注，配角平分线引线防挤压）
+window.svgNumberedAngle = function(v, pStart, pEnd, numStr, opts = {}) {
+  const radius = opts.radius || 28;
+  const color = opts.color || '#2563eb';
+  const fill = opts.fill || 'none';
+  const labelDist = opts.labelDist || (radius + 13);
+  const dx1 = pStart[0] - v[0], dy1 = pStart[1] - v[1];
+  const dx2 = pEnd[0] - v[0], dy2 = pEnd[1] - v[1];
+  let a1 = Math.atan2(dy1, dx1);
+  let a2 = Math.atan2(dy2, dx2);
+  let diff = a2 - a1;
+  while (diff <= -Math.PI) diff += Math.PI * 2;
+  while (diff > Math.PI) diff -= Math.PI * 2;
+  const sweep = diff > 0 ? 1 : 0;
+  const sx = v[0] + Math.cos(a1) * radius;
+  const sy = v[1] + Math.sin(a1) * radius;
+  const ex = v[0] + Math.cos(a2) * radius;
+  const ey = v[1] + Math.sin(a2) * radius;
+  let out = '';
+  if (fill && fill !== 'none') {
+    out += `<path d="M ${v[0].toFixed(1)} ${v[1].toFixed(1)} L ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)} Z" fill="${fill}" stroke="none"/>`;
+  }
+  out += `<path d="M ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)}" fill="none" stroke="${color}" stroke-width="2.1"/>`;
+  if (numStr !== undefined && numStr !== null && String(numStr) !== '') {
+    const midA = a1 + diff / 2 + (opts.angleShift || 0);
+    const lx = v[0] + Math.cos(midA) * labelDist + (opts.dx || 0);
+    const ly = v[1] + Math.sin(midA) * labelDist + 4.5 + (opts.dy || 0);
+    if (opts.leader) {
+      const mx = v[0] + Math.cos(midA) * (radius * 0.75);
+      const my = v[1] + Math.sin(midA) * (radius * 0.75);
+      const tx = v[0] + Math.cos(midA) * (labelDist - 7) + (opts.dx || 0);
+      const ty = v[1] + Math.sin(midA) * (labelDist - 7) + (opts.dy || 0);
+      out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="${color}" stroke-width="1.3"/>`;
+    }
+    const inner = window.svgAutoFormatText(String(numStr), opts.fontSize || 14);
+    out += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${opts.fontSize || 14}" fill="${color}" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${inner}</text>`;
+  }
+  return out;
+};
+
+// 3. 求解目标/关键结论引线气泡框（如“求 BC = ?”或“BC = 4√3”）
+window.svgCalloutTag = function(anchorPt, boxRect, innerHtml, opts = {}) {
+  const color = opts.color || '#15803d';
+  const bg = opts.bg || '#f0fdf4';
+  const [ax, ay] = anchorPt;
+  const [bx, by, bw, bh] = boxRect;
+  const cy = by + bh / 2;
+  const startX = ax < bx ? bx : (ax > bx + bw ? bx + bw : bx + bw / 2);
+  return `<g>
+    <line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${startX.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="1.8"/>
+    <circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="3.2" fill="${color}"/>
+    <foreignObject x="${bx}" y="${by}" width="${bw}" height="${bh}" style="overflow:visible;">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;box-sizing:border-box;background:${bg};border:1.8px solid ${color};border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-family:'Times New Roman','Songti SC','SimSun',serif;font-size:14.5px;font-weight:700;color:${color};white-space:nowrap;box-shadow:0 2px 5px rgba(15,23,42,0.06);">${innerHtml}</div>
+    </foreignObject>
+  </g>`;
+};
+
+
 
 
 
@@ -3476,12 +3656,12 @@ window.renderMultiPanelScene = function(step, panels, opts = {}) {
 window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
 window.UNIT1_SIMS = window.UNIT1_SIMS || {};
 window.COURSEWARE_BRAND = '北师大版九上 · 第二章';
-window.COURSEWARE_TITLE = '2.3.2 反比例函数的应用（2）';
+window.COURSEWARE_TITLE = '2.3.2 反比例函数应用(2)';
 window.COURSEWARE_PHASES = [
   ['① 情境引入', '一次与反比例交点激活'],
-  ['② 新知探究·问题1', '电子秤复合电路建模'],
-  ['③ 新知探究·问题2', '图形间距离与隔音屏障'],
-  ['④ 新知探究·问题3', '崂山矿泉水供需与小结']
+  ['② 问题1探究', '电子秤复合电路建模'],
+  ['③ 问题2探究', '图形间距离与隔音屏障'],
+  ['④ 问题3探究', '崂山矿泉水供需与小结']
 ];
 
 (function () {
@@ -3930,7 +4110,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
     title: '问题<span class="num">2</span>（<span class="num">1</span>）：“两个图形之间的距离”新定义与平行线段间距离',
     stem: [
       '<p><b>问题<span class="num">2</span>：</b>在平面内，把一个图形上任意一点与另一个图形上任意一点之间的距离的最小值，称为这两个图形之间的距离（即<i class="m">A</i>，<i class="m">B</i>分别是图形<i class="m">M</i>和图形<i class="m">N</i>上任意一点，当<i class="m">AB</i>的长最小时，称这个最小值为图形<i class="m">M</i>与<i class="m">N</i>之间的距离）．例如，如图<span class="num">1</span>，<span class="math"><i class="m">AB</i><span class="num">⊥</span><i class="m">l</i><sub><span class="num">2</span></sub></span>，线段<i class="m">AB</i>的长度称为点<i class="m">A</i>与直线<i class="m">l</i><sub><span class="num">2</span></sub>之间的距离；当<span class="math"><i class="m">l</i><sub><span class="num">1</span></sub><span class="num">∥</span><i class="m">l</i><sub><span class="num">2</span></sub></span>时，线段<i class="m">AB</i>的长度也是<i class="m">l</i><sub><span class="num">1</span></sub>与<i class="m">l</i><sub><span class="num">2</span></sub>之间的距离．</p>',
-      '<p><b>【应用】</b>（<span class="num">1</span>）如图<span class="num">2</span>，在等腰<span class="math"><span class="num">Rt△</span><i class="m">BAC</i></span>中，<span class="math"><span class="num">∠</span><i class="m">A</i><span class="num">=90°</span></span>，<span class="math"><i class="m">AB</i><span class="num">=</span><i class="m">AC</i></span>，点<i class="m">D</i>为<i class="m">AB</i>边上一点，过点<i class="m">D</i>作<span class="math"><i class="m">DE</i><span class="num">∥</span><i class="m">BC</i></span>交<i class="m">AC</i>于点<i class="m">E</i>．若<span class="math"><i class="m">AB</i><span class="num">=6</span></span>，<span class="math"><i class="m">AD</i><span class="num">=4</span></span>，则<i class="m">DE</i>与<i class="m">BC</i>之间的距离是<span class="screen-blank" data-step="2" data-ans="<span class=\'math\'><span class=\'num\'>√2</span></span>"></span>．</p>'
+      '<p><b>【应用】</b>（<span class="num">1</span>）如图<span class="num">2</span>，在等腰<span class="math"><span class="num">Rt△</span><i class="m">BAC</i></span>中，<span class="math"><span class="num">∠</span><i class="m">A</i><span class="num">=90°</span></span>，<span class="math"><i class="m">AB</i><span class="num">=</span><i class="m">AC</i></span>，点<i class="m">D</i>为<i class="m">AB</i>边上一点，过点<i class="m">D</i>作<span class="math"><i class="m">DE</i><span class="num">∥</span><i class="m">BC</i></span>交<i class="m">AC</i>于点<i class="m">E</i>．若<span class="math"><i class="m">AB</i><span class="num">=6</span></span>，<span class="math"><i class="m">AD</i><span class="num">=4</span></span>，则<i class="m">DE</i>与<i class="m">BC</i>之间的距离是<span class="screen-blank" data-step="2" data-ans="<span class=\'math\'><span class=\'sqrt\'><span class=\'num\'>2</span></span></span>"></span>．</p>'
     ].join(''),
     steps: [
       {
@@ -3939,7 +4119,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
       },
       {
         title: '在等腰 <span class="math"><span class="num">Rt△</span><i class="m">BDF</i></span> 中求出垂线段 <i class="m">DF</i> 的长',
-        body: '在等腰 <span class="math"><span class="num">Rt△</span><i class="m">BAC</i></span> 中，<span class="math"><span class="num">∠</span><i class="m">A</i><span class="num">=90°</span></span>，<span class="math"><i class="m">AB</i><span class="num">=</span><i class="m">AC</i></span>，故 <span class="math"><span class="num">∠</span><i class="m">B</i><span class="num">=45°</span></span>．在 <span class="math"><span class="num">Rt△</span><i class="m">BDF</i></span> 中，<span class="math"><span class="num">∠</span><i class="m">BFD</i><span class="num">=90°</span></span>，<span class="math"><span class="num">∠</span><i class="m">B</i><span class="num">=45°</span></span>，<span class="math"><i class="m">BD</i><span class="num">=2</span></span>，所以 <span class="math"><i class="m">DF</i><span class="num">=</span><i class="m">BD</i><span class="num">·sin45°=2×</span><span class="fraction"><span><span class="num">√2</span></span><span><span class="num">2</span></span></span><span class="num">=√2</span></span>．'
+        body: '在等腰 <span class="math"><span class="num">Rt△</span><i class="m">BAC</i></span> 中，<span class="math"><span class="num">∠</span><i class="m">A</i><span class="num">=90°</span></span>，<span class="math"><i class="m">AB</i><span class="num">=</span><i class="m">AC</i></span>，故 <span class="math"><span class="num">∠</span><i class="m">B</i><span class="num">=45°</span></span>．在 <span class="math"><span class="num">Rt△</span><i class="m">BDF</i></span> 中，<span class="math"><span class="num">∠</span><i class="m">BFD</i><span class="num">=90°</span></span>，<span class="math"><span class="num">∠</span><i class="m">B</i><span class="num">=45°</span></span>，<span class="math"><i class="m">BD</i><span class="num">=2</span></span>，所以 <span class="math"><i class="m">DF</i><span class="num">=</span><i class="m">BD</i><span class="num">·sin45°=2×</span><span class="fraction"><span><span class="sqrt"><span class="num">2</span></span></span><span><span class="num">2</span></span></span><span class="num">=</span><span class="sqrt"><span class="num">2</span></span></span>．'
       }
     ],
     renderScene: function (step) {
@@ -4051,7 +4231,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
         if (window.svgFoCard) {
           out.push(window.svgFoCard(284, 266, 340, 52,
             '<div style="font-size:14px;color:#0f172a;font-weight:700;text-align:center;">' +
-            '等腰 <span class="math"><span class="num">Rt△</span><i class="m">BDF</i></span> 中：<span class="math"><i class="m">DF</i><span class="num">=</span><i class="m">BD</i><span class="num">·sin45°=2×</span><span class="fraction"><span><span class="num">√2</span></span><span><span class="num">2</span></span></span><span class="num">=</span><span style="color:#dc2626;"><span class="num">√2</span></span></span>' +
+            '等腰 <span class="math"><span class="num">Rt△</span><i class="m">BDF</i></span> 中：<span class="math"><i class="m">DF</i><span class="num">=</span><i class="m">BD</i><span class="num">·sin45°=2×</span><span class="fraction"><span><span class="sqrt"><span class="num">2</span></span></span><span><span class="num">2</span></span></span><span class="num">=</span><span style="color:#dc2626;"><span class="sqrt"><span class="num">2</span></span></span></span>' +
             '</div>'
           ));
         }
@@ -4078,16 +4258,16 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
       '<div style="background:#f0f9ff;border-left:4px solid #0284c7;padding:6px 12px;margin-bottom:8px;border-radius:6px;font-size:0.92em;color:#0369a1;">',
       '<b>【前问已知】</b>图形<i class="m">M</i>与图形<i class="m">N</i>之间的距离定义为两图形上任意两点间距离的最小值．',
       '</div>',
-      '<p>（<span class="num">2</span>）如图<span class="num">3</span>，已知直线<span class="math"><i class="m">l</i><sub><span class="num">3</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+4</span></span>与双曲线<span class="math"><i class="m">C</i><sub><span class="num">1</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">x</i><span class="num">&gt;0</span></span>）交于<span class="math"><i class="m">A</i><span class="num">(1,</span><i class="m">m</i><span class="num">)</span></span>与<i class="m">B</i>两点，点<i class="m">A</i>与点<i class="m">B</i>之间的距离是<span class="screen-blank" data-step="1" data-ans="<span class=\'num\'>2√2</span>"></span>，点<i class="m">O</i>与双曲线<i class="m">C</i><sub><span class="num">1</span></sub>之间的距离是<span class="screen-blank" data-step="2" data-ans="<span class=\'num\'>√6</span>"></span>．</p>'
+      '<p>（<span class="num">2</span>）如图<span class="num">3</span>，已知直线<span class="math"><i class="m">l</i><sub><span class="num">3</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+4</span></span>与双曲线<span class="math"><i class="m">C</i><sub><span class="num">1</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">x</i><span class="num">&gt;0</span></span>）交于<span class="math"><i class="m">A</i><span class="num">(1,</span><i class="m">m</i><span class="num">)</span></span>与<i class="m">B</i>两点，点<i class="m">A</i>与点<i class="m">B</i>之间的距离是<span class="screen-blank" data-step="1" data-ans="<span class=\'num\'>2</span><span class=\'sqrt\'><span class=\'num\'>2</span></span>"></span>，点<i class="m">O</i>与双曲线<i class="m">C</i><sub><span class="num">1</span></sub>之间的距离是<span class="screen-blank" data-step="2" data-ans="<span class=\'sqrt\'><span class=\'num\'>6</span></span>"></span>．</p>'
     ].join(''),
     steps: [
       {
         title: '求交点 <i class="m">A</i>，<i class="m">B</i> 的坐标并计算线段 <i class="m">AB</i> 的长',
-        body: '将 <span class="math"><i class="m">A</i><span class="num">(1,</span><i class="m">m</i><span class="num">)</span></span> 代入 <span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+4</span></span> 得 <span class="math"><i class="m">m</i><span class="num">=3</span></span>，即 <span class="math"><i class="m">A</i><span class="num">(1,3)</span></span>；代入 <span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span> 得 <span class="math"><i class="m">k</i><span class="num">=3</span></span>．联立 <span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+4</span></span> 与 <span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span></span> 解得 <span class="math"><i class="m">B</i><span class="num">(3,1)</span></span>．由勾股定理得 <span class="math"><i class="m">AB</i><span class="num">=√((3-1)</span><sup><span class="num">2</span></sup><span class="num">+(1-3)</span><sup><span class="num">2</span></sup><span class="num">)=2√2</span></span>．'
+        body: '将 <span class="math"><i class="m">A</i><span class="num">(1,</span><i class="m">m</i><span class="num">)</span></span> 代入 <span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+4</span></span> 得 <span class="math"><i class="m">m</i><span class="num">=3</span></span>，即 <span class="math"><i class="m">A</i><span class="num">(1,3)</span></span>；代入 <span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span> 得 <span class="math"><i class="m">k</i><span class="num">=3</span></span>．联立 <span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+4</span></span> 与 <span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span></span> 解得 <span class="math"><i class="m">B</i><span class="num">(3,1)</span></span>．由勾股定理得 <span class="math"><i class="m">AB</i><span class="num">=</span><span class="sqrt"><span class="num">(3-1)</span><sup><span class="num">2</span></sup><span class="num">+(1-3)</span><sup><span class="num">2</span></sup></span><span class="num">=2</span><span class="sqrt"><span class="num">2</span></span></span>．'
       },
       {
         title: '利用对称性（或配方法）求原点 <i class="m">O</i> 到双曲线 <i class="m">C</i><sub><span class="num">1</span></sub> 的最短距离',
-        body: '设双曲线 <span class="math"><i class="m">C</i><sub><span class="num">1</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">x</i><span class="num">&gt;0</span></span>）上任意一点 <span class="math"><i class="m">P</i><span class="num">(</span><i class="m">x</i><span class="num">,</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span><span class="num">)</span></span>，则 <span class="math"><i class="m">OP</i><sup><span class="num">2</span></sup><span class="num">=</span><i class="m">x</i><sup><span class="num">2</span></sup><span class="num">+</span><span class="fraction"><span><span class="num">9</span></span><span><i class="m">x</i><sup><span class="num">2</span></sup></span></span><span class="num">=(</span><i class="m">x</i><span class="num">-</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span><span class="num">)</span><sup><span class="num">2</span></sup><span class="num">+6≥6</span></span>．当且仅当 <span class="math"><i class="m">x</i><span class="num">=</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span></span>（即点 <i class="m">P</i> 在对称轴 <span class="math"><i class="m">y</i><span class="num">=</span><i class="m">x</i></span> 上，坐标为 <span class="math"><span class="num">(√3,√3)</span></span>）时，<span class="math"><i class="m">OP</i><sub><span class="num">min</span></sub><span class="num">=√6</span></span>．'
+        body: '设双曲线 <span class="math"><i class="m">C</i><sub><span class="num">1</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">x</i><span class="num">&gt;0</span></span>）上任意一点 <span class="math"><i class="m">P</i><span class="num">(</span><i class="m">x</i><span class="num">,</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span><span class="num">)</span></span>，则 <span class="math"><i class="m">OP</i><sup><span class="num">2</span></sup><span class="num">=</span><i class="m">x</i><sup><span class="num">2</span></sup><span class="num">+</span><span class="fraction"><span><span class="num">9</span></span><span><i class="m">x</i><sup><span class="num">2</span></sup></span></span><span class="num">=(</span><i class="m">x</i><span class="num">-</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span><span class="num">)</span><sup><span class="num">2</span></sup><span class="num">+6≥6</span></span>．当且仅当 <span class="math"><i class="m">x</i><span class="num">=</span><span class="fraction"><span><span class="num">3</span></span><span><i class="m">x</i></span></span></span>（即点 <i class="m">P</i> 在对称轴 <span class="math"><i class="m">y</i><span class="num">=</span><i class="m">x</i></span> 上，坐标为 <span class="math"><span class="num">(</span><span class="sqrt"><span class="num">3</span></span><span class="num">,</span><span class="sqrt"><span class="num">3</span></span><span class="num">)</span></span>）时，<span class="math"><i class="m">OP</i><sub><span class="num">min</span></sub><span class="num">=</span><span class="sqrt"><span class="num">6</span></span></span>．'
       }
     ],
     controls: function (step, state) {
@@ -4148,8 +4328,8 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
         if (window.svgFoCard) {
           c.raw(window.svgFoCard(330, 22, 292, 68,
             '<div style="font-size:13px;line-height:1.45;color:#1e293b;">' +
-            '<div><span style="color:#7c3aed;font-weight:700;">当前动点：</span><span class="math"><i class="m">P</i><span class="num">(' + xp.toFixed(2) + ',' + yp.toFixed(2) + ')</span></span>，<span class="math"><i class="m">OP</i><span class="num">≈' + opLen.toFixed(2) + '</span></span></div>' +
-            '<div><span style="color:#059669;font-weight:700;">最短距离：</span><span class="math"><i class="m">OP</i><sub><span class="num">0</span></sub><span class="num">=√6≈2.45</span></span>（当 <span class="math"><i class="m">x</i><span class="num">=</span><i class="m">y</i><span class="num">=√3</span></span>）</div>' +
+            '<div><span style="color:#7c3aed;font-weight:700;">当前动点：</span><span class="math"><i class="m">P</i></span></div>' +
+            '<div><span style="color:#059669;font-weight:700;">最短距离：</span><span class="math"><i class="m">OP</i><sub><span class="num">0</span></sub><span class="num">=</span><span class="sqrt"><span class="num">6</span></span></span>（当 <span class="math"><i class="m">x</i><span class="num">=</span><i class="m">y</i><span class="num">=</span><span class="sqrt"><span class="num">3</span></span></span>）</div>' +
             '</div>'
           ));
         }
@@ -4176,15 +4356,15 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
     steps: [
       {
         title: '平移直线 <i class="m">l</i><sub><span class="num">4</span></sub> 构造距离等于 <span class="num">80m</span> 的临界平行线 <span class="math"><i class="m">l</i><span class="num">′</span></span>',
-        body: '在第一象限作与高速路 <span class="math"><i class="m">l</i><sub><span class="num">4</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=-</span><i class="m">x</i></span> 平行且距离为 <span class="num">80m</span> 的直线 <span class="math"><i class="m">l</i><span class="num">′</span></span>，交 <i class="m">x</i> 轴、<i class="m">y</i> 轴于点 <i class="m">E</i>，<i class="m">F</i>．因 <span class="math"><span class="num">△</span><i class="m">OEF</i></span> 是等腰直角三角形，斜边高为 <span class="num">80</span>，故 <span class="math"><i class="m">OE</i><span class="num">=</span><i class="m">OF</i><span class="num">=80√2</span></span>，得临界平行线 <span class="math"><i class="m">l</i><span class="num">′：</span><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+80√2</span></span>．'
+        body: '在第一象限作与高速路 <span class="math"><i class="m">l</i><sub><span class="num">4</span></sub><span class="num">：</span><i class="m">y</i><span class="num">=-</span><i class="m">x</i></span> 平行且距离为 <span class="num">80m</span> 的直线 <span class="math"><i class="m">l</i><span class="num">′</span></span>，交 <i class="m">x</i> 轴、<i class="m">y</i> 轴于点 <i class="m">E</i>，<i class="m">F</i>．因 <span class="math"><span class="num">△</span><i class="m">OEF</i></span> 是等腰直角三角形，斜边高为 <span class="num">80</span>，故 <span class="math"><i class="m">OE</i><span class="num">=</span><i class="m">OF</i><span class="num">=80</span><span class="sqrt"><span class="num">2</span></span></span>，得临界平行线 <span class="math"><i class="m">l</i><span class="num">′：</span><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+80</span><span class="sqrt"><span class="num">2</span></span></span>．'
       },
       {
         title: '联立临界直线 <span class="math"><i class="m">l</i><span class="num">′</span></span> 与双曲线 <i class="m">C</i><sub><span class="num">2</span></sub> 求临界交点 <i class="m">M</i>，<i class="m">N</i> 坐标',
-        body: '联立 <span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+80√2</span></span> 与 <span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">3000</span></span><span><i class="m">x</i></span></span></span>，整理得 <span class="math"><i class="m">x</i><sup><span class="num">2</span></sup><span class="num">-80√2</span><i class="m">x</i><span class="num">+3000=0</span></span>，即 <span class="math"><span class="num">(</span><i class="m">x</i><span class="num">-30√2)(</span><i class="m">x</i><span class="num">-50√2)=0</span></span>，解得 <span class="math"><i class="m">M</i><span class="num">(30√2,50√2)</span></span>，<span class="math"><i class="m">N</i><span class="num">(50√2,30√2)</span></span>．'
+        body: '联立 <span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+80</span><span class="sqrt"><span class="num">2</span></span></span> 与 <span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">3000</span></span><span><i class="m">x</i></span></span></span>，整理得 <span class="math"><i class="m">x</i><sup><span class="num">2</span></sup><span class="num">-80</span><span class="sqrt"><span class="num">2</span></span><i class="m">x</i><span class="num">+3000=0</span></span>，即 <span class="math"><span class="num">(</span><i class="m">x</i><span class="num">-30</span><span class="sqrt"><span class="num">2</span></span><span class="num">)(</span><i class="m">x</i><span class="num">-50</span><span class="sqrt"><span class="num">2</span></span><span class="num">)=0</span></span>，解得 <span class="math"><i class="m">M</i><span class="num">(30</span><span class="sqrt"><span class="num">2</span></span><span class="num">,50</span><span class="sqrt"><span class="num">2</span></span><span class="num">)</span></span>，<span class="math"><i class="m">N</i><span class="num">(50</span><span class="sqrt"><span class="num">2</span></span><span class="num">,30</span><span class="sqrt"><span class="num">2</span></span><span class="num">)</span></span>．'
       },
       {
         title: '由平行投射（或两点间距离公式）求隔音屏障长度',
-        body: '过 <i class="m">M</i>，<i class="m">N</i> 分别向高速路 <i class="m">l</i><sub><span class="num">4</span></sub> 作垂线得垂足 <span class="math"><i class="m">M</i><span class="num">′</span></span>，<span class="math"><i class="m">N</i><span class="num">′</span></span>，则隔音屏障长度 <span class="math"><i class="m">M</i><span class="num">′</span><i class="m">N</i><span class="num">′=</span><i class="m">MN</i><span class="num">=√((50√2-30√2)</span><sup><span class="num">2</span></sup><span class="num">+(30√2-50√2)</span><sup><span class="num">2</span></sup><span class="num">)=40</span></span>（<span class="num">m</span>）．'
+        body: '过 <i class="m">M</i>，<i class="m">N</i> 分别向高速路 <i class="m">l</i><sub><span class="num">4</span></sub> 作垂线得垂足 <span class="math"><i class="m">M</i><span class="num">′</span></span>，<span class="math"><i class="m">N</i><span class="num">′</span></span>，则隔音屏障长度 <span class="math"><i class="m">M</i><span class="num">′</span><i class="m">N</i><span class="num">′=</span><i class="m">MN</i><span class="num">=</span><span class="sqrt"><span class="num">(50</span><span class="sqrt"><span class="num">2</span></span><span class="num">-30</span><span class="sqrt"><span class="num">2</span></span><span class="num">)</span><sup><span class="num">2</span></sup><span class="num">+(30</span><span class="sqrt"><span class="num">2</span></span><span class="num">-50</span><span class="sqrt"><span class="num">2</span></span><span class="num">)</span><sup><span class="num">2</span></sup></span><span class="num">=40</span></span>（<span class="num">m</span>）．'
       }
     ],
     renderScene: function (step) {
@@ -4248,7 +4428,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
         if (window.svgFoCard) {
           c.raw(window.svgFoCard(335, 18, 288, 62,
             '<div style="font-size:13px;line-height:1.45;color:#0f172a;font-weight:700;">' +
-            '<div>临界弦长：<span class="math"><i class="m">MN</i><span class="num">=√((20√2)</span><sup><span class="num">2</span></sup><span class="num">+(-20√2)</span><sup><span class="num">2</span></sup><span class="num">)=40m</span></span></div>' +
+            '<div>临界弦长：<span class="math"><i class="m">MN</i><span class="num">=</span><span class="sqrt"><span class="num">(20</span><span class="sqrt"><span class="num">2</span></span><span class="num">)</span><sup><span class="num">2</span></sup><span class="num">+(-20</span><span class="sqrt"><span class="num">2</span></span><span class="num">)</span><sup><span class="num">2</span></sup></span><span class="num">=40m</span></span></div>' +
             '<div style="color:#dc2626;">隔音屏障长：<span class="math"><i class="m">M</i><span class="num">′</span><i class="m">N</i><span class="num">′=</span><i class="m">MN</i><span class="num">=40m</span></span></div>' +
             '</div>'
           ));
@@ -4634,7 +4814,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
       },
       {
         title: '模型三：新定义“图形间的距离”与平行线相交/相切转化',
-        html: '<p><b>【模型三·图形间的距离】</b>原点到双曲线<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点在对称轴<span class="math"><i class="m">y</i><span class="num">=</span><i class="m">x</i></span>上，最短距离为<span class="math"><span class="num">√(2</span><i class="m">k</i><span class="num">)</span></span>；求到直线<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i></span>距离小于<i class="m">d</i>的截线长，通过<b>平移直线</b>构造<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+√2</span><i class="m">d</i></span>联立求交点弦长．</p>'
+        html: '<p><b>【模型三·图形间的距离】</b>原点到双曲线<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点在对称轴<span class="math"><i class="m">y</i><span class="num">=</span><i class="m">x</i></span>上，最短距离为<span class="math"><span class="sqrt"><span class="num">2</span><i class="m">k</i></span></span>；求到直线<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i></span>距离小于<i class="m">d</i>的截线长，通过<b>平移直线</b>构造<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+</span><span class="sqrt"><span class="num">2</span></span><i class="m">d</i></span>联立求交点弦长．</p>'
       },
       {
         title: '模型四：经济供需平衡与二次函数利润综合',
@@ -4664,8 +4844,8 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
           idx: 3, x: 16, y: 216, w: 296, h: 188,
           bg: '#fffbeb', bd: '#d97706', titleCol: '#b45309',
           title: '模型三：新定义“图形间的距离”',
-          body: '• <b>对称轴性质</b>：原点到<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点为<span class="math"><span class="num">(√</span><i class="m">k</i><span class="num">,√</span><i class="m">k</i><span class="num">)</span></span>，<span class="math"><i class="m">d</i><sub>min</sub><span class="num">=√(2</span><i class="m">k</i><span class="num">)</span></span>；<br/>' +
-            '• <b>平行线截弦</b>：将距离<i class="m">d</i>转化为竖直截距<span class="math"><span class="num">√2</span><i class="m">d</i></span>，联立求弦长<span class="math"><i class="m">MN</i></span>．'
+          body: '• <b>对称轴性质</b>：原点到<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点为<span class="math"><span class="num">(</span><span class="sqrt"><i class="m">k</i></span><span class="num">,</span><span class="sqrt"><i class="m">k</i></span><span class="num">)</span></span>，<span class="math"><i class="m">d</i><sub>min</sub><span class="num">=</span><span class="sqrt"><span class="num">2</span><i class="m">k</i></span></span>；<br/>' +
+            '• <b>平行线截弦</b>：将距离<i class="m">d</i>转化为竖直截距<span class="math"><span class="sqrt"><span class="num">2</span></span><i class="m">d</i></span>，联立求弦长<span class="math"><i class="m">MN</i></span>．'
         },
         {
           idx: 4, x: 328, y: 216, w: 296, h: 188,
@@ -4761,7 +4941,10 @@ const fmt=(v,n=2)=>Number(v).toFixed(n);
 function slider(key,label,min,max,value,step=1,unit=''){
   if (simState[key] === undefined) simState[key]=value;
   const plain = String(label).replace(/<[^>]*>/g, '');
-  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${simState[key]}" step="${step}" aria-label="${plain}"><output data-value="${key}">${simState[key]}${unit}</output></label>`;
+  const curVal = simState[key];
+  const numVal = Number(curVal);
+  const dispVal = (!isNaN(numVal) && !Number.isInteger(numVal)) ? numVal.toFixed(2) : curVal;
+  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${curVal}" step="${step}" aria-label="${plain}"><output data-value="${key}">${dispVal}${unit}</output></label>`;
 }
 function select(key,label,options,value){
   if (simState[key] === undefined) simState[key]=value;
@@ -4773,8 +4956,9 @@ function actions(items, activeKey){
   return `<div class="actions">${items.map(([k,t])=>`<button type="button" data-action="${k}" class="${cur===k?'active-act':''}">${t}</button>`).join('')}</div>`;
 }
 function modeButtons(key, curVal, items){
-  if (simState[key] === undefined) simState[key] = curVal;
-  const active = simState[key] !== undefined ? simState[key] : curVal;
+  if (curVal !== undefined) simState[key] = curVal;
+  else if (simState[key] === undefined && items && items.length) simState[key] = items[0][0];
+  const active = curVal !== undefined ? curVal : simState[key];
   return `<div class="actions">${items.map(([v, label, syncStep]) => `<button type="button" data-mode-key="${key}" data-mode-val="${v}" ${syncStep !== undefined ? `data-sync-step="${syncStep}"` : ''} class="${String(active) === String(v) ? 'active-act' : ''}">${label}</button>`).join('')}</div>`;
 }
 window.slider = slider;
@@ -5082,18 +5266,16 @@ function syncSlideProgression(state) {
   }
   const sn = root.querySelector('.screen-notes');
   if (sn) {
-    if (s === 0 && !hasAnyManual(state)) {
+    if ((s === 0 && !hasAnyManual(state)) || maxStep <= 2) {
       sn.scrollTop = 0;
-    } else if (s >= maxStep && sn.scrollHeight > sn.clientHeight + 4) {
-      sn.scrollTop = sn.scrollHeight;
     } else {
       const activeEl = sn.querySelector('.step.step-active');
       if (activeEl && sn.scrollHeight > sn.clientHeight + 4) {
         const elBottom = activeEl.offsetTop + activeEl.offsetHeight;
         if (elBottom > sn.scrollTop + sn.clientHeight) {
-          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 12);
+          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 8);
         } else if (activeEl.offsetTop < sn.scrollTop) {
-          sn.scrollTop = Math.max(0, activeEl.offsetTop - 12);
+          sn.scrollTop = Math.max(0, activeEl.offsetTop - 8);
         }
       }
     }
@@ -5470,7 +5652,10 @@ function bindSimControls(type){
       simState[k] = isNaN(+e.target.value) ? e.target.value : +e.target.value;
       if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       const out = ctrlBox.querySelector(`output[data-value="${k}"]`);
-      if (out) out.textContent = e.target.value;
+      if (out) {
+        const nv = Number(e.target.value);
+        out.textContent = (!isNaN(nv) && !Number.isInteger(nv)) ? nv.toFixed(2) : e.target.value;
+      }
       // 拖动滑块时屏蔽 controls.innerHTML 重建，保持滑块焦点不断连
       Object.defineProperty(ctrlBox, 'innerHTML', {
         configurable: true,
@@ -5523,9 +5708,9 @@ function bindSimControls(type){
       e.stopPropagation();
       const k = mBtn.dataset.modeKey;
       const v = mBtn.dataset.modeVal;
-      simState[k] = isNaN(+v) ? v : +v;
+      simState[k] = (typeof simState[k] === 'number') ? (isNaN(+v) ? v : +v) : v;
       if (mBtn.dataset.syncStep !== undefined) {
-        simState.step = Number(mBtn.dataset.syncStep);
+        simState.step = Math.max(Number(simState.step || 0), Number(mBtn.dataset.syncStep));
       }
       if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       runSimFn(fn, simState, false);

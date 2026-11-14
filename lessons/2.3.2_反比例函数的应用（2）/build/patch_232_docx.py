@@ -22,7 +22,7 @@ SCRIPT_DIR = os.path.join(REPO_ROOT, ".agents", "skills", "math-interactive-cour
 sys.path.insert(0, SCRIPT_DIR)
 from docx_inplace_patcher import DocxWorksheetPatcher, W_NS, WP_NS, A_NS, R_NS
 
-SRC_DOCX = "/Users/xionghaoran/Desktop/学案/6反比例函数/2.3.2 反比例函数的应用（2） .docx"
+SRC_DOCX = os.environ.get("SRC_DOCX", os.path.join(LESSON_DIR, "2.3.2_反比例函数的应用（2）_原学案.docx"))
 REDRAWN_DIR = os.path.join(BUILD_DIR, "redrawn_media")
 OUT_DOCX = os.path.join(LESSON_DIR, "2.3.2_反比例函数的应用（2）_学生学案_优化版.docx")
 

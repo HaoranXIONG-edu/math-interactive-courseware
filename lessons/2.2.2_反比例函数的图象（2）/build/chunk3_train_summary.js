@@ -239,15 +239,7 @@ Object.assign(window.UNIT1_SIMS, {
               分支在第二象限 &rArr; <tspan font-family="'Times New Roman',serif" font-style="italic">k</tspan><tspan font-family="'Times New Roman',serif">&lt;0</tspan>
             </text>
           </g>
-        ` : `
-          <!-- Step 0: Blank coordinate plane prompt (zero curve spoiler) -->
-          <g transform="translate(115, 32)">
-            <rect x="0" y="0" width="230" height="34" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.4"/>
-            <text x="115" y="22" text-anchor="middle" font-size="13.5" font-weight="700" fill="#475569">
-              思考：在 <tspan font-family="'Times New Roman',serif">-3&le;</tspan><tspan font-family="'Times New Roman',serif" font-style="italic">x</tspan><tspan font-family="'Times New Roman',serif">&le;-1</tspan> 上 <tspan font-family="'Times New Roman',serif" font-style="italic">y</tspan> 最大值为 <tspan font-family="'Times New Roman',serif">6</tspan>，图象在哪个象限？
-            </text>
-          </g>
-        `}
+        ` : ''}
 
         ${step >= 2 ? `
           <!-- Step 2: Endpoint (-3, 2) and maximum endpoint P(-1, 6), plus 2D stacked fraction formula y = -6/x -->
@@ -458,7 +450,7 @@ Object.assign(window.UNIT1_SIMS, {
         <text x="${ox - 20}" y="28" font-family="'Times New Roman',serif" font-style="italic" font-size="19" font-weight="700" fill="#0f172a">y</text>
         <text x="${ox - 18}" y="${oy + 22}" font-family="'Times New Roman',serif" font-style="italic" font-size="18" font-weight="700" fill="#0f172a">O</text>
 
-        <!-- Two Hyperbola Branches: y = -1/x (x<0) and y = 4/x (x>0) -->
+        <!-- Two Hyperbola Branches: y = -1/x and y = 4/x -->
         <path d="${curveQ2}" fill="none" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round"/>
         <path d="${curveQ1}" fill="none" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round"/>
 

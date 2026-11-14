@@ -370,7 +370,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
       },
       {
         title: '模型三：新定义“图形间的距离”与平行线相交/相切转化',
-        html: '<p><b>【模型三·图形间的距离】</b>原点到双曲线<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点在对称轴<span class="math"><i class="m">y</i><span class="num">=</span><i class="m">x</i></span>上，最短距离为<span class="math"><span class="num">√(2</span><i class="m">k</i><span class="num">)</span></span>；求到直线<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i></span>距离小于<i class="m">d</i>的截线长，通过<b>平移直线</b>构造<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+√2</span><i class="m">d</i></span>联立求交点弦长．</p>'
+        html: '<p><b>【模型三·图形间的距离】</b>原点到双曲线<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点在对称轴<span class="math"><i class="m">y</i><span class="num">=</span><i class="m">x</i></span>上，最短距离为<span class="math"><span class="sqrt"><span class="num">2</span><i class="m">k</i></span></span>；求到直线<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i></span>距离小于<i class="m">d</i>的截线长，通过<b>平移直线</b>构造<span class="math"><i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+</span><span class="sqrt"><span class="num">2</span></span><i class="m">d</i></span>联立求交点弦长．</p>'
       },
       {
         title: '模型四：经济供需平衡与二次函数利润综合',
@@ -400,8 +400,8 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
           idx: 3, x: 16, y: 216, w: 296, h: 188,
           bg: '#fffbeb', bd: '#d97706', titleCol: '#b45309',
           title: '模型三：新定义“图形间的距离”',
-          body: '• <b>对称轴性质</b>：原点到<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点为<span class="math"><span class="num">(√</span><i class="m">k</i><span class="num">,√</span><i class="m">k</i><span class="num">)</span></span>，<span class="math"><i class="m">d</i><sub>min</sub><span class="num">=√(2</span><i class="m">k</i><span class="num">)</span></span>；<br/>' +
-            '• <b>平行线截弦</b>：将距离<i class="m">d</i>转化为竖直截距<span class="math"><span class="num">√2</span><i class="m">d</i></span>，联立求弦长<span class="math"><i class="m">MN</i></span>．'
+          body: '• <b>对称轴性质</b>：原点到<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">k</i></span><span><i class="m">x</i></span></span></span>（<span class="math"><i class="m">k</i><span class="num">&gt;0</span></span>）最近点为<span class="math"><span class="num">(</span><span class="sqrt"><i class="m">k</i></span><span class="num">,</span><span class="sqrt"><i class="m">k</i></span><span class="num">)</span></span>，<span class="math"><i class="m">d</i><sub>min</sub><span class="num">=</span><span class="sqrt"><span class="num">2</span><i class="m">k</i></span></span>；<br/>' +
+            '• <b>平行线截弦</b>：将距离<i class="m">d</i>转化为竖直截距<span class="math"><span class="sqrt"><span class="num">2</span></span><i class="m">d</i></span>，联立求弦长<span class="math"><i class="m">MN</i></span>．'
         },
         {
           idx: 4, x: 328, y: 216, w: 296, h: 188,

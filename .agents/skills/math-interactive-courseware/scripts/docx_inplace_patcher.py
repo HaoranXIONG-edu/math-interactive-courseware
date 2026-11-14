@@ -23,7 +23,7 @@ import zipfile
 from lxml import etree
 
 # Import LaTeX -> OMML / Auto-Tokenizer from docx_exam_builder.py
-sys.path.insert(0, "/Users/xionghaoran/.gemini/config/plugins/polya-math-diagram/skills/math-exam-to-word/scripts")
+sys.path.insert(0, os.path.expanduser("~/.gemini/config/plugins/polya-math-diagram/skills/math-exam-to-word/scripts"))
 import docx_exam_builder as deb
 
 # Import WMF GDI -> LaTeX decoder from inspect_docx_worksheet.py

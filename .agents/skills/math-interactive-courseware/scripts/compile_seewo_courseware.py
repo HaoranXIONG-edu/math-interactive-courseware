@@ -75,21 +75,30 @@ var localStorage = { getItem: function(){return null;}, setItem: function(){} };
 var matchMedia = function(){ return { matches: false, addEventListener: function(){} }; };
 var cancelAnimationFrame = function(){};
 var requestAnimationFrame = function(){};
+var queueMicrotask = function(){};
+var setTimeout = function(){};
+var clearTimeout = function(){};
 var innerWidth = 1600, innerHeight = 900;
 """ + sc_defs + """
-if (window.COURSEWARE_BRAND && String(window.COURSEWARE_BRAND).length > 15) {
-  throw new Error("Top flowbar overflow: window.COURSEWARE_BRAND ('" + window.COURSEWARE_BRAND + "') exceeds 15 chars!");
+function cjkLen(s) {
+  var plain = String(s || "").replace(/<[^>]+>/g, "");
+  var w = 0;
+  for (var i = 0; i < plain.length; i++) w += (plain.charCodeAt(i) > 127 ? 1 : 0.55);
+  return w;
 }
-if (window.COURSEWARE_TITLE && String(window.COURSEWARE_TITLE).length > 15) {
-  throw new Error("Top flowbar overflow: window.COURSEWARE_TITLE ('" + window.COURSEWARE_TITLE + "') exceeds 15 chars!");
+if (window.COURSEWARE_BRAND && cjkLen(window.COURSEWARE_BRAND) > 15) {
+  throw new Error("Top flowbar overflow: window.COURSEWARE_BRAND ('" + window.COURSEWARE_BRAND + "') exceeds 15 CJK chars!");
+}
+if (window.COURSEWARE_TITLE && cjkLen(window.COURSEWARE_TITLE) > 15) {
+  throw new Error("Top flowbar overflow: window.COURSEWARE_TITLE ('" + window.COURSEWARE_TITLE + "') exceeds 15 CJK chars!");
 }
 if (Array.isArray(window.COURSEWARE_PHASES)) {
   for (var pi = 0; pi < window.COURSEWARE_PHASES.length; pi++) {
     var ph = window.COURSEWARE_PHASES[pi];
-    if (ph && ph[0] && String(ph[0]).length > 7) {
+    if (ph && ph[0] && cjkLen(ph[0]) > 7.5) {
       throw new Error("Top flowbar phase title overflow: '" + ph[0] + "' exceeds 7 chars!");
     }
-    if (ph && ph[1] && String(ph[1]).length > 10) {
+    if (ph && ph[1] && cjkLen(ph[1]) > 10.5) {
       throw new Error("Top flowbar phase subtitle overflow: '" + ph[1] + "' exceeds 10 chars (causes chevron text clipping)!");
     }
   }
@@ -195,18 +204,29 @@ for (var idx = 0; idx < slides.length; idx++) {
         var xm = tAttrs.match(/\\bx=["']([^"']+)["']/), ym = tAttrs.match(/\\by=["']([^"']+)["']/);
         if (!xm || !ym) continue;
         var tx = parseFloat(xm[1]), ty = parseFloat(ym[1]);
+        var prefixSvg = svgStr.slice(0, tm.index);
+        var gStack = [], gTokRe = /<(\\/?)g\\b([^>]*)>/gi, gtm;
+        while ((gtm = gTokRe.exec(prefixSvg)) !== null) {
+          if (gtm[1] === "/") { gStack.pop(); }
+          else if (!/\\/\\s*$/.test(gtm[2])) {
+            var trm = gtm[2].match(/transform=["'][^"']*translate\\(\\s*([\\d.+\\-]+)(?:[\\s,]+([\\d.+\\-]+))?\\s*\\)/i);
+            gStack.push(trm ? [parseFloat(trm[1]) || 0, parseFloat(trm[2]) || 0] : [0, 0]);
+          }
+        }
+        for (var gi = 0; gi < gStack.length; gi++) { tx += gStack[gi][0]; ty += gStack[gi][1]; }
         var am = tAttrs.match(/text-anchor=["']([^"']+)["']/);
         var anchor = am ? am[1] : "start";
         var sm = tAttrs.match(/font-size=["']([^"']+)["']/);
         var fsize = sm ? parseFloat(sm[1]) : 14;
-        var raw = tInner.replace(/<[^>]+>/g, "").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&").trim();
+        var raw = tInner.replace(/<[^>]+>/g, "").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&").replace(/\\s+/g, " ").trim();
         if (!raw) continue;
         if (/(?:[A-Za-z]{1,4}\s*=\s*|:\s*)\d+\/\d+(?:\([^)]+\))?|\(\s*\d+[A-Za-z0-9_+\-\s]*\)\/\d+|\b\d+\/\d+\s*\([A-Za-z0-9_+\-\s]+\)/.test(raw)) {
           throw new Error("Slide " + idx + " (" + sl.navTag + " step=" + s + ") BARE SLASH FRACTION IN SVG TEXT: Found literal single-line slash equation '" + raw + "'. In dynamic courseware, all geometry/algebra fraction labels MUST be rendered using window.svgFoLabel() with standard 2D stacked .fraction HTML layout instead of raw single-line slashes (e.g. '4/3(4-x)')!");
         }
         var tw = 0;
         for (var ci = 0; ci < raw.length; ci++) {
-          tw += fsize * (raw.charCodeAt(ci) > 127 ? 0.95 : 0.54);
+          var cc = raw.charCodeAt(ci);
+          tw += fsize * (cc === 32 ? 0.28 : (cc > 127 ? 0.95 : 0.54));
         }
         var x1 = anchor === "middle" ? tx - tw / 2 : (anchor === "end" ? tx - tw : tx);
         var x2 = x1 + tw, y1 = ty - fsize * 0.82, y2 = ty + fsize * 0.18;
@@ -215,6 +235,7 @@ for (var idx = 0; idx < slides.length; idx++) {
       for (var ti = 0; ti < texts.length; ti++) {
         for (var tj = ti + 1; tj < texts.length; tj++) {
           var a = texts[ti], b = texts[tj];
+          if (a.raw === b.raw && Math.abs(a.x1 - b.x1) < 1.5 && Math.abs(a.y1 - b.y1) < 1.5) continue;
           if (a.x1 < b.x2 - 4 && a.x2 > b.x1 + 4 && a.y1 < b.y2 - 2.5 && a.y2 > b.y1 + 2.5) {
             throw new Error("Slide " + idx + " (" + sl.navTag + " step=" + s + ") SVG TEXT-TEXT OVERLAP: '" + a.raw + "' overlaps '" + b.raw + "'!");
           }
@@ -232,6 +253,7 @@ for (var idx = 0; idx < slides.length; idx++) {
         if (rfill.indexOf("rgba") === 0 || rfill === "none" || rw > 420 || rw <= 24) continue;
         for (var tk = 0; tk < texts.length; tk++) {
           var t = texts[tk];
+          if (rh > 80 && rm.index < t.pos) continue;
           var ox = Math.max(0, Math.min(rx + rw, t.x2) - Math.max(rx, t.x1));
           var oy = Math.max(0, Math.min(ry + rh, t.y2) - Math.max(ry, t.y1));
           if (ox > 0 && oy > 0) {

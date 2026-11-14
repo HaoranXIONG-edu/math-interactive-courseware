@@ -133,23 +133,32 @@ sup span, sup i, sup b,
   padding: 1px 0.22em 0;
 }
 .sqrt {
-  display: inline-flex;
-  align-items: baseline;
+  display: inline-flex !important;
+  align-items: baseline !important;
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
   font-weight: inherit;
   margin: 0 1px;
+  white-space: nowrap !important;
 }
 .sqrt::before {
-  content: "√";
-  font-size: 1.05em;
+  content: "\221A";
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+  font-size: 1.06em;
   line-height: 1;
-  margin-right: 1px;
+  margin-right: -0.04em;
 }
 .sqrt > span {
-  border-top: 1.8px solid currentColor;
-  padding: 0 2px;
-  line-height: 1.05;
+  border-top: 1.7px solid currentColor !important;
+  padding: 0 2px 0 1px !important;
+  line-height: 1.04 !important;
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: normal !important;
+}
+.sqrt > span i.m {
+  font-family: 'Times New Roman', Times, serif !important;
+  font-style: italic !important;
 }
 .overline {
   border-top: 1.8px solid currentColor;
@@ -1538,7 +1547,7 @@ body.canvas-zoom-mode .step-btn.next {
 }
 .screen-notes .step.step-locked::after {
   content: attr(data-lock-msg);
-  font-family: 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
+  font-family: 'Times New Roman', 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
   font-size: 21.5px;
   font-weight: 700;
   color: #475569;
@@ -1561,6 +1570,16 @@ body.canvas-zoom-mode .step-btn.next {
 .screen-notes .step > span {
   font-size: 24px !important;
   line-height: 1.46 !important;
+}
+.screen-notes .step > span b {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-weight: 700 !important;
+  color: inherit;
+}
+.screen-notes .step > span > b:first-child {
+  color: #1e3a8a;
 }
 .step-sub-part.sub-step-locked > * {
   display: none !important;
@@ -2241,6 +2260,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-notes {
   order: 1 !important;
+  grid-column: 1 !important;
   background: #ffffff;
   border: 1.5px solid #cbd5e1;
   border-radius: 14px;
@@ -2249,6 +2269,7 @@ body[data-font-scale="xlarge"] .screen-notes > * {
 }
 .screen-lower.layout-b > .screen-media {
   order: 2 !important;
+  grid-column: 2 !important;
   background: #ffffff;
   border: 2px solid #0d9488;
   border-radius: 14px;
@@ -2739,6 +2760,11 @@ body.canvas-zoom-mode .step-btn.zoom {
 .visual svg text {
   font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
 }
+.visual foreignObject svg,
+.screen-lab foreignObject svg {
+  width: auto !important;
+  height: auto !important;
+}
 .svg-fo-card {
   box-sizing: border-box;
   width: 100%;
@@ -2825,6 +2851,45 @@ body.canvas-zoom-mode .step-btn.zoom {
   text-align: center;
 }
 
+/* 题干与步骤区标准教材数据表格样式（杜绝全局 th 深蓝底白字与左对齐污染） */
+.screen-stem table,
+.screen-notes table,
+table.stem-data-table {
+  width: 86% !important;
+  max-width: 960px !important;
+  margin: 6px auto 8px !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  font-size: 20px !important;
+  line-height: 1.35 !important;
+  background: #ffffff !important;
+  border: 1.5px solid #94a3b8 !important;
+}
+.screen-stem table th,
+.screen-stem table td,
+.screen-notes table th,
+.screen-notes table td,
+table.stem-data-table th,
+table.stem-data-table td {
+  border: 1.5px solid #cbd5e1 !important;
+  padding: 5px 10px !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  font-size: 20px !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+.screen-stem table th,
+.screen-notes table th,
+table.stem-data-table th,
+.screen-stem table tr > td:first-child:has(i.m),
+table.stem-data-table tr > th:first-child {
+  background: #eef2ff !important;
+  color: #1e3a8a !important;
+  font-weight: 700 !important;
+  width: 110px !important;
+}
+
 </style></head><body><header><strong>2.2.3 反比例函数中“k”的几何意义</strong><button id="toc">课程目录</button></header><main id="viewport"><div id="stage"><div id="content"></div><canvas id="penLayer" width="1600" height="900" aria-label="课堂批注画布"></canvas></div></main><div class="progress"><i id="progress"></i></div><footer><button id="prev">← 上一页</button><span id="pageCount"></span><button id="next">下一页 →</button><button id="fontScaleBtn" class="font-scale-btn" type="button" title="切换教室大屏字号档位">🔍 字号：大屏标准</button><span id="slideTitle"></span><span class="keyhint">← → 翻页 · F 全屏 · M 目录</span><button id="pen">批注</button><button id="clearPen">清除批注</button><button id="effects">翻页特效</button><button id="remote">翻页笔</button><button id="fullscreen">全屏</button></footer><section id="inkToolbar" aria-label="课堂批注工具" hidden><div class="ink-group"><button data-ink-tool="pen" title="随速度或触控笔压力变化">钢笔</button><button data-ink-tool="marker">签字笔</button><button data-ink-tool="highlight">荧光笔</button><button data-ink-tool="eraser">橡皮擦</button></div><span class="ink-divider"></span><div class="ink-group ink-palette"><button type="button" class="ink-swatch" data-ink-color="#d94040" style="--swatch:#d94040" aria-label="红色" title="红色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#384d8f" style="--swatch:#384d8f" aria-label="靛蓝" title="靛蓝" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#118575" style="--swatch:#118575" aria-label="绿色" title="绿色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#252b37" style="--swatch:#252b37" aria-label="黑色" title="黑色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#e29a19" style="--swatch:#e29a19" aria-label="橙色" title="橙色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#9652ae" style="--swatch:#9652ae" aria-label="紫色" title="紫色" aria-pressed="false"></button><input type="color" id="inkCustomColor" value="#d94040" aria-label="自选笔迹颜色" title="自选颜色"></div><span class="ink-divider"></span><label>粗细<input id="inkSize" type="range" min="2" max="12" step="1" value="5" aria-label="笔迹粗细"><output id="inkSizeValue">5</output></label><div class="ink-group"><button id="inkUndo" title="撤销 Ctrl+Z">撤销</button><button id="inkRedo" title="重做 Ctrl+Shift+Z">重做</button><button id="inkClear">清空本页</button><button id="inkClose">完成</button></div><div id="inkMode" aria-live="polite"></div></section><dialog id="transitionDialog" aria-label="翻页特效设置"><button id="transitionClose">关闭 ×</button><h3>翻页特效</h3><p>选择课堂的翻页方式。主题联动会在进入新教学环节时，用光束揭开下一页。</p><div id="transitionChoices"></div><div class="transition-options"><label>动画节奏<select id="transitionSpeed" aria-label="动画节奏"><option value="420">利落 · 0.42 秒</option><option value="650">标准 · 0.65 秒</option><option value="900">舒展 · 0.9 秒</option></select></label><button id="transitionPreview">预览当前效果</button></div><p id="transitionMotionNote" hidden>系统已设置减少动态效果，课件会直接翻页。</p></dialog><dialog id="remoteDialog" aria-label="翻页笔按键设置"><button id="remoteClose">关闭 ×</button><h3>翻页笔联动</h3><p>连接翻页笔的接收器或蓝牙，让浏览器中的课件保持当前活动窗口。常见的上一页、下一页键可直接使用。</p><div id="remoteRows"></div><p id="remoteStatus" role="status"></p><button id="remoteReset">恢复默认按键</button><p class="remote-note">清空只影响当前页批注，可以撤销。也可用键盘 C 清空、F 或 F5 切换全屏。<br>绑定需要按键向浏览器发送键盘信号；仅控制硬件的激光开关不能绑定。</p></dialog><dialog id="tocDialog"><button id="closeToc">关闭 ×</button><h3>课程目录</h3><p style="font-size:15px;margin-bottom:20px">按学案问题顺序编排 · 点击可直接跳转</p><div id="tocList"></div></dialog><dialog id="imageDialog" aria-label="图片放大查看"><button id="closeImage">关闭 ×</button><img id="largeImage" alt="放大图片"></dialog><div id="toast" role="status"></div><script>
 // ================= 全局基础工具与 SVG 数学公式正斜体规范引擎（前置挂载，供所有分块脚本直接调用） =================
 window.isManualOverride = function(st, key) {
@@ -2855,6 +2920,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
   str = str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
   str = str.replace(/([\u4e00-\u9fff])\s+([A-Za-z0-9|△▱∠⊥∥∽=+\-(])/g, '$1$2');
   str = str.replace(/([A-Za-z0-9|△▱∠⊥∥∽)])\s+([\u4e00-\u9fff])/g, '$1$2');
+  str = str.replace(/(\d)\s+(cm|mm|km|kg|mg|kPa|Pa|min|s|m|h|g|t|N|A|V|W|Ω|°C)(?![A-Za-z])/g, '$1$2');
 
   function escSvg(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -2874,18 +2940,21 @@ window.svgAutoFormatText = function(rawText, baseSize) {
 
   function formatFlatTokens(seg, isSubOrSup = false) {
     if (!seg) return '';
-    const tokenRe = /(Rt|sin|cos|tan|min|max|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
+    const tokenRe = /(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
     let out = '';
     let m;
     const baseTokenFs = isSubOrSup ? subFs : fs;
     while ((m = tokenRe.exec(seg)) !== null) {
       const tk = m[0];
+      const idx = m.index;
+      const prevChar = idx > 0 ? seg.slice(0, idx).replace(/\s+$/, '').slice(-1) : '';
+      const isUnitAfterSlashOrDigit = /^[mshgtNAVWJL]$/.test(tk) && (prevChar === '/' || /[0-9]/.test(prevChar));
       const safeTk = escSvg(tk);
       const dyAttr = isSubOrSup ? '' : consumeDyAttr(0, null);
       if (tk === '△') {
         const triFs = Math.round(baseTokenFs * 0.80 * 10) / 10;
         out += `<tspan${dyAttr} font-family="'Songti SC', 'SimSun', serif" font-style="normal" font-size="${triFs}">${safeTk}</tspan>`;
-      } else if (/^(Rt|sin|cos|tan|min|max)$/.test(tk)) {
+      } else if (/^(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
         out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${baseTokenFs}">${safeTk}</tspan>`;
       } else if (/^[A-Za-z]+$/.test(tk)) {
         out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="italic" font-size="${baseTokenFs}">${safeTk}</tspan>`;
@@ -2900,7 +2969,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
 
   const subMap = { '₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9','ₙ':'n' };
   const supMap = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9' };
-  const masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g;
+  const masterRe = /S(直角梯形|平行四边形|四边形|矩形|梯形|Rt△|△|▱)([A-Za-z0-9']*)|([₀₁₂₃₄₅₆₇₈₉ₙ]+)|([⁰¹²³⁴⁵⁶⁷⁸⁹]+)|√\(([^)]+)\)|√([0-9A-Za-z]+)/g;
 
   let result = '';
   let lastIdx = 0;
@@ -2932,6 +3001,12 @@ window.svgAutoFormatText = function(rawText, baseSize) {
         formatFlatTokens(supStr, true) +
         `</tspan>`;
       pendingDy = supDy;
+    } else if (match[5] !== undefined || match[6] !== undefined) {
+      const radContent = match[5] !== undefined ? match[5] : match[6];
+      const rAttr = consumeDyAttr(0, null);
+      result += `<tspan${rAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}">√</tspan><tspan font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${fs}" text-decoration="overline">` +
+        formatFlatTokens(radContent, false) +
+        `</tspan>`;
     }
     lastIdx = masterRe.lastIndex;
   }
@@ -3041,19 +3116,25 @@ window.renderStandardCover = function(cfg = {}) {
 };
 
 // ================= 数学真实坐标系 SVG 确定性绘图底座（SeewoCoordCanvas，杜绝口算像素与图形画错） =================
-window.createCoordCanvas = function(opts = {}) {
+window.createCoordCanvas = function(arg1 = {}, arg2, arg3) {
+  const opts = (typeof arg1 === 'number')
+    ? Object.assign({ width: arg1, height: arg2 }, arg3 || {})
+    : (arg1 || {});
   const W = opts.width || 560;
   const H = opts.height || 430;
   const pad = Object.assign({ left: 46, right: 36, top: 36, bottom: 38 }, opts.padding || {});
-  const xMin = opts.xRange ? opts.xRange[0] : -5;
-  const xMax = opts.xRange ? opts.xRange[1] : 5;
-  const yMin = opts.yRange ? opts.yRange[0] : -4;
-  const yMax = opts.yRange ? opts.yRange[1] : 4;
+  const xMin = opts.xRange ? opts.xRange[0] : (opts.xMin !== undefined ? opts.xMin : -5);
+  const xMax = opts.xRange ? opts.xRange[1] : (opts.xMax !== undefined ? opts.xMax : 5);
+  const yMin = opts.yRange ? opts.yRange[0] : (opts.yMin !== undefined ? opts.yMin : -4);
+  const yMax = opts.yRange ? opts.yRange[1] : (opts.yMax !== undefined ? opts.yMax : 4);
   const plotW = W - pad.left - pad.right;
   const plotH = H - pad.top - pad.bottom;
   const rawScaleX = plotW / (xMax - xMin);
   const rawScaleY = plotH / (yMax - yMin);
-  const equalAspect = opts.equalAspect !== false;
+  const spanRatio = (xMax - xMin) / Math.max(1e-6, yMax - yMin);
+  const equalAspect = opts.equalAspect !== undefined
+    ? Boolean(opts.equalAspect)
+    : (!opts.xStep && !opts.yStep && opts.xMin === undefined && spanRatio >= 0.85 && spanRatio <= 1.45 && (xMax - xMin) <= 16);
   const scaleX = equalAspect ? Math.min(rawScaleX, rawScaleY) : rawScaleX;
   const scaleY = equalAspect ? Math.min(rawScaleX, rawScaleY) : rawScaleY;
   const ox = pad.left + (-xMin) * scaleX + (equalAspect ? (plotW - (xMax - xMin) * scaleX) / 2 : 0);
@@ -3064,32 +3145,48 @@ window.createCoordCanvas = function(opts = {}) {
   function py(y) { return oy - y * scaleY; }
   function pt(p) { return Array.isArray(p) ? [px(p[0]), py(p[1])] : [px(p.x), py(p.y)]; }
 
-  return {
+  const api = {
     W, H, ox, oy, scaleX, scaleY, px, py, pt,
+    sx: px, sy: py, X: px, Y: py,
     raw(svgSnippet) { if (svgSnippet) els.push(svgSnippet); return this; },
+    add(svgSnippet) { if (svgSnippet) els.push(svgSnippet); return this; },
     drawAxes(cfg = {}) {
       const x0 = px(xMin), x1 = px(xMax), y0 = py(yMin), y1 = py(yMax);
       const axisColor = cfg.color || '#1e293b';
+      const xStep = cfg.xStep || opts.xStep || 1;
+      const yStep = cfg.yStep || opts.yStep || 1;
       if (cfg.showGrid) {
-        for (let gx = Math.ceil(xMin); gx <= Math.floor(xMax); gx++) {
-          if (gx === 0) continue;
+        for (let gx = Math.ceil(xMin / xStep) * xStep; gx <= xMax + 1e-6; gx += xStep) {
+          if (Math.abs(gx) < 1e-6) continue;
           els.push(`<line x1="${px(gx).toFixed(1)}" y1="${y1.toFixed(1)}" x2="${px(gx).toFixed(1)}" y2="${y0.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`);
         }
-        for (let gy = Math.ceil(yMin); gy <= Math.floor(yMax); gy++) {
-          if (gy === 0) continue;
+        for (let gy = Math.ceil(yMin / yStep) * yStep; gy <= yMax + 1e-6; gy += yStep) {
+          if (Math.abs(gy) < 1e-6) continue;
           els.push(`<line x1="${x0.toFixed(1)}" y1="${py(gy).toFixed(1)}" x2="${x1.toFixed(1)}" y2="${py(gy).toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`);
+        }
+      }
+      if (cfg.showTicks || opts.xStep || opts.yStep) {
+        for (let gx = Math.ceil(xMin / xStep) * xStep; gx <= xMax - xStep * 0.3; gx += xStep) {
+          if (Math.abs(gx) < 1e-6 || gx < 0) continue;
+          els.push(`<line x1="${px(gx).toFixed(1)}" y1="${oy.toFixed(1)}" x2="${px(gx).toFixed(1)}" y2="${(oy - 5).toFixed(1)}" stroke="${axisColor}" stroke-width="1.5"/>`);
+          els.push(`<text x="${px(gx).toFixed(1)}" y="${(oy + 19).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">${Math.round(gx * 100) / 100}</text>`);
+        }
+        for (let gy = Math.ceil(yMin / yStep) * yStep; gy <= yMax - yStep * 0.3; gy += yStep) {
+          if (Math.abs(gy) < 1e-6 || gy < 0) continue;
+          els.push(`<line x1="${ox.toFixed(1)}" y1="${py(gy).toFixed(1)}" x2="${(ox + 5).toFixed(1)}" y2="${py(gy).toFixed(1)}" stroke="${axisColor}" stroke-width="1.5"/>`);
+          els.push(`<text x="${(ox - 7).toFixed(1)}" y="${(py(gy) + 4).toFixed(1)}" text-anchor="end" font-size="13" font-weight="600" fill="#475569">${Math.round(gy * 100) / 100}</text>`);
         }
       }
       els.push(`<line x1="${x0.toFixed(1)}" y1="${oy.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${axisColor}" stroke-width="2"/>`);
       els.push(`<polygon points="${(x1 + 6).toFixed(1)},${oy.toFixed(1)} ${(x1 - 7).toFixed(1)},${(oy - 4.8).toFixed(1)} ${(x1 - 7).toFixed(1)},${(oy + 4.8).toFixed(1)}" fill="${axisColor}"/>`);
       els.push(`<line x1="${ox.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${ox.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${axisColor}" stroke-width="2"/>`);
       els.push(`<polygon points="${ox.toFixed(1)},${(y1 - 6).toFixed(1)} ${(ox - 4.8).toFixed(1)},${(y1 + 7).toFixed(1)} ${(ox + 4.8).toFixed(1)},${(y1 + 7).toFixed(1)}" fill="${axisColor}"/>`);
-      els.push(`<text x="${(x1 - 4).toFixed(1)}" y="${(oy + 24).toFixed(1)}" font-size="18" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.xLabel || 'x', 18)}</text>`);
-      els.push(`<text x="${(ox + 12).toFixed(1)}" y="${(y1 + 14).toFixed(1)}" font-size="18" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.yLabel || 'y', 18)}</text>`);
+      els.push(`<text x="${(x1 - 4).toFixed(1)}" y="${(oy + 24).toFixed(1)}" text-anchor="end" font-size="16" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.xLabel || opts.xLabel || 'x', 16)}</text>`);
+      els.push(`<text x="${(ox + 12).toFixed(1)}" y="${(y1 + 14).toFixed(1)}" font-size="16" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.yLabel || opts.yLabel || 'y', 16)}</text>`);
       if (cfg.showOrigin !== false) {
-        const oxOff = cfg.originOffset ? cfg.originOffset[0] : -18;
+        const oxOff = cfg.originOffset ? cfg.originOffset[0] : -16;
         const oyOff = cfg.originOffset ? cfg.originOffset[1] : 20;
-        els.push(`<text x="${(ox + oxOff).toFixed(1)}" y="${(oy + oyOff).toFixed(1)}" font-size="17" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText('O', 17)}</text>`);
+        els.push(`<text x="${(ox + oxOff).toFixed(1)}" y="${(oy + oyOff).toFixed(1)}" font-size="16" font-weight="700" fill="${axisColor}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText('O', 16)}</text>`);
       }
       return this;
     },
@@ -3115,6 +3212,36 @@ window.createCoordCanvas = function(opts = {}) {
       });
       return this;
     },
+    curve(fn, domMin, domMax, colorOrCfg, widthArg, dashArg) {
+      const cfg = (typeof colorOrCfg === 'object' && colorOrCfg !== null) ? colorOrCfg : { stroke: colorOrCfg, width: widthArg, dash: dashArg };
+      const color = cfg.stroke || cfg.color || '#1e293b';
+      const width = cfg.width || 2.6;
+      const dash = cfg.dash ? ` stroke-dasharray="${cfg.dash}"` : '';
+      const stepCount = 80;
+      const pts = [];
+      for (let i = 0; i <= stepCount; i++) {
+        const x = domMin + (domMax - domMin) * (i / stepCount);
+        const y = fn(x);
+        if (!Number.isFinite(y) || y < yMin - (yMax - yMin) * 0.2 || y > yMax + (yMax - yMin) * 0.2) continue;
+        pts.push(`${px(x).toFixed(1)},${py(y).toFixed(1)}`);
+      }
+      if (pts.length > 1) {
+        els.push(`<polyline fill="none" stroke="${color}" stroke-width="${width}"${dash} stroke-linecap="round" points="${pts.join(' ')}"/>`);
+      }
+      return this;
+    },
+    shadedRegion(fn, x1, x2, fill = 'rgba(37,99,235,0.12)') {
+      const stepCount = 40;
+      const pts = [`${px(x1).toFixed(1)},${py(0).toFixed(1)}`];
+      for (let i = 0; i <= stepCount; i++) {
+        const x = x1 + (x2 - x1) * (i / stepCount);
+        const y = fn(x);
+        if (Number.isFinite(y)) pts.push(`${px(x).toFixed(1)},${py(y).toFixed(1)}`);
+      }
+      pts.push(`${px(x2).toFixed(1)},${py(0).toFixed(1)}`);
+      els.push(`<polygon points="${pts.join(' ')}" fill="${fill}" stroke="none"/>`);
+      return this;
+    },
     drawPolygon(mathPts, cfg = {}) {
       const svgPts = mathPts.map(p => {
         const [sx, sy] = pt(p);
@@ -3127,13 +3254,21 @@ window.createCoordCanvas = function(opts = {}) {
       els.push(`<polygon points="${svgPts}" fill="${fill}" stroke="${stroke}" stroke-width="${width}"${dash} stroke-linejoin="round"/>`);
       return this;
     },
+    polygon(mathPts, fillOrCfg, strokeArg, widthArg) {
+      const cfg = (typeof fillOrCfg === 'object' && fillOrCfg !== null) ? fillOrCfg : { fill: fillOrCfg, stroke: strokeArg || 'none', width: widthArg !== undefined ? widthArg : (strokeArg ? 2 : 0) };
+      return this.drawPolygon(mathPts, cfg);
+    },
     drawSegment(p1, p2, cfg = {}) {
       const [x1, y1] = pt(p1), [x2, y2] = pt(p2);
-      const color = cfg.color || '#475569';
+      const color = cfg.stroke || cfg.color || '#475569';
       const width = cfg.width || 1.8;
       const dash = cfg.dash ? ` stroke-dasharray="${cfg.dash}"` : '';
       els.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="${width}"${dash} stroke-linecap="round"/>`);
       return this;
+    },
+    line(x1, y1, x2, y2, colorOrCfg, widthArg, dashArg) {
+      const cfg = (typeof colorOrCfg === 'object' && colorOrCfg !== null) ? colorOrCfg : { color: colorOrCfg, width: widthArg, dash: dashArg };
+      return this.drawSegment([x1, y1], [x2, y2], cfg);
     },
     drawRightAngle(vertex, p1, p2, size = 9, color = '#475569') {
       const [vx, vy] = pt(vertex), [x1, y1] = pt(p1), [x2, y2] = pt(p2);
@@ -3154,19 +3289,50 @@ window.createCoordCanvas = function(opts = {}) {
       if (cfg.label) {
         const dx = cfg.dx !== undefined ? cfg.dx : 8;
         const dy = cfg.dy !== undefined ? cfg.dy : -8;
-        const fs = cfg.fontSize || 17;
-        const anchor = cfg.anchor || 'start';
+        const fs = cfg.fontSize || 16;
+        const anchor = cfg.anchor || (dx < -2 ? 'end' : 'start');
         els.push(`<text x="${(sx + dx).toFixed(1)}" y="${(sy + dy).toFixed(1)}" text-anchor="${anchor}" font-size="${fs}" font-weight="700" fill="${cfg.labelColor || color}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(cfg.label, fs)}</text>`);
       }
       return this;
     },
+    point(xOrPt, yOrCfg, labelArg, colorOrCfg, dxArg, dyArg, rArg) {
+      if (Array.isArray(xOrPt)) return this.drawPoint(xOrPt, yOrCfg || {});
+      const cfg = (typeof colorOrCfg === 'object' && colorOrCfg !== null)
+        ? Object.assign({ label: labelArg }, colorOrCfg)
+        : { label: labelArg, color: colorOrCfg, dx: dxArg, dy: dyArg, r: rArg };
+      return this.drawPoint([xOrPt, yOrCfg], cfg);
+    },
+    projPoint(x, y, label, cfg = {}) {
+      const color = cfg.color || '#1e293b';
+      const dashColor = cfg.dashColor || '#64748b';
+      this.drawSegment([x, y], [x, 0], { color: dashColor, width: 1.5, dash: '4,3' });
+      this.drawSegment([x, y], [0, y], { color: dashColor, width: 1.5, dash: '4,3' });
+      if (cfg.showTickX) {
+        els.push(`<text x="${px(x).toFixed(1)}" y="${(oy + 19).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="${color}" stroke="#ffffff" stroke-width="4.5" paint-order="stroke">${Math.round(x * 100) / 100}</text>`);
+      }
+      if (cfg.showTickY) {
+        els.push(`<text x="${(ox - 7).toFixed(1)}" y="${(py(y) + 4).toFixed(1)}" text-anchor="end" font-size="13" font-weight="700" fill="${color}" stroke="#ffffff" stroke-width="4.5" paint-order="stroke">${Math.round(y * 100) / 100}</text>`);
+      }
+      return this.drawPoint([x, y], Object.assign({}, cfg, { label }));
+    },
     drawText(mathPt, textStr, cfg = {}) {
       const [sx, sy] = pt(mathPt);
-      const fs = cfg.fontSize || 17;
+      const fs = cfg.fontSize || cfg.size || 16;
       const anchor = cfg.anchor || 'middle';
-      const color = cfg.color || '#1e293b';
+      const color = cfg.fill || cfg.color || '#1e293b';
       els.push(`<text x="${sx.toFixed(1)}" y="${sy.toFixed(1)}" text-anchor="${anchor}" font-size="${fs}" font-weight="${cfg.weight || 700}" fill="${color}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(textStr, fs)}</text>`);
       return this;
+    },
+    text(x, y, textStr, colorOrCfg, sizeArg, anchorArg, weightArg) {
+      if (typeof colorOrCfg === 'object' && colorOrCfg !== null) {
+        const fs = colorOrCfg.size || colorOrCfg.fontSize || 15;
+        const anchor = colorOrCfg.anchor || 'start';
+        const color = colorOrCfg.fill || colorOrCfg.color || '#1e293b';
+        const weight = colorOrCfg.weight || 700;
+        els.push(`<text x="${Number(x).toFixed(1)}" y="${Number(y).toFixed(1)}" text-anchor="${anchor}" font-size="${fs}" font-weight="${weight}" fill="${color}" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${window.svgAutoFormatText(textStr, fs)}</text>`);
+        return this;
+      }
+      return this.drawText([x, y], textStr, { color: colorOrCfg, fontSize: sizeArg, anchor: anchorArg, weight: weightArg });
     },
     drawFoCard(x, y, w, h, innerHtml, extraStyle = '') {
       els.push(window.svgFoCard(x, y, w, h, innerHtml, extraStyle));
@@ -3174,11 +3340,47 @@ window.createCoordCanvas = function(opts = {}) {
     },
     toSvg(extraAttr = '') {
       return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;max-height:100%;display:block;" ${extraAttr}>${els.join('\n')}</svg>`;
+    },
+    done(extraAttr = '') {
+      return this.toSvg(extraAttr);
     }
   };
+
+  if (opts.xStep || opts.yStep || opts.autoAxes) {
+    api.drawAxes({ showGrid: opts.showGrid !== false, showTicks: true, xLabel: opts.xLabel, yLabel: opts.yLabel });
+  }
+
+  return api;
 };
 
 // ================= 声明式课件页面构建器（window.defineSlide，强制 1对1 步数/填空/图形同步契约） =================
+window.formatInlineMathHTML = function(rawStr) {
+  if (!rawStr) return '';
+  const s = String(rawStr);
+  if (/<(span|i|sup|sub|b)\b/i.test(s)) return s;
+  let clean = s
+    .replace(/([\u4e00-\u9fff])\s+([A-Za-z0-9△▱∠⊥∥∽≌=+\-√])/g, '$1$2')
+    .replace(/([A-Za-z0-9△▱∠⊥∥∽≌²³)])\s+([\u4e00-\u9fff])/g, '$1$2')
+    .replace(/\s*([=+\-∶:∽≌∥⊥⇒])\s*/g, '$1');
+  function fmtAtom(seg) {
+    return seg.replace(/([0-9]+(?:\.[0-9]+)?)?√\(([^)]+)\)|([0-9]+(?:\.[0-9]+)?)?√([0-9A-Za-z²³+\-]+)|Rt△|△|[A-Za-z]+|[0-9]+(?:\.[0-9]+)?|[²³]|[=+\-±×÷·:∶∠⊥∥∽≌°⇒/]/g, (m, c1, radParen, c2, radBare) => {
+      if (radParen !== undefined || radBare !== undefined) {
+        const coef = c1 || c2 || '';
+        const inner = radParen !== undefined ? radParen : radBare;
+        const coefHtml = coef ? `<span class="num">${coef}</span>` : '';
+        return `<span style="white-space:nowrap;">${coefHtml}<span class="sqrt"><span>${fmtAtom(inner)}</span></span></span>`;
+      }
+      if (m === 'Rt△') return '<span class="num">Rt</span><span class="tri-sym">△</span>';
+      if (m === '△') return '<span class="tri-sym">△</span>';
+      if (m === '²') return '<sup><span class="num">2</span></sup>';
+      if (m === '³') return '<sup><span class="num">3</span></sup>';
+      if (/^[A-Za-z]+$/.test(m)) return `<i class="m">${m}</i>`;
+      return `<span class="num">${m}</span>`;
+    });
+  }
+  return fmtAtom(clean);
+};
+
 window.defineSlide = function(cfg) {
   window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
   window.UNIT1_SIMS = window.UNIT1_SIMS || {};
@@ -3201,8 +3403,18 @@ window.defineSlide = function(cfg) {
   const stepsHTML = steps.map((st, idx) => {
     const num = idx + 1;
     const badge = String(num).padStart(2, '0');
-    const titlePart = typeof st === 'object' && st.title ? `<b>步骤<span class="num">${num}</span>（${st.title}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
-    const bodyPart = typeof st === 'object' ? st.html : st;
+    let stTitle = '', bodyPart = '';
+    if (Array.isArray(st)) {
+      stTitle = st[0] || '';
+      bodyPart = st[1] || '';
+    } else if (typeof st === 'object' && st !== null) {
+      stTitle = st.title || '';
+      bodyPart = st.html || st.body || st.text || '';
+    } else {
+      bodyPart = String(st || '');
+    }
+    const fmtTitle = window.formatInlineMathHTML(stTitle);
+    const titlePart = fmtTitle ? `<b>步骤<span class="num">${num}</span>（${fmtTitle}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
     return `<div class="step step-locked"><b>${badge}</b><span>${titlePart}${bodyPart}</span></div>`;
   }).join('\n          ');
 
@@ -3242,9 +3454,18 @@ window.defineSlide = function(cfg) {
     if (isInit) {
       state.step = 0;
       clearManualOverrides(state);
+      const defaultState = cfg.state || cfg.initState;
+      if (defaultState && typeof defaultState === 'object') {
+        Object.keys(defaultState).forEach(k => { state[k] = defaultState[k]; });
+      }
       if (typeof cfg.onInit === 'function') cfg.onInit(state);
     }
     const root = activeRoot();
+    if (root && !root.slider) {
+      root.slider = window.slider;
+      root.modeButtons = window.modeButtons;
+      root.stepBar = window.stepBar;
+    }
     const step = Number(state.step || 0);
     const controls = root.querySelector('#controls');
     if (controls) {
@@ -3258,6 +3479,176 @@ window.defineSlide = function(cfg) {
   };
 };
 
+// ================= 一题多图（图(1)~图(k)）总览与单图自动放大标准容器（杜绝多图与步骤脱节） =================
+window.renderMultiPanelScene = function(step, panels, opts = {}) {
+  const W = opts.width || 560;
+  const H = opts.height || 430;
+  const list = Array.isArray(panels) ? panels : [];
+  if (!list.length) return `<svg viewBox="0 0 ${W} ${H}"></svg>`;
+
+  if (!step || step <= 0) {
+    const n = list.length;
+    const cols = n <= 2 ? 2 : (n === 3 ? 3 : (n === 4 ? 2 : 3));
+    const rows = Math.ceil(n / cols);
+    const padX = 12, padY = 10, gapX = 10, gapY = 10;
+    const cellW = Math.floor((W - padX * 2 - gapX * (cols - 1)) / cols);
+    const cellH = Math.floor((H - padY * 2 - gapY * (rows - 1)) / rows);
+    const cells = list.map((p, idx) => {
+      const r = Math.floor(idx / cols);
+      const itemsInRow = (r === rows - 1 && n % cols !== 0) ? (n % cols) : cols;
+      const rowW = itemsInRow * cellW + (itemsInRow - 1) * gapX;
+      const startX = Math.floor((W - rowW) / 2);
+      const c = idx % cols;
+      const x0 = startX + c * (cellW + gapX);
+      const y0 = padY + r * (cellH + gapY);
+      const gotoStep = p.targetStep || (Array.isArray(p.steps) ? p.steps[0] : (idx + 1));
+      const inner = typeof p.render === 'function' ? p.render({ x0, y0, w: cellW, h: cellH, zoomed: false, step: 0 }) : '';
+      return `<g data-step-goto="${gotoStep}" style="cursor:pointer;">
+        <rect x="${x0}" y="${y0}" width="${cellW}" height="${cellH}" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        ${p.title ? `<text x="${(x0 + cellW / 2).toFixed(1)}" y="${(y0 + 20).toFixed(1)}" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">${window.svgAutoFormatText(p.title, 13.5)}</text>` : ''}
+        ${inner}
+      </g>`;
+    }).join('\n');
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;max-height:100%;display:block;">${cells}</svg>`;
+  }
+
+  let activePanel = list.find(p => Array.isArray(p.steps) ? p.steps.includes(step) : p.targetStep === step);
+  if (!activePanel) activePanel = list[Math.min(list.length - 1, Math.max(0, step - 1))];
+  const zoomedInner = typeof activePanel.render === 'function'
+    ? activePanel.render({ x0: 14, y0: 12, w: W - 28, h: H - 24, zoomed: true, step })
+    : '';
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;max-height:100%;display:block;">
+    <rect x="14" y="12" width="${W - 28}" height="${H - 24}" rx="12" fill="#ffffff" stroke="#93c5fd" stroke-width="1.8"/>
+    ${activePanel.title ? `<text x="${(W / 2).toFixed(1)}" y="36" text-anchor="middle" font-size="16" font-weight="700" fill="#1e3a8a">${window.svgAutoFormatText(activePanel.title, 16)}</text>` : ''}
+    ${zoomedInner}
+    <g data-step-goto="0" style="cursor:pointer;">
+      <rect x="${W - 148}" y="20" width="122" height="26" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+      <text x="${W - 87}" y="38" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1d4ed8">${window.svgAutoFormatText('⊞ 返回多图总览', 12.5)}</text>
+    </g>
+  </svg>`;
+};
+
+// ================= 波利亚级（Polya-Grade）SVG 几何图示清晰标注引擎（100% 纯原生 SVG 图元，严禁嵌套子 <svg>） =================
+// 1. 顶部色彩图例条（纯 SVG 绘制，彻底杜绝 .visual svg 样式污染导致图标放大）
+window.svgLegendBar = function(items, opts = {}) {
+  const list = Array.isArray(items) ? items.filter(Boolean) : [];
+  if (!list.length) return '';
+  const x = opts.x !== undefined ? opts.x : 12;
+  const y = opts.y !== undefined ? opts.y : 6;
+  const w = opts.width || 516;
+  const h = opts.height || 28;
+  const cy = y + h / 2;
+  const fs = opts.fontSize || 12.5;
+
+  function estTextW(str) {
+    let tw = 0;
+    const s = String(str || '');
+    for (let i = 0; i < s.length; i++) {
+      tw += fs * (s.charCodeAt(i) > 127 ? 0.92 : 0.54);
+    }
+    return tw;
+  }
+
+  const measured = list.map(it => {
+    const type = it.type || 'angle';
+    const iconW = type === 'dash' ? 18 : (type === 'line' ? 16 : 15);
+    const rawTxt = String(it.text || it.html || '').replace(/<[^>]+>/g, '');
+    const tw = estTextW(rawTxt);
+    return { it, type, iconW, rawTxt, tw, totalW: iconW + 4 + tw };
+  });
+
+  const gap = 16;
+  const sumW = measured.reduce((acc, m) => acc + m.totalW, 0) + gap * (measured.length - 1);
+  let curX = x + Math.max(8, (w - sumW) / 2);
+
+  let out = `<g class="svg-legend-bar">`;
+  out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="rgba(248,250,252,0.96)" stroke="#cbd5e1" stroke-width="1.2"/>`;
+
+  measured.forEach((m, idx) => {
+    const color = m.it.color || '#2563eb';
+    if (m.type === 'angle') {
+      out += `<path d="M ${(curX + 13).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 1).toFixed(1)} ${(cy + 5).toFixed(1)} L ${(curX + 10).toFixed(1)} ${(cy - 5).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+      out += `<path d="M ${(curX + 8).toFixed(1)} ${(cy + 5).toFixed(1)} A 6.5 6.5 0 0 0 ${(curX + 6.3).toFixed(1)} ${(cy - 0.8).toFixed(1)}" fill="none" stroke="${color}" stroke-width="1.5"/>`;
+    } else if (m.type === 'dash') {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 18).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/>`;
+    } else if (m.type === 'tri') {
+      out += `<polygon points="${(curX + 7).toFixed(1)},${(cy - 5.5).toFixed(1)} ${(curX + 1).toFixed(1)},${(cy + 5).toFixed(1)} ${(curX + 13).toFixed(1)},${(cy + 5).toFixed(1)}" fill="${m.it.fill || 'rgba(234,88,12,0.22)'}" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>`;
+    } else {
+      out += `<line x1="${curX.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(curX + 16).toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="2.4" stroke-linecap="round"/>`;
+    }
+    const tx = curX + m.iconW + 4;
+    const ty = cy + 4.5;
+    out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    curX += m.totalW + gap;
+    if (idx < measured.length - 1) {
+      const sepX = curX - gap / 2;
+      out += `<line x1="${sepX.toFixed(1)}" y1="${(y + 6).toFixed(1)}" x2="${sepX.toFixed(1)}" y2="${(y + h - 6).toFixed(1)}" stroke="#cbd5e1" stroke-width="1.2"/>`;
+    }
+  });
+
+  out += `</g>`;
+  return out;
+};
+
+// 2. 数字角直观标注（支持同顶点阶梯半径与纯数字 1, 2, 3, 4, 5 标注，配角平分线引线防挤压）
+window.svgNumberedAngle = function(v, pStart, pEnd, numStr, opts = {}) {
+  const radius = opts.radius || 28;
+  const color = opts.color || '#2563eb';
+  const fill = opts.fill || 'none';
+  const labelDist = opts.labelDist || (radius + 13);
+  const dx1 = pStart[0] - v[0], dy1 = pStart[1] - v[1];
+  const dx2 = pEnd[0] - v[0], dy2 = pEnd[1] - v[1];
+  let a1 = Math.atan2(dy1, dx1);
+  let a2 = Math.atan2(dy2, dx2);
+  let diff = a2 - a1;
+  while (diff <= -Math.PI) diff += Math.PI * 2;
+  while (diff > Math.PI) diff -= Math.PI * 2;
+  const sweep = diff > 0 ? 1 : 0;
+  const sx = v[0] + Math.cos(a1) * radius;
+  const sy = v[1] + Math.sin(a1) * radius;
+  const ex = v[0] + Math.cos(a2) * radius;
+  const ey = v[1] + Math.sin(a2) * radius;
+  let out = '';
+  if (fill && fill !== 'none') {
+    out += `<path d="M ${v[0].toFixed(1)} ${v[1].toFixed(1)} L ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)} Z" fill="${fill}" stroke="none"/>`;
+  }
+  out += `<path d="M ${sx.toFixed(1)} ${sy.toFixed(1)} A ${radius} ${radius} 0 0 ${sweep} ${ex.toFixed(1)} ${ey.toFixed(1)}" fill="none" stroke="${color}" stroke-width="2.1"/>`;
+  if (numStr !== undefined && numStr !== null && String(numStr) !== '') {
+    const midA = a1 + diff / 2 + (opts.angleShift || 0);
+    const lx = v[0] + Math.cos(midA) * labelDist + (opts.dx || 0);
+    const ly = v[1] + Math.sin(midA) * labelDist + 4.5 + (opts.dy || 0);
+    if (opts.leader) {
+      const mx = v[0] + Math.cos(midA) * (radius * 0.75);
+      const my = v[1] + Math.sin(midA) * (radius * 0.75);
+      const tx = v[0] + Math.cos(midA) * (labelDist - 7) + (opts.dx || 0);
+      const ty = v[1] + Math.sin(midA) * (labelDist - 7) + (opts.dy || 0);
+      out += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="${color}" stroke-width="1.3"/>`;
+    }
+    const inner = window.svgAutoFormatText(String(numStr), opts.fontSize || 14);
+    out += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${opts.fontSize || 14}" fill="${color}" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">${inner}</text>`;
+  }
+  return out;
+};
+
+// 3. 求解目标/关键结论引线气泡框（如“求 BC = ?”或“BC = 4√3”）
+window.svgCalloutTag = function(anchorPt, boxRect, innerHtml, opts = {}) {
+  const color = opts.color || '#15803d';
+  const bg = opts.bg || '#f0fdf4';
+  const [ax, ay] = anchorPt;
+  const [bx, by, bw, bh] = boxRect;
+  const cy = by + bh / 2;
+  const startX = ax < bx ? bx : (ax > bx + bw ? bx + bw : bx + bw / 2);
+  return `<g>
+    <line x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${startX.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="${color}" stroke-width="1.8"/>
+    <circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="3.2" fill="${color}"/>
+    <foreignObject x="${bx}" y="${by}" width="${bw}" height="${bh}" style="overflow:visible;">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;box-sizing:border-box;background:${bg};border:1.8px solid ${color};border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-family:'Times New Roman','Songti SC','SimSun',serif;font-size:14.5px;font-weight:700;color:${color};white-space:nowrap;box-shadow:0 2px 5px rgba(15,23,42,0.06);">${innerHtml}</div>
+    </foreignObject>
+  </g>`;
+};
+
+
+
 
 
 
@@ -3265,11 +3656,12 @@ window.defineSlide = function(cfg) {
 window.UNIT1_THEOREM_SLIDES = window.UNIT1_THEOREM_SLIDES || [];
 window.UNIT1_SIMS = window.UNIT1_SIMS || {};
 window.COURSEWARE_BRAND = '反比例函数';
+window.COURSEWARE_TITLE = '2.2.3 “k”的几何意义';
 window.COURSEWARE_PHASES = [
   ['① 情境引入', '核心面积激活'],
-  ['② 新知探究', '问题<span class="num">1—4</span>模型探究'],
-  ['③ 新知应用', '第<span class="num">1—5</span>题典例精析'],
-  ['④ 分层训练', '训练<span class="num">1—3</span>与课堂小结']
+  ['② 新知探究', '问题1—4模型探究'],
+  ['③ 新知应用', '第1—5题典例精析'],
+  ['④ 分层训练', '训练1—3与课堂小结']
 ];
 
 // ================= SVG 辅助绘制函数（标准二维分式、白描边防压线、坐标轴） =================
@@ -5180,12 +5572,12 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
       layout: "layout-b",
       sim: "train3Sim",
       maxStep: 4,
-      stem: '<p><span class="num">3．</span>如图，一次函数<i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+</span><i class="m">b</i>与反比例函数<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><i class="m">x</i></span></span></span>（<i class="m">x</i><span class="num">&gt;0</span>）的图象交于<i class="m">A</i>，<i class="m">B</i>两点，与<i class="m">x</i>轴、<i class="m">y</i>轴分别交于<i class="m">C</i>，<i class="m">D</i>两点，连接<i class="m">OA</i>，<i class="m">OB</i>，过点<i class="m">A</i>作<i class="m">AE</i><span class="num">⊥</span><i class="m">x</i>轴于点<i class="m">E</i>，交<i class="m">OB</i>于点<i class="m">F</i>，设点<i class="m">A</i>的横坐标为<i class="m">m</i>．若<i class="m">S</i><sub><span class="num">△</span><i class="m">OAF</i></sub><span class="num">+</span><i class="m">S</i><sub>四边形<i class="m">EFBC</i></sub><span class="num">=4</span>，则<i class="m">m</i>的值是<span class="screen-blank" data-step="4" data-ans="<span class=\'num\'>√</span><span style=\'text-decoration:overline;\'><span class=\'num\'>2</span></span>"></span>．</p>',
+      stem: '<p><span class="num">3．</span>如图，一次函数<i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+</span><i class="m">b</i>与反比例函数<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><i class="m">x</i></span></span></span>（<i class="m">x</i><span class="num">&gt;0</span>）的图象交于<i class="m">A</i>，<i class="m">B</i>两点，与<i class="m">x</i>轴、<i class="m">y</i>轴分别交于<i class="m">C</i>，<i class="m">D</i>两点，连接<i class="m">OA</i>，<i class="m">OB</i>，过点<i class="m">A</i>作<i class="m">AE</i><span class="num">⊥</span><i class="m">x</i>轴于点<i class="m">E</i>，交<i class="m">OB</i>于点<i class="m">F</i>，设点<i class="m">A</i>的横坐标为<i class="m">m</i>．若<i class="m">S</i><sub><span class="num">△</span><i class="m">OAF</i></sub><span class="num">+</span><i class="m">S</i><sub>四边形<i class="m">EFBC</i></sub><span class="num">=4</span>，则<i class="m">m</i>的值是<span class="screen-blank" data-step="4" data-ans="<span class=\'sqrt\'><span class=\'num\'>2</span></span>"></span>．</p>',
       notes: [
         '<div class="step step-locked"><b>01</b><span><b>步骤<span class="num">1</span>（求基准面积）：</b>点<i class="m">A</i>在<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><span class="num">4</span></span><span><i class="m">x</i></span></span></span>上且<i class="m">AE</i><span class="num">⊥</span><i class="m">x</i>轴，故<i class="m">S</i><sub><span class="num">△</span><i class="m">OAE</i></sub><span class="num">=</span><i class="m">S</i><sub><span class="num">△</span><i class="m">OAF</i></sub><span class="num">+</span><i class="m">S</i><sub><span class="num">△</span><i class="m">OEF</i></sub><span class="num">=</span><span class="math"><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span></span><span class="num">×4=2</span>．</span></div>',
         '<div class="step step-locked"><b>02</b><span><b>步骤<span class="num">2</span>（面积消元化简）：</b>由<i class="m">S</i><sub><span class="num">△</span><i class="m">OAF</i></sub><span class="num">+</span><i class="m">S</i><sub>四边形<i class="m">EFBC</i></sub><span class="num">=4</span>，代入<i class="m">S</i><sub><span class="num">△</span><i class="m">OAF</i></sub><span class="num">=2-</span><i class="m">S</i><sub><span class="num">△</span><i class="m">OEF</i></sub>与<i class="m">S</i><sub>四边形<i class="m">EFBC</i></sub><span class="num">=</span><i class="m">S</i><sub><span class="num">△</span><i class="m">OBC</i></sub><span class="num">-</span><i class="m">S</i><sub><span class="num">△</span><i class="m">OEF</i></sub>，化简得<i class="m">S</i><sub><span class="num">△</span><i class="m">OBC</i></sub><span class="num">-2</span><i class="m">S</i><sub><span class="num">△</span><i class="m">OEF</i></sub><span class="num">=2</span>．</span></div>',
         '<div class="step step-locked"><b>03</b><span><b>步骤<span class="num">3</span>（对称表出坐标）：</b>将<i class="m">A</i><span class="num">(</span><i class="m">m</i><span class="num">,</span><span class="math"><span class="fraction"><span><span class="num">4</span></span><span><i class="m">m</i></span></span></span><span class="num">)</span>代入<i class="m">y</i><span class="num">=-</span><i class="m">x</i><span class="num">+</span><i class="m">b</i>得<i class="m">b</i><span class="num">=</span><i class="m">m</i><span class="num">+</span><span class="math"><span class="fraction"><span><span class="num">4</span></span><span><i class="m">m</i></span></span></span>，故<i class="m">OC</i><span class="num">=</span><i class="m">m</i><span class="num">+</span><span class="math"><span class="fraction"><span><span class="num">4</span></span><span><i class="m">m</i></span></span></span>（<span class="num">△</span><i class="m">AEC</i>为等腰直角三角形，<i class="m">EC</i><span class="num">=</span><i class="m">AE</i><span class="num">=</span><span class="math"><span class="fraction"><span><span class="num">4</span></span><span><i class="m">m</i></span></span></span>）．由对称性知点<i class="m">B</i>坐标为<span class="num">(</span><span class="math"><span class="fraction"><span><span class="num">4</span></span><span><i class="m">m</i></span></span></span><span class="num">,</span><i class="m">m</i><span class="num">)</span>．</span></div>',
-        '<div class="step step-locked"><b>04</b><span><b>步骤<span class="num">4</span>（列方程求<i class="m">m</i>）：</b><i class="m">S</i><sub><span class="num">△</span><i class="m">OBC</i></sub><span class="num">=</span><span class="math"><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span></span><i class="m">OC</i><span class="num">·</span><i class="m">y</i><sub><i class="m">B</i></sub><span class="num">=</span><span class="math"><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span></span><i class="m">m</i><sup><span class="num">2</span></sup><span class="num">+2</span>；直线<i class="m">OB</i>为<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">m</i><sup><span class="num">2</span></sup></span><span><span class="num">4</span></span></span><i class="m">x</i></span>，得<i class="m">F</i><span class="num">(</span><i class="m">m</i><span class="num">,</span><span class="math"><span class="fraction"><span><i class="m">m</i><sup><span class="num">3</span></sup></span><span><span class="num">4</span></span></span></span><span class="num">)</span>，<i class="m">S</i><sub><span class="num">△</span><i class="m">OEF</i></sub><span class="num">=</span><span class="math"><span class="fraction"><span><i class="m">m</i><sup><span class="num">4</span></sup></span><span><span class="num">8</span></span></span></span>．代入得<span class="num">(</span><span class="math"><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span></span><i class="m">m</i><sup><span class="num">2</span></sup><span class="num">+2)-2×</span><span class="math"><span class="fraction"><span><i class="m">m</i><sup><span class="num">4</span></sup></span><span><span class="num">8</span></span></span></span><span class="num">=2</span>，化简得<i class="m">m</i><sup><span class="num">2</span></sup><span class="num">(2-</span><i class="m">m</i><sup><span class="num">2</span></sup><span class="num">)=0</span>．因<i class="m">m</i><span class="num">&gt;0</span>，故<i class="m">m</i><span class="num">=√</span><span style="text-decoration:overline;"><span class="num">2</span></span>．</span></div>'
+        '<div class="step step-locked"><b>04</b><span><b>步骤<span class="num">4</span>（列方程求<i class="m">m</i>）：</b><i class="m">S</i><sub><span class="num">△</span><i class="m">OBC</i></sub><span class="num">=</span><span class="math"><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span></span><i class="m">OC</i><span class="num">·</span><i class="m">y</i><sub><i class="m">B</i></sub><span class="num">=</span><span class="math"><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span></span><i class="m">m</i><sup><span class="num">2</span></sup><span class="num">+2</span>；直线<i class="m">OB</i>为<span class="math"><i class="m">y</i><span class="num">=</span><span class="fraction"><span><i class="m">m</i><sup><span class="num">2</span></sup></span><span><span class="num">4</span></span></span><i class="m">x</i></span>，得<i class="m">F</i><span class="num">(</span><i class="m">m</i><span class="num">,</span><span class="math"><span class="fraction"><span><i class="m">m</i><sup><span class="num">3</span></sup></span><span><span class="num">4</span></span></span></span><span class="num">)</span>，<i class="m">S</i><sub><span class="num">△</span><i class="m">OEF</i></sub><span class="num">=</span><span class="math"><span class="fraction"><span><i class="m">m</i><sup><span class="num">4</span></sup></span><span><span class="num">8</span></span></span></span>．代入得<span class="num">(</span><span class="math"><span class="fraction"><span><span class="num">1</span></span><span><span class="num">2</span></span></span></span><i class="m">m</i><sup><span class="num">2</span></sup><span class="num">+2)-2×</span><span class="math"><span class="fraction"><span><i class="m">m</i><sup><span class="num">4</span></sup></span><span><span class="num">8</span></span></span></span><span class="num">=2</span>，化简得<i class="m">m</i><sup><span class="num">2</span></sup><span class="num">(2-</span><i class="m">m</i><sup><span class="num">2</span></sup><span class="num">)=0</span>．因<i class="m">m</i><span class="num">&gt;0</span>，故<i class="m">m</i><span class="num">=</span><span class="sqrt"><span class="num">2</span></span>．</span></div>'
       ]
     },
     {
@@ -5582,7 +5974,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
         '<div style="font-size:11.5px; color:#1e293b;">当前点<i class="m">A</i>横坐标<i class="m">m</i><span class="num">=' + m.toFixed(3) + '</span></div>' +
         '<div style="font-size:11.5px; color:#2563eb;"><span class="math"><i class="m">S</i><sub><span class="num">△</span><i class="m">OAF</i></sub><span class="num">=' + sOAF.toFixed(2) + '</span></span>，<span class="math"><i class="m">S</i><sub>四边形<i class="m">EFBC</i></sub><span class="num">=' + sEFBC.toFixed(2) + '</span></span></div>' +
         '<div style="font-size:11.5px; color:' + (Math.abs(sumArea - 4) < 0.05 ? "#059669" : "#dc2626") + ';">面积和<span class="num">=' + sumArea.toFixed(2) + '</span>' +
-        (Math.abs(sumArea - 4) < 0.05 ? '（恰好等于<span class="num">4</span>，<i class="m">m</i><span class="num">=√</span><span style="text-decoration:overline;"><span class="num">2</span></span>）' : '') + '</div>',
+        (Math.abs(sumArea - 4) < 0.05 ? '（恰好等于<span class="num">4</span>，<i class="m">m</i><span class="num">=</span><span class="sqrt"><span class="num">2</span></span>）' : '') + '</div>',
         'align-items:flex-start; padding:5px 10px;'
       );
       svg += '</svg>';
@@ -5590,7 +5982,7 @@ window.UNIT1_SIMS = window.UNIT1_SIMS || {};
       var controlsEl = root.querySelector("#controls");
       if (controlsEl && typeof stepBar === "function") {
         controlsEl.innerHTML = stepBar(step, 4) +
-          slider("m", "拖动点<i class='m'>A</i>横坐标<i class='m'>m</i>（<i class='m'>m</i><span class='num'>=√</span><span style='text-decoration:overline;'><span class='num'>2</span></span>时和为<span class='num'>4</span>）", 1.0, 1.8, m, 0.01);
+          slider("m", "拖动点<i class='m'>A</i>横坐标<i class='m'>m</i>（<i class='m'>m</i><span class='num'>=</span><span class='sqrt'><span class='num'>2</span></span>时和为<span class='num'>4</span>）", 1.0, 1.8, m, 0.01);
       }
       host.innerHTML = svg;
     }
@@ -5766,7 +6158,10 @@ const fmt=(v,n=2)=>Number(v).toFixed(n);
 function slider(key,label,min,max,value,step=1,unit=''){
   if (simState[key] === undefined) simState[key]=value;
   const plain = String(label).replace(/<[^>]*>/g, '');
-  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${simState[key]}" step="${step}" aria-label="${plain}"><output data-value="${key}">${simState[key]}${unit}</output></label>`;
+  const curVal = simState[key];
+  const numVal = Number(curVal);
+  const dispVal = (!isNaN(numVal) && !Number.isInteger(numVal)) ? numVal.toFixed(2) : curVal;
+  return `<label class="control"><span>${label}</span><input type="range" data-key="${key}" min="${min}" max="${max}" value="${curVal}" step="${step}" aria-label="${plain}"><output data-value="${key}">${dispVal}${unit}</output></label>`;
 }
 function select(key,label,options,value){
   if (simState[key] === undefined) simState[key]=value;
@@ -5778,10 +6173,15 @@ function actions(items, activeKey){
   return `<div class="actions">${items.map(([k,t])=>`<button type="button" data-action="${k}" class="${cur===k?'active-act':''}">${t}</button>`).join('')}</div>`;
 }
 function modeButtons(key, curVal, items){
-  if (simState[key] === undefined) simState[key] = curVal;
-  const active = simState[key] !== undefined ? simState[key] : curVal;
+  if (curVal !== undefined) simState[key] = curVal;
+  else if (simState[key] === undefined && items && items.length) simState[key] = items[0][0];
+  const active = curVal !== undefined ? curVal : simState[key];
   return `<div class="actions">${items.map(([v, label, syncStep]) => `<button type="button" data-mode-key="${key}" data-mode-val="${v}" ${syncStep !== undefined ? `data-sync-step="${syncStep}"` : ''} class="${String(active) === String(v) ? 'active-act' : ''}">${label}</button>`).join('')}</div>`;
 }
+window.slider = slider;
+window.select = select;
+window.actions = actions;
+window.modeButtons = modeButtons;
 
 // ================= 分步渐进式探索全局组件（去AI化、1对1精准点按引擎） =================
 window._blockSeq = 0;
@@ -6083,18 +6483,16 @@ function syncSlideProgression(state) {
   }
   const sn = root.querySelector('.screen-notes');
   if (sn) {
-    if (s === 0 && !hasAnyManual(state)) {
+    if ((s === 0 && !hasAnyManual(state)) || maxStep <= 2) {
       sn.scrollTop = 0;
-    } else if (s >= maxStep && sn.scrollHeight > sn.clientHeight + 4) {
-      sn.scrollTop = sn.scrollHeight;
     } else {
       const activeEl = sn.querySelector('.step.step-active');
       if (activeEl && sn.scrollHeight > sn.clientHeight + 4) {
         const elBottom = activeEl.offsetTop + activeEl.offsetHeight;
         if (elBottom > sn.scrollTop + sn.clientHeight) {
-          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 12);
+          sn.scrollTop = Math.max(0, elBottom - sn.clientHeight + 8);
         } else if (activeEl.offsetTop < sn.scrollTop) {
-          sn.scrollTop = Math.max(0, activeEl.offsetTop - 12);
+          sn.scrollTop = Math.max(0, activeEl.offsetTop - 8);
         }
       }
     }
@@ -6471,7 +6869,10 @@ function bindSimControls(type){
       simState[k] = isNaN(+e.target.value) ? e.target.value : +e.target.value;
       if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       const out = ctrlBox.querySelector(`output[data-value="${k}"]`);
-      if (out) out.textContent = e.target.value;
+      if (out) {
+        const nv = Number(e.target.value);
+        out.textContent = (!isNaN(nv) && !Number.isInteger(nv)) ? nv.toFixed(2) : e.target.value;
+      }
       // 拖动滑块时屏蔽 controls.innerHTML 重建，保持滑块焦点不断连
       Object.defineProperty(ctrlBox, 'innerHTML', {
         configurable: true,
@@ -6524,9 +6925,9 @@ function bindSimControls(type){
       e.stopPropagation();
       const k = mBtn.dataset.modeKey;
       const v = mBtn.dataset.modeVal;
-      simState[k] = isNaN(+v) ? v : +v;
+      simState[k] = (typeof simState[k] === 'number') ? (isNaN(+v) ? v : +v) : v;
       if (mBtn.dataset.syncStep !== undefined) {
-        simState.step = Number(mBtn.dataset.syncStep);
+        simState.step = Math.max(Number(simState.step || 0), Number(mBtn.dataset.syncStep));
       }
       if (typeof setManualOverride === 'function') setManualOverride(simState, k);
       runSimFn(fn, simState, false);

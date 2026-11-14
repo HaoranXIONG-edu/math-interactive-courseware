@@ -17,8 +17,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 1. **步骤 1.1（1 秒自动化体检 + WMF/OMML 公式全自动解码 + 原图视觉必读 `Visual-First Rule`）**：
    - 运行本技能内置的一键体检脚本（v2.0），一次性完成：① 自动解码全部遗留 MathType `<w:object>`（`.wmf`）与原生 `<m:oMath>` 为内联 `$LaTeX$` 公式；② 仅将真正的题目配图（`.png / .jpg / .jpeg`）导出到 `--media-out`（自动过滤掉数十个 `.wmf` 公式碎片）；③ 审计每张配图的像素分辨率、Word 物理宽高（`cm`）及 `<a:srcRect>` 裁剪参数，并对存在大幅裁剪的图片自动生成裁剪后实际可见视图 `*_crop*.png`；④ 审计 `<mc:AlternateContent>` 浮动圆角文本框的 `Choice/Fallback` 双分支同步状态与 `o:gfxdata` 缓存标志，并输出结构化 JSON 蓝图：
      ```bash
-     /Users/xionghaoran/.venv-html-to-docx/bin/python3 \
-       /Users/xionghaoran/数学交互式课件/.agents/skills/math-interactive-courseware/scripts/inspect_docx_worksheet.py \
+     python3 .agents/skills/math-interactive-courseware/scripts/inspect_docx_worksheet.py \
        "原学案路径.docx" --media-out /tmp/docx_inspect_media --json-out /tmp/docx_inspect_media/audit_report.json
      ```
    - **原图必读铁律**：主智能体必须先用 `read_file` 逐张查看 `/tmp/docx_inspect_media/` 下的所有导出配图（及 `*_crop*.png` 裁剪预览图），核对几何顶点字母、线段连接关系与子图编号（如图(1)～图(5)）。
@@ -43,7 +42,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 3. **步骤 2.3（一键编译 + 1对1步数一致性门禁 + 全页面运行时仿真）**：
    - 调用编译脚本合并输出 `.html`，脚本会自动执行 **JS 语法检验**、**顶栏 `COURSEWARE_PHASES` 与封面页校验**、**DOM 结构校验（`.screen-page.lab-visible` / `.screen-lower`）**、**1对1 步数对齐校验（`.step` 卡片数 === `stepBar` 圆点数 >= 填空最大 `data-step`）**、**`modeButtons` 同步校验**、**SVG 非法 `<0` 乱码扫描**以及**全页面 `step = 0..maxStep` 运行时仿真渲染测试**，任何一页违背契约即刻报错拦截：
      ```bash
-     python3 /Users/xionghaoran/数学交互式课件/.agents/skills/math-interactive-courseware/scripts/compile_seewo_courseware.py \
+     python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_courseware.py \
        --title "2.2.3 反比例函数中“k”的几何意义" \
        --chunks chunk1_intro_explore.js chunk2_apply.js chunk3_train_summary.js \
        --output "2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html"
