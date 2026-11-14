@@ -1,11 +1,10 @@
-# 初中数学学案无损优化与交互式 HTML 动态讲解课件（希沃大屏版）全流程开发工具链
+# 数学交互式课件（Math Interactive Courseware）
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9+-green.svg)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/platform-Seewo%20%7C%20Web%20%7C%20iPad-orange.svg)]()
 
-> 本项目是一套专门面向**初中数学课堂教学、希沃（Seewo）白板大屏、Pad 触屏交互**的工业级学案优化与动态课件全自动化开发流水线。
-> 实现了从**原版 Word 学案原地无损修补（In-Place XML Patching）**到**单文件高帧率、纯原生、渐进式呈现的交互式 HTML 动态讲解课件**的端到端生产闭环。
+> 面向中学数学课堂教学、希沃（Seewo）白板大屏及触屏设备的学案优化与交互式课件构建工具链。支持从 Word 学案原地 XML 无损修补（`.docx`）到单文件 SVG 动态交互课件（`.html`）的标准化构建与校验。
 
 ---
 
