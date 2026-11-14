@@ -26,25 +26,42 @@
 
 ```mermaid
 flowchart TD
-  subgraph Stage1["阶段一：Word 学案解析与无损修补（.docx）"]
-    A[原版 Word 学案 .docx] --> B[inspect_docx_worksheet.py 文档结构解析]
-    B --> C[WMF / OMML 公式解码为 LaTeX]
-    B --> D[提取配图并审计分辨率与裁剪参数]
-    C & D --> E[几何坐标推导与可解性校验]
-    E --> F[重绘 300 DPI 高清配图]
-    F --> G[docx_inplace_patcher.py 原地 XML 修补]
-    G --> H[输出优化版学案 .docx]
+  subgraph S1["阶段一：Word 学案解析与无损修补（.docx）"]
+    A(["📄 原版学案 .docx"]) --> B["文档结构解析与审计<br/>inspect_docx_worksheet.py"]
+    B --> C1["公式解码升级<br/>WMF / OMML → 原生公式"]
+    B --> C2["高清配图重绘<br/>坐标推导 · 300 DPI 重绘"]
+    B --> C3["文本框与版式清理<br/>双分支同步 · 清除遮挡残留"]
+    C1 & C2 & C3 --> D["原地无损 XML 修补<br/>docx_inplace_patcher.py"]
+    D --> E(["📘 优化版学案 .docx"])
   end
 
-  H --> Gate{{"学案审阅与定稿确认"}}
+  E --> Gate{{"🔍 学案审阅与定稿确认"}}
 
-  subgraph Stage2["阶段二：交互式动态课件构建与校验（.html）"]
-    Gate -->|定稿确认| I[提取课时结构化蓝图]
-    I --> J[分模块编写 chunk1 / chunk2 / chunk3.js]
-    J --> K[compile_seewo_courseware.py 合并编译]
-    K --> L[语法检查、步数对齐与 SVG 碰撞仿真]
-    L --> M[输出单文件交互式课件 .html]
+  subgraph S2["阶段二：交互式动态课件构建与校验（.html）"]
+    Gate -->|"锁定 1:1 数据源"| F["课时结构化蓝图"]
+    F --> G1["情境引入与新知探究<br/>chunk1_intro_explore.js"]
+    F --> G2["新知应用与典例精析<br/>chunk2_apply.js"]
+    F --> G3["分层训练与课堂小结<br/>chunk3_train_summary.js"]
+    G1 & G2 & G3 --> H["壳层注入与合并编译<br/>compile_seewo_courseware.py"]
+    H --> I["全量自动化门禁校验<br/>语法检查 · 步数对齐 · SVG 防重叠仿真"]
+    I --> J(["🖥️ 交互式动态课件 .html"])
   end
+
+  classDef ioNode fill:#1e293b,stroke:#0f172a,color:#ffffff,stroke-width:1.5px,font-weight:bold
+  classDef s1Node fill:#eff6ff,stroke:#3b82f6,color:#1e3a8a,stroke-width:1.5px
+  classDef s1Core fill:#dbeafe,stroke:#2563eb,color:#1e40af,stroke-width:2px,font-weight:bold
+  classDef gateNode fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px,font-weight:bold
+  classDef s2Node fill:#f0fdf4,stroke:#22c55e,color:#14532d,stroke-width:1.5px
+  classDef s2Core fill:#dcfce7,stroke:#16a34a,color:#166534,stroke-width:2px,font-weight:bold
+
+  class A,E,J ioNode
+  class C1,C2,C3 s1Node
+  class B,D s1Core
+  class Gate gateNode
+  class F,G1,G2,G3 s2Node
+  class H,I s2Core
+  style S1 fill:#f8fafc,stroke:#93c5fd,stroke-width:1.5px,color:#1e3a8a
+  style S2 fill:#f8fafc,stroke:#86efac,stroke-width:1.5px,color:#14532d
 ```
 
 ### 阶段一：Word 学案解析与无损修补（.docx）
