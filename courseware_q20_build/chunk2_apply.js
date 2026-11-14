@@ -421,22 +421,12 @@ window.defineSlide({
       const midMEx = (E[0] + M[0]) / 2;
       svg += svgTextHalo2(midMEx, oy + 20, '4-x', { size: 13, color: '#2563eb', weight: '700' });
 
-      // 3. NF = 4/3(4-x) 胶囊气泡框（位于 NF 中点左侧，与 BN=3 分开）
+      // 3. NF = 4/3(4-x) 标准上下叠置分式胶囊框
       const midNFy = (N[1] + F[1]) / 2;
-      svg += `
-        <g>
-          <rect x="20" y="${(midNFy - 11).toFixed(1)}" width="80" height="22" rx="4" fill="#fff7ed" stroke="#fdba74" stroke-width="1.1"/>
-          ${svgTextHalo2(60, midNFy + 3, 'NF=4/3(4-x)', { size: 11, color: '#c2410c', weight: '700' })}
-        </g>
-      `;
+      svg += svgFractionBadge(56, midNFy, 'NF=', '4', '3', '(4-x)', { color: '#c2410c', bg: '#fff7ed', border: '#fdba74' });
 
-      // 4. BF = (25-4x)/3 胶囊气泡框（位于 F 上方左侧）
-      svg += `
-        <g>
-          <rect x="18" y="${(F[1] - 26).toFixed(1)}" width="82" height="22" rx="4" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.1"/>
-          ${svgTextHalo2(59, F[1] - 12, 'BF=(25-4x)/3', { size: 11, color: '#1e3a8a', weight: '700' })}
-        </g>
-      `;
+      // 4. BF = (25-4x)/3 标准上下叠置分式胶囊框
+      svg += svgFractionBadge(54, F[1] - 22, 'BF=', '25-4x', '3', '', { color: '#1e3a8a', bg: '#eff6ff', border: '#93c5fd' });
     }
 
     // 主顶点标注

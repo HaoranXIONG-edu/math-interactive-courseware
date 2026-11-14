@@ -2,6 +2,8 @@
 // Chunk 3: 拓展提升 (4) 情况一、情况二与模型总结
 // =============================================================================
 
+// svgFractionBadge is defined in chunk2_apply.js (window.svgFractionBadge)
+
 // 通用几何绘图函数
 function svgTextHalo3(x, y, text, opts = {}) {
   const { size = 15, color = '#0f172a', anchor = 'middle', weight = '700' } = opts;
@@ -156,32 +158,17 @@ window.defineSlide({
       svg += svgRightAngle3(F, Hpt, B, 12, '#ea580c');
       svg += svgPt3(Hpt[0], Hpt[1], '#ea580c', 4.5);
       svg += svgTextHalo3(Hpt[0] + 16, Hpt[1] + 4, 'H', { color: '#ea580c' });
-      // 8 字相似对应边代数式标注（采用精致防遮挡胶囊气泡）
+      // 8 字相似对应边代数式标注（标准上下叠置分式胶囊框）
       const midFHx = (F[0] + Hpt[0]) / 2;
-      svg += `
-        <g>
-          <rect x="${(midFHx - 52).toFixed(1)}" y="${(F[1] - 25).toFixed(1)}" width="104" height="22" rx="4" fill="#fff7ed" stroke="#fdba74" stroke-width="1.1"/>
-          ${svgTextHalo3(midFHx, F[1] - 9, 'FH=4(25-4x)/9', { size: 11, color: '#c2410c', weight: '700' })}
-        </g>
-      `;
+      svg += svgFractionBadge(midFHx, F[1] - 22, 'FH=', '4(25-4x)', '9', '', { color: '#c2410c', bg: '#fff7ed', border: '#fdba74' });
 
-      // BF 边长标注
-      svg += `
-        <g>
-          <rect x="18" y="${(F[1] - 26).toFixed(1)}" width="82" height="22" rx="4" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.1"/>
-          ${svgTextHalo3(59, F[1] - 12, 'BF=(25-4x)/3', { size: 11, color: '#1e3a8a', weight: '700' })}
-        </g>
-      `;
+      // BF 边长标注（标准上下叠置分式胶囊框）
+      svg += svgFractionBadge(54, F[1] - 22, 'BF=', '25-4x', '3', '', { color: '#1e3a8a', bg: '#eff6ff', border: '#93c5fd' });
 
-      // BE 边长标注：步骤 1 设元为 x，步骤 2 得出结论 BE = 50/17
+      // BE 边长标注：步骤 1 设元为 x，步骤 2 得出结论 BE = 50/17（标准上下叠置分式）
       const midBEx = (B[0] + E[0]) / 2;
       if (step >= 2) {
-        svg += `
-          <g>
-            <rect x="${(midBEx - 46).toFixed(1)}" y="${(oy + 8).toFixed(1)}" width="92" height="24" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="1.3"/>
-            ${svgTextHalo3(midBEx, oy + 24, 'BE = 50/17', { size: 12.5, color: '#15803d', weight: '700' })}
-          </g>
-        `;
+        svg += svgFractionBadge(midBEx, oy + 22, 'BE=', '50', '17', '', { color: '#15803d', bg: '#f0fdf4', border: '#86efac' });
       } else {
         svg += svgTextHalo3(midBEx, oy + 20, 'x', { size: 14, color: '#dc2626', weight: '700' });
       }
@@ -306,34 +293,20 @@ window.defineSlide({
     svg += svgRightAngle3(F, Hpt, B, 12, '#ea580c');
     svg += svgPt3(Hpt[0], Hpt[1], '#ea580c', 4.5);
     svg += svgTextHalo3(Hpt[0] + 16, Hpt[1] + 4, 'H', { color: '#ea580c' });
-    // 8 字相似对应边代数式标注（采用精致防遮挡胶囊气泡）
+    // 8 字相似对应边代数式标注（标准上下叠置分式胶囊框）
     const isCase1 = (curCase === 'case1');
-    const midFHx = (F[0] + Hpt[0]) / 2;
-    svg += `
-      <g>
-        <rect x="${(midFHx - 52).toFixed(1)}" y="${(F[1] - 25).toFixed(1)}" width="104" height="22" rx="4" fill="#fff7ed" stroke="#fdba74" stroke-width="1.1"/>
-        ${svgTextHalo3(midFHx, F[1] - 9, 'FH=4(25-4x)/9', { size: 11, color: '#c2410c', weight: '700' })}
-      </g>
-    `;
+    const midFHx = isCase1 ? ((F[0] + Hpt[0]) / 2) : 185;
+    svg += svgFractionBadge(midFHx, F[1] - 22, 'FH=', '4(25-4x)', '9', '', { color: '#c2410c', bg: '#fff7ed', border: '#fdba74' });
 
-    // BF 边长标注
-    svg += `
-      <g>
-        <rect x="18" y="${(F[1] - 26).toFixed(1)}" width="82" height="22" rx="4" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.1"/>
-        ${svgTextHalo3(59, F[1] - 12, 'BF=(25-4x)/3', { size: 11, color: '#1e3a8a', weight: '700' })}
-      </g>
-    `;
+    // BF 边长标注（标准上下叠置分式胶囊框）
+    svg += svgFractionBadge(54, F[1] - 22, 'BF=', '25-4x', '3', '', { color: '#1e3a8a', bg: '#eff6ff', border: '#93c5fd' });
 
-    // BE 边长标注
+    // BE 边长标注：步骤 1 设元为 x，步骤 2 得出结论（标准上下叠置分式）
     const midBEx = (B[0] + E[0]) / 2;
     if (step >= 2) {
-      const solText = isCase1 ? 'BE = 50/17' : 'BE = 200/41';
-      svg += `
-        <g>
-          <rect x="${(midBEx - 48).toFixed(1)}" y="${(oy + 8).toFixed(1)}" width="96" height="24" rx="5" fill="#f0fdf4" stroke="#86efac" stroke-width="1.3"/>
-          ${svgTextHalo3(midBEx, oy + 24, solText, { size: 12.5, color: '#15803d', weight: '700' })}
-        </g>
-      `;
+      const solNum = isCase1 ? '50' : '200';
+      const solDen = isCase1 ? '17' : '41';
+      svg += svgFractionBadge(midBEx, oy + 22, 'BE=', solNum, solDen, '', { color: '#15803d', bg: '#f0fdf4', border: '#86efac' });
     } else {
       svg += svgTextHalo3(midBEx, oy + 20, 'x', { size: 14, color: '#dc2626', weight: '700' });
     }
