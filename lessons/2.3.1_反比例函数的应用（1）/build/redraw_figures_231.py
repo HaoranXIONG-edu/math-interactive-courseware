@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw
 sys.path.insert(0, "/Users/xionghaoran/.gemini/config/plugins/polya-math-diagram/skills/math-exam-to-word/scripts")
 from exam_figure_engine import ExamFigure, FONTS
 
-OUT_DIR = "/Users/xionghaoran/数学交互式课件/courseware_2_3_1_build/redrawn_media"
+OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "redrawn_media")
 os.makedirs(OUT_DIR, exist_ok=True)
 
 

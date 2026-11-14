@@ -166,10 +166,10 @@ patcher.save("优化版学案.docx")
 ```bash
 python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_courseware.py \
   --title "2.2.3 反比例函数中“k”的几何意义" \
-  --chunks courseware_2_2_3_build/chunk1_intro_explore.js \
-           courseware_2_2_3_build/chunk2_apply.js \
-           courseware_2_3_1_build/chunk3_train_summary.js \
-  --output "2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html"
+  --chunks "lessons/2.2.3_反比例函数中“k”的几何意义/build/chunk1_intro_explore.js" \
+           "lessons/2.2.3_反比例函数中“k”的几何意义/build/chunk2_apply.js" \
+           "lessons/2.2.3_反比例函数中“k”的几何意义/build/chunk3_train_summary.js" \
+  --output "lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html"
 ```
 
 ---
@@ -187,9 +187,21 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_coursew
 │       ├── docx_inplace_patcher.py             # 原地无损 Word XML 补丁器
 │       ├── compile_seewo_courseware.py         # 课件一键编译器与契约门禁仿真器
 │       └── audit_figure_script.py              # 配图真实数学坐标与可解性校验器
-├── courseware_*_build/                         # 各课时源码分块（chunk1/chunk2/chunk3.js）
-├── 数学学案优化与动态交互课件开发规范总结.md        # 历次迭代全量技术总结
-└── *.html / *.docx                             # 已发布的标杆课件与对应优化版学案
+├── docs/                                       # 技术规范与开发总结文档
+│   └── 数学学案优化与动态交互课件开发规范总结.md
+├── lessons/                                    # 分课时学案与动态课件（成品 + build 源码）
+│   ├── 2.2.2_反比例函数的图象（2）/
+│   ├── 2.2.3_反比例函数中“k”的几何意义/
+│   ├── 2.3.1_反比例函数的应用（1）/
+│   ├── 2.3.2_反比例函数的应用（2）/
+│   └── 第20题_十字双垂旋转模型/
+├── workbench_demo/                             # One·ai 讲评工作台动态演示与构建脚本
+│   ├── One·ai_讲评工作台_动态演示.html
+│   ├── build_production_workbench_v4.py
+│   ├── v4_js_patch.js
+│   └── archive/                                # 历史迭代脚本（v1–v3）
+├── LICENSE
+└── README.md
 ```
 
 ---

@@ -13,13 +13,16 @@ import os
 import sys
 from lxml import etree
 
-SCRIPT_DIR = "/Users/xionghaoran/数学交互式课件/.agents/skills/math-interactive-courseware/scripts"
+BUILD_DIR = os.path.dirname(os.path.abspath(__file__))
+LESSON_DIR = os.path.dirname(BUILD_DIR)
+REPO_ROOT = os.path.dirname(os.path.dirname(LESSON_DIR))
+SCRIPT_DIR = os.path.join(REPO_ROOT, ".agents", "skills", "math-interactive-courseware", "scripts")
 sys.path.insert(0, SCRIPT_DIR)
 from docx_inplace_patcher import DocxWorksheetPatcher, W_NS, WP_NS, A_NS, R_NS
 
 SRC_DOCX = "/Users/xionghaoran/.gemini/antigravity/brain/8af58b38-6a7b-4412-a8d5-e675efab4539/.user_uploaded/media_1794392363273_b66df882.docx"
-REDRAWN_DIR = "/Users/xionghaoran/数学交互式课件/courseware_2_3_1_build/redrawn_media"
-OUT_DOCX = "/Users/xionghaoran/数学交互式课件/2.3.1_反比例函数的应用（1）_学生学案_优化版.docx"
+REDRAWN_DIR = os.path.join(BUILD_DIR, "redrawn_media")
+OUT_DOCX = os.path.join(LESSON_DIR, "2.3.1_反比例函数的应用（1）_学生学案_优化版.docx")
 
 
 def configure_anchor_right_square(draw_elem, cx_emu: int, pos_v_emu: int = 25000):
