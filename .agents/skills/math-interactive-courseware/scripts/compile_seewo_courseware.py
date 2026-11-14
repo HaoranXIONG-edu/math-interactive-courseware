@@ -27,6 +27,10 @@ def main():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     prefix = open(os.path.join(base_dir, "layers", "seewo_shell_prefix.html"), "r", encoding="utf-8").read()
     suffix = open(os.path.join(base_dir, "layers", "seewo_shell_suffix.html"), "r", encoding="utf-8").read()
+    annotation_js_path = os.path.join(base_dir, "layers", "annotation_components.js")
+    if os.path.isfile(annotation_js_path):
+        annotation_js = open(annotation_js_path, "r", encoding="utf-8").read()
+        suffix = suffix.replace("/* __ANNOTATION_COMPONENTS_JS__ */", annotation_js)
 
     prefix = prefix.replace("2.2.2 反比例函数的图象（2）", args.title)
     suffix = suffix.replace("2.2.2 反比例函数的图象（2）", args.title)
