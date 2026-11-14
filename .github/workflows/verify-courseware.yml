@@ -1,0 +1,28 @@
+name: Verify Courseware & 5-Gate Simulation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    name: 5-Gate Compilation & Headless SVG Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js (for headless JS/SVG runtime audit)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run 5-Gate Courseware Compiler & Simulation
+        run: python3 scripts/build_all.py

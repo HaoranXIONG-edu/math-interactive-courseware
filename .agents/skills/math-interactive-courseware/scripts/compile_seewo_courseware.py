@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
-import argparse, os, re, subprocess, tempfile
+import argparse, os, re, shutil, subprocess, tempfile
+
+def run_js_check(js_file_path, is_syntax_only=False):
+    if shutil.which("osascript"):
+        if is_syntax_only:
+            cmd = ["osascript", "-l", "JavaScript", "-e", f'ObjC.import("Foundation"); var s = $.NSString.stringWithContentsOfFileEncodingError({js_file_path!r}, $.NSUTF8StringEncoding, null).js; new Function(s); "OK"']
+        else:
+            cmd = ["osascript", "-l", "JavaScript", js_file_path]
+        return subprocess.run(cmd, capture_output=True, text=True)
+    elif shutil.which("node"):
+        if is_syntax_only:
+            cmd = ["node", "--check", js_file_path]
+        else:
+            cmd = ["node", "-e", f'const fs = require("fs"); const res = eval(fs.readFileSync({js_file_path!r}, "utf8")); if (res) console.log(res);']
+        return subprocess.run(cmd, capture_output=True, text=True)
+    else:
+        raise RuntimeError("Neither 'osascript' (macOS JXA) nor 'node' (Node.js) was found in PATH for JS verification.")
 
 def main():
     parser = argparse.ArgumentParser(description="Compile Seewo Interactive Math Courseware from JS chunks")
@@ -37,10 +53,7 @@ def main():
         with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=False) as tf:
             tf.write(sc)
             tpath = tf.name
-        res = subprocess.run(
-            ["osascript", "-l", "JavaScript", "-e", f'ObjC.import("Foundation"); var s = $.NSString.stringWithContentsOfFileEncodingError({tpath!r}, $.NSUTF8StringEncoding, null).js; new Function(s); "OK"'],
-            capture_output=True, text=True
-        )
+        res = run_js_check(tpath, is_syntax_only=True)
         os.unlink(tpath)
         if res.returncode != 0:
             raise RuntimeError(f"JS syntax error in script block {idx}: {res.stderr}")
@@ -342,7 +355,7 @@ return "Runtime, 1-to-1 Step Consistency & Zero-Occlusion SVG audit passed (" + 
         with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=False) as rtf:
             rtf.write(runtime_harness)
             rpath = rtf.name
-        rres = subprocess.run(["osascript", "-l", "JavaScript", rpath], capture_output=True, text=True)
+        rres = run_js_check(rpath, is_syntax_only=False)
         os.unlink(rpath)
         if rres.returncode != 0:
             raise RuntimeError(f"Runtime simulation check failed: {rres.stderr}")

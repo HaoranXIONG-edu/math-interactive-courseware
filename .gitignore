@@ -21,6 +21,7 @@ ENV/
 
 # Intermediate unpack & cache folders
 **/docx_unpacked/
+**/redrawn_media/
 **/__pycache__/
 *.tmp
 *.log

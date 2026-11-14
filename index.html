@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数学交互式课件（Math Interactive Courseware）— 课例门户与在线预览</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --teal: #0d9488;
+      --teal-soft: #f0fdfa;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 36px 24px 64px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      padding: 36px 40px;
+      border-radius: 18px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+      margin-bottom: 32px;
+    }
+    .badge-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      letter-spacing: 0.4px;
+    }
+    header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    header p {
+      color: #cbd5e1;
+      font-size: 15px;
+      max-width: 880px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 28px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 22px;
+      border-radius: 3px;
+      background: var(--blue);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+      border-color: #93c5fd;
+    }
+    .card-top {
+      margin-bottom: 18px;
+    }
+    .tag-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .unit-tag {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+    .unit-tag.teal {
+      background: var(--teal-soft);
+      color: var(--teal);
+    }
+    .unit-tag.amber {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .slide-count {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .card p {
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: #ffffff;
+      flex: 1;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+    .arch-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+    .arch-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    footer a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge-row">
+        <span class="badge">Seewo 16:9 希沃大屏交互</span>
+        <span class="badge">Word XML 原地无损修补</span>
+        <span class="badge">波利亚级 SVG 几何动态标注</span>
+        <span class="badge">五重门禁无头仿真验证</span>
+      </div>
+      <h1>数学交互式课件（Math Interactive Courseware）</h1>
+      <p>面向中学数学课堂教学、希沃（Seewo）交互式白板与平板触控设备的学案无损修补与动态讲解课件全流程工具链。点击下方卡片即可直接在浏览器中全屏体验单文件交互式课件或下载配套优化版 Word 学案。</p>
+    </header>
+
+    <h2 class="section-title">示范课例与交互式课件在线预览</h2>
+    <div class="grid">
+      <!-- 2.2.2 -->
+      <div class="card">
+        <div class="card-top">
+          <div class="tag-row">
+            <span class="unit-tag">反比例函数 · 课时 1</span>
+            <span class="slide-count">15 页幻灯片 · Layouts A/B</span>
+          </div>
+          <h3>2.2.2 反比例函数的图象（2）</h3>
+          <p>涵盖双曲线增减性、象限分布规律、跨象限三点函数值大小比较（图像法 / 特殊值法 / 性质法三模式切换）及含参区间最值探究。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_动态讲解课件.html">▶ 启动动态讲解课件 (.html)</a>
+          <a class="btn btn-secondary" href="lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_学生学案_优化版.docx">⬇ 下载学生学案 (.docx)</a>
+        </div>
+      </div>
+
+      <!-- 2.2.3 -->
+      <div class="card">
+        <div class="card-top">
+          <div class="tag-row">
+            <span class="unit-tag">反比例函数 · 课时 2</span>
+            <span class="slide-count">16 页幻灯片 · Layouts A/B</span>
+          </div>
+          <h3>2.2.3 反比例函数中“k”的几何意义</h3>
+          <p>涵盖矩形与直角三角形面积定值模型、同底等高面积转化、双反比例函数嵌套模型及一线三垂直相似综合探究。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html">▶ 启动动态讲解课件 (.html)</a>
+          <a class="btn btn-secondary" href="lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_学生学案_优化版.docx">⬇ 下载学生学案 (.docx)</a>
+        </div>
+      </div>
+
+      <!-- 2.3.1 -->
+      <div class="card">
+        <div class="card-top">
+          <div class="tag-row">
+            <span class="unit-tag">反比例函数 · 课时 3</span>
+            <span class="slide-count">18 页幻灯片 · Layouts A/B/D</span>
+          </div>
+          <h3>2.3.1 反比例函数的应用（1）</h3>
+          <p>涵盖列表—描点—连线实验建模、物理压强与杠杆平衡跨学科应用、气球体积安全阈值报警分析及正反比例分段函数模型。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_动态讲解课件.html">▶ 启动动态讲解课件 (.html)</a>
+          <a class="btn btn-secondary" href="lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_学生学案_优化版.docx">⬇ 下载学生学案 (.docx)</a>
+        </div>
+      </div>
+
+      <!-- 2.3.2 -->
+      <div class="card">
+        <div class="card-top">
+          <div class="tag-row">
+            <span class="unit-tag">反比例函数 · 课时 4</span>
+            <span class="slide-count">11 页幻灯片 · Layouts B</span>
+          </div>
+          <h3>2.3.2 反比例函数的应用（2）</h3>
+          <p>涵盖一次函数与反比例函数交点联立求解、三垂直分界区域函数值大小比较、曲直结合割补法面积计算及动态平行四边形存在性探究。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="lessons/2.3.2_反比例函数的应用（2）/2.3.2_反比例函数的应用（2）_动态讲解课件.html">▶ 启动动态讲解课件 (.html)</a>
+          <a class="btn btn-secondary" href="lessons/2.3.2_反比例函数的应用（2）/2.3.2_反比例函数的应用（2）_学生学案_优化版.docx">⬇ 下载学生学案 (.docx)</a>
+        </div>
+      </div>
+
+      <!-- 第20题 -->
+      <div class="card">
+        <div class="card-top">
+          <div class="tag-row">
+            <span class="unit-tag teal">几何综合压轴 · 波利亚四步法</span>
+            <span class="slide-count">8 页幻灯片 · 多子图联动</span>
+          </div>
+          <h3>第20题 十字双垂旋转模型</h3>
+          <p>完整呈现波利亚解题四步法、通栏色彩图例条（svgLegendBar）、数字角（∠1–∠5）图文同步导角、筝形构造辅助线与二维叠置分式推导。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="lessons/第20题_十字双垂旋转模型/第20题_十字双垂旋转模型_动态讲解课件.html">▶ 启动动态讲解课件 (.html)</a>
+        </div>
+      </div>
+
+      <!-- One·ai 讲评工作台 -->
+      <div class="card">
+        <div class="card-top">
+          <div class="tag-row">
+            <span class="unit-tag amber">AI 试卷讲评工作台</span>
+            <span class="slide-count">班级学情诊断 · 典型错因对比</span>
+          </div>
+          <h3>One·ai 试卷讲评工作台（动态演示）</h3>
+          <p>融合班级得分率热力分布、学生真实作答切片对比、典型错因归因定位与分步动态几何讲评的智慧课堂工作台原型。</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="workbench_demo/One·ai_讲评工作台_动态演示.html">▶ 启动讲评工作台演示 (.html)</a>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">双阶段解耦构建架构（Two-Stage Decoupled Pipeline）</h2>
+    <div class="arch-box">
+      <img src="docs/assets/architecture_pipeline.svg" alt="数学交互式课件与学案双阶段解耦构建架构">
+    </div>
+
+    <footer>
+      <p>开源仓库：<a href="https://github.com/HaoranXIONG-edu/math-interactive-courseware">GitHub · HaoranXIONG-edu/math-interactive-courseware</a> · 遵循 MIT License</p>
+    </footer>
+  </div>
+</body>
+</html>

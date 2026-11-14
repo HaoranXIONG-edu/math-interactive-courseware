@@ -1,5 +1,6 @@
 # 数学交互式课件（Math Interactive Courseware）
 
+[![CI Verification](https://github.com/HaoranXIONG-edu/math-interactive-courseware/actions/workflows/verify-courseware.yml/badge.svg)](https://github.com/HaoranXIONG-edu/math-interactive-courseware/actions/workflows/verify-courseware.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9+-green.svg)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/platform-Seewo%20%7C%20Web%20%7C%20iPad-orange.svg)]()
@@ -12,11 +13,12 @@
 - [一、系统架构与构建流程](#一系统架构与构建流程)
   - [阶段一：Word 学案解析与无损修补（.docx）](#阶段一word-学案解析与无损修补docx)
   - [阶段二：交互式动态课件构建与校验（.html）](#阶段二交互式动态课件构建与校验html)
-- [二、自适应页面版式体系（Layouts A–E）](#二自适应页面版式体系layouts-ae)
-- [三、几何图示 SVG 动态标注规范](#三几何图示-svg-动态标注规范)
-- [四、渐进式呈现与教学节奏控制规范](#四渐进式呈现与教学节奏控制规范)
-- [五、工具链接口与命令行使用说明](#五工具链接口与命令行使用说明)
-- [六、项目目录结构](#六项目目录结构)
+- [二、示范课例与交互式课件索引](#二示范课例与交互式课件索引)
+- [三、自适应页面版式体系（Layouts A–E）](#三自适应页面版式体系layouts-ae)
+- [四、几何图示 SVG 动态标注规范](#四几何图示-svg-动态标注规范)
+- [五、渐进式呈现与教学节奏控制规范](#五渐进式呈现与教学节奏控制规范)
+- [六、工具链接口与命令行使用说明](#六工具链接口与命令行使用说明)
+- [七、项目目录结构](#七项目目录结构)
 
 ---
 
@@ -63,7 +65,22 @@
 
 ---
 
-## 二、自适应页面版式体系（Layouts A–E）
+## 二、示范课例与交互式课件索引
+
+仓库内置 **5 节完整示范课例（共 68 页交互式幻灯片）** 与 **1 个 AI 试卷讲评工作台原型**，全部通过五重门禁无头仿真校验。可直接打开根目录 [index.html](index.html) 门户页浏览，或点击下表快速访问对应文件：
+
+| 序号 | 课题 / 模块名称 | 幻灯片数 | 适用版式与核心特性 | 动态讲解课件（`.html`） | 优化版学生学案（`.docx`） |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| **01** | **2.2.2 反比例函数的图象（2）** | 15 页 | `Layouts A/B` · 双曲线增减性、跨象限三点比较三法切换 | [2.2.2_动态讲解课件.html](lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_动态讲解课件.html) | [2.2.2_学生学案_优化版.docx](lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_学生学案_优化版.docx) |
+| **02** | **2.2.3 反比例函数中“k”的几何意义** | 16 页 | `Layouts A/B` · 面积定值模型、同底等高转化、多子图联动 | [2.2.3_动态讲解课件.html](lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html) | [2.2.3_学生学案_优化版.docx](lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_学生学案_优化版.docx) |
+| **03** | **2.3.1 反比例函数的应用（1）** | 18 页 | `Layouts A/B/D` · 列表描点拟合、压强/杠杆跨学科建模 | [2.3.1_动态讲解课件.html](lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_动态讲解课件.html) | [2.3.1_学生学案_优化版.docx](lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_学生学案_优化版.docx) |
+| **04** | **2.3.2 反比例函数的应用（2）** | 11 页 | `Layout B` · 一次与反比例交点、三垂直分界与平行四边形探究 | [2.3.2_动态讲解课件.html](lessons/2.3.2_反比例函数的应用（2）/2.3.2_反比例函数的应用（2）_动态讲解课件.html) | [2.3.2_学生学案_优化版.docx](lessons/2.3.2_反比例函数的应用（2）/2.3.2_反比例函数的应用（2）_学生学案_优化版.docx) |
+| **05** | **第20题 十字双垂旋转模型** | 8 页 | `Layout B` · 波利亚四步法、通栏图例、数字角与二维分式 | [第20题_动态讲解课件.html](lessons/第20题_十字双垂旋转模型/第20题_十字双垂旋转模型_动态讲解课件.html) | —（专项几何压轴精讲） |
+| **06** | **One·ai 试卷讲评工作台（演示）** | 交互工作台 | 班级得分率热力分布、学生真实作答对比、典型错因归因 | [One·ai_讲评工作台_动态演示.html](workbench_demo/One·ai_讲评工作台_动态演示.html) | —（智慧讲评工作台原型） |
+
+---
+
+## 三、自适应页面版式体系（Layouts A–E）
 
 为适配希沃一体机（16:9，推荐标准画布 1600×900）以及平板触控，课件内置 5 种响应式页面版式：
 
@@ -77,7 +94,7 @@
 
 ---
 
-## 三、几何图示 SVG 动态标注规范
+## 四、几何图示 SVG 动态标注规范
 
 课件中的几何图形完全采用原生高保真 SVG 动态生成，达到与出版级纸质讲义一致的清晰度与专业度：
 
@@ -103,7 +120,7 @@
 
 ---
 
-## 四、渐进式呈现与教学节奏控制规范
+## 五、渐进式呈现与教学节奏控制规范
 
 1. **初始状态（`step = 0`）留白控制**：
    - 进入页面时，所有推导步骤卡片默认隐藏，填空处保持留白；
@@ -119,9 +136,15 @@
 
 ---
 
-## 五、工具链接口与命令行使用说明
+## 六、工具链接口与命令行使用说明
 
-### 1. 学案结构解析与配图审计 (`inspect_docx_worksheet.py`)
+### 1. 全仓课例一键编译与五重门禁校验 (`scripts/build_all.py`)
+```bash
+python3 scripts/build_all.py
+```
+- 自动遍历全部 5 节示范课例，合并编译 JS 模块并执行五重门禁（语法、步数契约、数学符号、SVG 零碰撞、无头运行时仿真）全量验证。
+
+### 2. 学案结构解析与配图审计 (`inspect_docx_worksheet.py`)
 ```bash
 python3 .agents/skills/math-interactive-courseware/scripts/inspect_docx_worksheet.py \
   "path/to/学案.docx" \
@@ -131,7 +154,7 @@ python3 .agents/skills/math-interactive-courseware/scripts/inspect_docx_workshee
 - 输出全部配图的原始 DPI、物理宽高及裁剪边界。
 - 自动解码文档内所有 `<w:object>` 与 `<m:oMath>` 公式。
 
-### 2. 学案原地无损 XML 修补 (`docx_inplace_patcher.py`)
+### 3. 学案原地无损 XML 修补 (`docx_inplace_patcher.py`)
 ```python
 from scripts.docx_inplace_patcher import DocxWorksheetPatcher
 
@@ -141,7 +164,7 @@ patcher.patch_paragraph(target_index, new_xml_fragment)
 patcher.save("优化版学案.docx")
 ```
 
-### 3. 一键课件编译与自动化仿真 (`compile_seewo_courseware.py`)
+### 4. 单课例课件编译与自动化仿真 (`compile_seewo_courseware.py`)
 ```bash
 python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_courseware.py \
   --title "2.2.3 反比例函数中“k”的几何意义" \
@@ -153,18 +176,19 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_coursew
 
 ---
 
-## 六、项目目录结构
+## 七、项目目录结构
 
 ```text
-├── .agents/skills/math-interactive-courseware/   # 核心技能与流水线定义
-│   ├── SKILL.md                                # 官方规范说明书（包含全套规则与契约）
+├── .github/workflows/verify-courseware.yml     # GitHub Actions 五重门禁自动化 CI 流水线
+├── .agents/skills/math-interactive-courseware/ # 核心技能与流水线定义
+│   ├── SKILL.md                                # 规范说明书（全套开发规则与接口契约）
 │   ├── layers/                                 # 希沃大屏标准 HTML 壳层
 │   │   ├── seewo_shell_prefix.html             # 顶层交互容器、样式表、数学引擎库
 │   │   └── seewo_shell_suffix.html             # 播放控制条、快捷键、手写荧光笔
 │   └── scripts/                                # 核心自动化编译与修补工具
 │       ├── inspect_docx_worksheet.py           # 学案结构解析与 WMF/OMML 公式解码器
 │       ├── docx_inplace_patcher.py             # 原地无损 Word XML 补丁器
-│       ├── compile_seewo_courseware.py         # 课件一键编译器与契约门禁仿真器
+│       ├── compile_seewo_courseware.py         # 课件一键编译器与契约门禁仿真器（支持 JXA / Node）
 │       └── audit_figure_script.py              # 配图真实数学坐标与可解性校验器
 ├── docs/                                       # 技术规范与开发总结文档
 │   ├── assets/architecture_pipeline.svg        # 双阶段解耦构建架构矢量图
@@ -175,10 +199,13 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_coursew
 │   ├── 2.3.1_反比例函数的应用（1）/
 │   ├── 2.3.2_反比例函数的应用（2）/
 │   └── 第20题_十字双垂旋转模型/
+├── scripts/
+│   └── build_all.py                            # 全仓课例一键合并编译与五重门禁校验脚本
 ├── workbench_demo/                             # One·ai 讲评工作台动态演示与构建脚本
 │   ├── One·ai_讲评工作台_动态演示.html
 │   ├── build_production_workbench_v4.py
 │   └── v4_js_patch.js
+├── index.html                                  # 课例门户与 GitHub Pages 在线预览主页
 ├── requirements.txt                            # Python 运行环境依赖声明
 ├── LICENSE
 └── README.md

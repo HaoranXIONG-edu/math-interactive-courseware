@@ -13,24 +13,24 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 
 为彻底消除“边改学案边猜着写课件”导致的题干不一致、设问错位与返工，必须严格执行**“第一阶段先定稿 `.docx` 学案并交由用户确认 $\to$ 第二阶段以定稿 `.docx` 为唯一基准 1:1 生成 `.html` 动态课件”**的两阶段工作流：
 
-### 第一阶段：学案体检与优化版 `.docx` 交付确认（严禁在此阶段提前生成 HTML）
-1. **步骤 1.1（1 秒自动化体检 + WMF/OMML 公式全自动解码 + 原图视觉必读 `Visual-First Rule`）**：
-   - 运行本技能内置的一键体检脚本（v2.0），一次性完成：① 自动解码全部遗留 MathType `<w:object>`（`.wmf`）与原生 `<m:oMath>` 为内联 `$LaTeX$` 公式；② 仅将真正的题目配图（`.png / .jpg / .jpeg`）导出到 `--media-out`（自动过滤掉数十个 `.wmf` 公式碎片）；③ 审计每张配图的像素分辨率、Word 物理宽高（`cm`）及 `<a:srcRect>` 裁剪参数，并对存在大幅裁剪的图片自动生成裁剪后实际可见视图 `*_crop*.png`；④ 审计 `<mc:AlternateContent>` 浮动圆角文本框的 `Choice/Fallback` 双分支同步状态与 `o:gfxdata` 缓存标志，并输出结构化 JSON 蓝图：
+### 第一阶段：学案结构解析与优化版 `.docx` 交付确认（严禁在此阶段提前生成 HTML）
+1. **步骤 1.1（自动化结构解析 + WMF/OMML 公式全自动解码 + 原图视觉核验 `Visual-First Rule`）**：
+   - 运行本技能内置的结构解析与审计脚本（v2.0），一次性完成：① 自动解码全部遗留 MathType `<w:object>`（`.wmf`）与原生 `<m:oMath>` 为内联 `$LaTeX$` 公式；② 仅将真正的题目配图（`.png / .jpg / .jpeg`）导出到 `--media-out`（自动过滤掉数十个 `.wmf` 公式碎片）；③ 审计每张配图的像素分辨率、Word 物理宽高（`cm`）及 `<a:srcRect>` 裁剪参数，并对存在大幅裁剪的图片自动生成裁剪后实际可见视图 `*_crop*.png`；④ 审计 `<mc:AlternateContent>` 浮动圆角文本框的 `Choice/Fallback` 双分支同步状态与 `o:gfxdata` 缓存标志，并输出结构化 JSON 蓝图：
      ```bash
      python3 .agents/skills/math-interactive-courseware/scripts/inspect_docx_worksheet.py \
        "原学案路径.docx" --media-out /tmp/docx_inspect_media --json-out /tmp/docx_inspect_media/audit_report.json
      ```
-   - **原图必读铁律**：主智能体必须先用 `read_file` 逐张查看 `/tmp/docx_inspect_media/` 下的所有导出配图（及 `*_crop*.png` 裁剪预览图），核对几何顶点字母、线段连接关系与子图编号（如图(1)～图(5)）。
+   - **原图视觉核验规范**：主智能体必须先用 `read_file` 逐张查看 `/tmp/docx_inspect_media/` 下的所有导出配图（及 `*_crop*.png` 裁剪预览图），核对几何顶点字母、线段连接关系与子图编号（如图(1)～图(5)）。
 2. **步骤 1.2（数学可解性验算 + 并发重绘 300 DPI 配图 + 原地无损修补生成优化版 `.docx`）**：
-   - **🚨 几何可解性与零自由常数铁律（Mathematical Solvability & Zero Magic-Coordinate Rule，防病题复现门禁）**：
+   - **🚨 几何可解性与零自由常数规范（Mathematical Solvability & Zero Magic-Coordinate Rule）**：
      1. **严禁无约束自由常数坐标**：原版学案常包含随手画的示意图和笼统提问（如“你发现了什么规律？”）。在具象化题干设问与重绘配图时，除驱动动点（如 $A(x_0, k/x_0)$）外，**图形中其余所有顶点（垂足、交点、对称点）的坐标必须严格由题干明示的几何条件（如 $\perp x$ 轴、$\parallel y$ 轴、过原点对称）通过数学公式推导得出**（如 `C = (A[0], 0)`），**绝对禁止**在绘图代码中硬编码与 $k$ 或 $x_0$ 无关的自由常数坐标（如把非垂足斜线端点写死为 `C = (1.75, 0)`，导致面积含未知截距而无法用 $|k|$ 解出）！
      2. **代数消元必检**：凡要求“用含 $|k|$ 的代数式表示面积/长度”的探究题，动笔作图前必须先列出含动点坐标 $(x_0, y_0)$ 的面积代数式，验证 $x_0, y_0$ 乘积能 100% 转化为 $k$（无无法消去的自由变量），并在题干中补全必要的垂直/平行前提条件（图中同步标出直角符号 `⊥`）。
      3. **题干几何名称 ↔ 子图顶点字母 1:1 闭合校验**：每个子图（如图(1)～图(4)）调用 `smart_label_point` 标注的顶点字母集合，必须与题干点名求面积的几何图形字母（如 `△ABC`、`四边形ACBD`、`四边形AFBE`）100% 一致，严禁图(4) 标了 $A,F,B,E$ 而题干统称求 `四边形ABCD`！
-      4. **40分钟课堂容量守恒铁律（严禁盲目扩充题量）**：初中一节数学课仅 40 分钟，审视和优化学案时必须严格根据单节课 40 分钟容量进行把控。若原版学案中的探究/应用大题本身综合度高、题量已饱满（例如已含 1 道多问情境引入 + 3 道长背景跨学科/新定义/实际建模综合大题），**严禁机械照搬四环节模板强行在末尾增补“三、新知应用”与“四、分层训练”**，避免课堂讲不完！仅当原学案存在错搬其他课时废题或总题量明显不足（少于 20 分钟容量）时，才按需精简替换或补充。
+     4. **40分钟课堂容量守恒规范（严禁盲目扩充题量）**：初中一节数学课仅 40 分钟，审视和优化学案时必须严格根据单节课 40 分钟容量进行把控。若原版学案中的探究/应用大题本身综合度高、题量已饱满（例如已含 1 道多问情境引入 + 3 道长背景跨学科/新定义/实际建模综合大题），**严禁机械照搬四环节模板强行在末尾增补“三、新知应用”与“四、分层训练”**，避免课堂讲不完！仅当原学案存在错搬其他课时废题或总题量明显不足（少于 20 分钟容量）时，才按需精简替换或补充。
    - 若需重绘配图 $\ge 3$ 张，使用 `invoke_subagent` 并发重绘全部 300 DPI 高清配图（$\ge 2400\text{px}$），并原地无损修补 `word/document.xml`（清零 `<w:object>` 升级为 `12pt` 原生 `<m:oMath>`，修复剧透填空与设问梯度，同步浮动归纳框双分支并清空框下残留段落），输出 `xxx_学生学案_优化版.docx`。
 3. **步骤 1.3（🛑 强制暂停确认门禁 STOP & CONFIRM）**：
    - 将生成的 `xxx_学生学案_优化版.docx` 及《学案优化修改清单》（**必须包含每道改动/重绘题的【几何条件与可解性验算式】及【题干↔配图字母核对结果】**）呈现给用户审阅，询问用户：**“请确认优化后的 Word 学案是否定稿（您也可以直接在 Word 中修改后发回给我），确认后我将严格按定稿学案 1:1 生成 HTML 动态讲解课件。”**
-   - **铁律**：在用户明确回复“确认”或发回修改后的定稿 `.docx` 之前，**严禁提前编写或生成 HTML 课件**！（若用户一开始直接上传的就是已定稿 `.docx` 并明确只要求直接生成 HTML 课件，则直接进入第二阶段）。
+   - **强制约束**：在用户明确回复“确认”或发回修改后的定稿 `.docx` 之前，**严禁提前编写或生成 HTML 课件**！（若用户一开始直接上传的就是已定稿 `.docx` 并明确只要求直接生成 HTML 课件，则直接进入第二阶段）。
 
 ### 第二阶段：基于用户确认定稿 `.docx` 1:1 极速生成 `.html` 课件
 1. **步骤 2.1（锁定唯一真实数据源 `Single Source of Truth`）**：
@@ -50,7 +50,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 
 ---
 
-## 二、Word 学生学案（`.docx`）原地无损修补铁律（统一调用 `docx_inplace_patcher.py` + `audit_figure_script.py`）
+## 二、Word 学生学案（`.docx`）原地无损修补规范（统一调用 `docx_inplace_patcher.py` + `audit_figure_script.py`）
 
 1. **严禁手写冗长 XML 拼接或新建无边框表格重排**：
    - 必须直接调用本技能内置的 [docx_inplace_patcher.py](./scripts/docx_inplace_patcher.py)（`DocxWorksheetPatcher` 类）原地修改 `word/document.xml`，100% 保留原文档页面边距、学校页眉、四号（`12pt`，`w:sz="24"`）字号、`1.5` 倍行距与圆角浮动归纳框：
@@ -89,7 +89,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 - **版式 D (`layout-d`)**：列表—描点—连线作图题。上方全宽展示带两端省略号 `…` 的取点表格（初始用 `?` 遮罩 $x, y$ 数值），左下分步推导，右下交互式坐标纸。
 - **版式 E (`layout-e`)**：多点坐标验算判断卡片题。上方题干，下方全宽并排展示待验算点卡片。
 
-### 2. 零剧透（Zero-Spoiler）与零冗余铁律
+### 2. 渐进式呈现（Zero-Spoiler）与零冗余规范
 0. **第 1 页必为极简正式教学封面页（`cover: true` + `window.renderStandardCover`）**：
    - `chunk1_intro_explore.js` 的第 1 页必须固定为 `cover: true` 的教学封面页，直接调用壳文件内置的 `window.renderStandardCover({ chapter, num, title, caption, goals })`：
      - **严禁在封面页重复堆砌“课堂四环节导览”卡片**（页面顶部 `flowbar` 已有四环节导航）；
@@ -113,11 +113,11 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 
 ---
 
-## 四、多智能体防呆契约与全局 API 白名单（严禁踩坑）
+## 四、多智能体接口契约与全局 API 规范
 
 为防止多个子智能体并行编写 `chunk1`、`chunk2`、`chunk3` 时出现接口不一致、DOM 容器缺失、步骤与图形错乱或几何坐标算错，所有子智能体必须严格遵守以下契约：
 
-1. **步骤卡片 ↔ 进度圆点 ↔ 题干填空 ↔ 几何子图“四位一体 1 对 1 同步铁律”**：
+1. **步骤卡片 ↔ 进度圆点 ↔ 题干填空 ↔ 几何子图“四位一体 1 对 1 同步规范”**：
    - 每一页的 `.step` 卡片总数 $N$ **必须严格等于** `stepBar(step, N)` 的进度圆点总数 $N$（编译脚本会自动拦截任何不相等的页面）！
    - 当一道题包含多个填空或子图（如图(1)～图(5)）时，**每个填空（`data-step="1"..data-step="N"`）必须独立对应一张 `.step` 卡片（`01 步骤1` ～ `0N 步骤N`）**，严禁把 2 个填空的推导合并塞进同一张 `.step` 卡片导致点一下跳两步、两个空同时蹦出！
    - 右侧 SVG 必须直接由 `step` 驱动切换对应子图（例如 `step = 0` 显示多图总览，`step = 1` 自动放大图(1)，`step = 2` 自动放大图(2)…）。若额外使用了 `modeButtons(key, curVal, items)`，每一项必须传入第 3 个参数 `syncStep`（如 `['1', '方法一', 1]`），使点击模式按钮时同步更新 `state.step`。
@@ -220,7 +220,7 @@ window.defineSlide({
 });
 ```
 
-### 3.6 多问长题拆页精讲规范（防页面拥挤铁律）
+### 3.6 多问长题拆页精讲规范（控制单页信息密度）
 
 为保障 1600×900 教室希沃大屏上的最佳视觉呼吸感（杜绝顶部 `.screen-stem` 过长挤压下方步骤区、杜绝单页塞入过多推导步骤或同屏堆叠多张不同配图），凡遇到**多问综合题或长题干题**，必须将子问题拆分为连续的多个独立页面（如 `问题2(1)(2)` 与 `问题2(3)`、`第5题(1)` 与 `第5题(2)`）进行分页精讲：
 
@@ -243,7 +243,7 @@ window.defineSlide({
 1. **顶部通栏色彩图例条必配规范（`window.svgLegendBar(items)`）**：
    - 凡 `step >= 1` 出现辅助线、数字角或全等/相似三角形色块时，画布顶部（`y = 6..36`）必须调用 `window.svgLegendBar([...])` 渲染一条清爽的浅灰圆角图例条（如 `[angle] ∠1=∠2=∠3 | [angle] ∠4=∠5 | [dash] BF,EF: 构造筝形 | [tri] △FDE∽△BDF`），图例颜色与图内几何元素 1:1 严格对应；
    - **严禁在图形角落放置大面积矩形悬浮卡片遮挡几何边线**，也严禁在图形正下方放置“图2（原题纯享图）”等压住下顶点的文字标题。
-2. **数字角（`1, 2, 3, 4, 5`）图文联动铁律（`window.svgNumberedAngle`）**：
+2. **数字角（`1, 2, 3, 4, 5`）图文联动规范（`window.svgNumberedAngle`）**：
    - **严禁画无字空角弧**，也严禁在图内塞入冗长的 `∠ABF`、`∠CBD` 三字母角标；
    - 凡涉及角平分线、倍角、外角定理或全等/相似导角，必须调用 `window.svgNumberedAngle(vertex, pStart, pEnd, '1', { radius, color, leader })` 在角弧旁标出醒目的纯数字 **`1`、`2`、`3`、`4`、`5`**；
    - **同顶点相邻角阶梯错位**：共顶点的相邻角（如 $\angle 1, \angle 2, \angle 3$）必须采用阶梯递增半径（如 `radius: 26, 33, 40`）错开圆弧，对狭窄角开启 `leader: true` 用细引线引出数字；
@@ -255,14 +255,14 @@ window.defineSlide({
    - 已知边长（如 `CE = 4`）与全等翻折转移后的边长（如 `EF = 4`）必须沿线段法向偏移 `14–16px` 直接在边旁标出数值 `4`。
 5. **视觉层级与色块垫底规范**：
    - 绘制顺序严格遵循：**① 底层柔和三角形色块（透明度 `0.15–0.24`） $\to$ ② 原题实线（深黑 `#0f172a`, `2.6px`）与辅助虚线（朱红 `#dc2626`, `dash="7 4"`） $\to$ ③ 角弧、短杠与直角标 $\to$ ④ 顶层顶点圆点、18px 顶点斜体字母与顶部图例条**。
-6. **严禁嵌套子 `<svg>` 铁律（防 `.visual svg` 100% 拉伸污染）**：
+6. **禁止嵌套子 `<svg>` 规范（防止 `.visual svg` 100% 拉伸变形）**：
    - 在非 `layout-c` 页面的 `#scene` 主 `<svg>` 内部（包括 `<foreignObject>` 内部），**绝对禁止再次嵌套 `<svg>` 标签**！所有图例图标、几何符号必须使用原生 `<path>`、`<polygon>`、`<line>`、`<rect>`、`<circle>` 绘制（`compile_seewo_courseware.py` 已内置 `FORBIDDEN NESTED <svg> DETECTED` 编译门禁）。
 7. **`<foreignObject>` 与 `<text>` 全包围盒零碰撞门禁**：
    - 图内所有 `<foreignObject>`（如 `svgFoCard`、`svgCalloutTag`）的矩形包围盒 `(x, y, width, height)` 严禁与任何 `<text>` 顶点字母、边长数值或其他 `<foreignObject>` 重叠（编译脚本自动执行 `SVG FOREIGNOBJECT-TEXT OVERLAP` 与 `FOREIGNOBJECT-FOREIGNOBJECT OVERLAP` 检测）。
 8. **相似三角形严禁括号证明符号 & 根号完整顶线（`.sqrt`）门禁**：
    - **相似三角形严禁写 `（AA）` / `（SAS）`**：初中数学规范中仅全等三角形（`≌`）在括号内注 `（SAS）`、`（ASA）`、`（AAS）`、`（SSS）`、`（HL）`；**相似三角形（`∽` 或“相似”）后严禁附加 `（AA）`、`（SAS）`、`（SSS）` 等括号符号**（编译脚本已内置 `FORBIDDEN SIMILARITY PROOF SYMBOL` 门禁拦截）。
    - **根式必须带完整顶线（`.sqrt`）且严禁楷体渲染 `√`**：所有 HTML 文本（含 `.step` 正文、步骤标题、填空 `data-ans` 及 SVG `<foreignObject>` 卡片）中的根号严禁裸写纯文本 `√3`（在楷体下会退化为中文对勾乱码 `∨` 且无顶线），必须使用 `<span class="sqrt"><span class="num">3</span></span>` 渲染为 Times New Roman 正体 `√` + 顶部相连水平顶线（`steps[].title` 已由壳文件 `window.formatInlineMathHTML` 自动转换，编译脚本已内置 `BARE RADICAL '√' WITHOUT .sqrt VINCULUM` 门禁拦截）。
-9. **图内所有几何边长与设元代数式 100% 采用标准二维上下叠置分式铁律（严禁单行斜杠 `/` 拼凑）**：
+9. **图内所有几何边长与设元代数式统一采用标准二维上下叠置分式规范（严禁单行斜杠 `/` 拼凑）**：
    - **痛点**：在几何与函数题中，设元 $x$ 后导出的边长表达式（如 $NF = \frac{4}{3}(4-x)$、$BF = \frac{25-4x}{3}$），若在 SVG 图中使用 `<text>` 渲染为单行斜杠纯文本（如 `NF=4/3(4-x)` 或 `(25-4x)/3`），既不符合初中数学出版级排版规范，也降低了课堂大屏的教学专业度。
    - **强制实现方案**：
      1. **胶囊标签与贴边数值**：凡包含分式的线段长标签，一律调用 `window.svgFoLabel(x, y, w, h, innerHtml, { bg, border, color })` 或在 `<foreignObject>` 中使用标准 `.fraction` HTML 结构：
