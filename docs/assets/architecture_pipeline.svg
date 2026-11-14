@@ -1,0 +1,320 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 820" width="100%" height="100%">
+  <defs>
+    <style>
+      .font-sans { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif; }
+      .font-mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+      .title-main { font-size: 20px; font-weight: 800; fill: #0f172a; }
+      .title-sub { font-size: 12.5px; font-weight: 500; fill: #475569; }
+      .stage-hdr { font-size: 16px; font-weight: 800; fill: #ffffff; }
+      .stage-sub { font-size: 11.5px; font-weight: 600; fill: rgba(255,255,255,0.88); }
+      .layer-tag { font-size: 10.5px; font-weight: 800; letter-spacing: 0.6px; }
+      .card-title { font-size: 13.5px; font-weight: 700; fill: #0f172a; }
+      .card-title-light { font-size: 13.5px; font-weight: 700; fill: #ffffff; }
+      .card-desc { font-size: 11.5px; font-weight: 400; fill: #475569; }
+      .card-desc-light { font-size: 11.5px; font-weight: 400; fill: #cbd5e1; }
+      .code-pill { font-size: 11px; font-weight: 600; }
+      .badge-txt { font-size: 11px; font-weight: 700; }
+      .gate-item { font-size: 11.2px; font-weight: 600; fill: #1e293b; }
+    </style>
+
+    <filter id="shadow-lg" x="-4%" y="-4%" width="108%" height="110%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.07"/>
+    </filter>
+    <filter id="shadow-sm" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.05"/>
+    </filter>
+
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+
+    <linearGradient id="s1-hdr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+
+    <linearGradient id="s2-hdr" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+
+    <linearGradient id="gate-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="100%" stop-color="#fef3c7"/>
+    </linearGradient>
+
+    <linearGradient id="io-blue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+
+    <linearGradient id="io-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f0fdfa"/>
+      <stop offset="100%" stop-color="#ccfbf1"/>
+    </linearGradient>
+
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arr-teal" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#0d9488"/>
+    </marker>
+    <marker id="arr-amber" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- Outer Canvas Background -->
+  <rect x="4" y="4" width="1472" height="812" rx="16" fill="url(#bg-grad)" stroke="#cbd5e1" stroke-width="1.5"/>
+
+  <!-- Top Architecture Header Banner -->
+  <g class="font-sans">
+    <rect x="24" y="20" width="1432" height="60" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" filter="url(#shadow-sm)"/>
+    <rect x="24" y="20" width="8" height="60" rx="4" fill="#1e40af"/>
+    <text x="48" y="47" class="title-main">数学交互式课件与学案双阶段解耦构建架构（Two-Stage Decoupled Pipeline）</text>
+    <text x="48" y="67" class="title-sub">Stage 1 负责 Word 学案 XML 无损修补与 300 DPI 配图重绘 · 经人工定稿确认后 · Stage 2 基于唯一真实数据源 1:1 编译单文件动态交互课件</text>
+
+    <!-- Top Right Legend Pills -->
+    <rect x="1110" y="34" width="102" height="30" rx="6" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+    <circle cx="1126" cy="49" r="5" fill="#2563eb"/>
+    <text x="1138" y="53" class="badge-txt" fill="#1e40af">Word 管线</text>
+
+    <rect x="1222" y="34" width="106" height="30" rx="6" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.2"/>
+    <circle cx="1238" cy="49" r="5" fill="#d97706"/>
+    <text x="1250" y="53" class="badge-txt" fill="#92400e">定稿确认门禁</text>
+
+    <rect x="1338" y="34" width="102" height="30" rx="6" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.2"/>
+    <circle cx="1354" cy="49" r="5" fill="#0d9488"/>
+    <text x="1366" y="53" class="badge-txt" fill="#115e59">HTML 管线</text>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LEFT PANEL: STAGE 01 (Word Worksheet In-Place Analysis & Patching)    -->
+  <!-- ===================================================================== -->
+  <g class="font-sans">
+    <rect x="24" y="96" width="636" height="700" rx="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="2" filter="url(#shadow-lg)"/>
+    <path d="M 24 110 A 14 14 0 0 1 38 96 L 646 96 A 14 14 0 0 1 660 110 L 660 154 L 24 154 Z" fill="url(#s1-hdr)"/>
+    <rect x="42" y="110" width="76" height="24" rx="5" fill="rgba(255,255,255,0.18)"/>
+    <text x="80" y="126" text-anchor="middle" class="font-mono" font-size="11.5" font-weight="800" fill="#ffffff">STAGE 01</text>
+    <text x="130" y="123" class="stage-hdr">Word 学案解析与原地无损修补流水线（.docx）</text>
+    <text x="130" y="143" class="stage-sub">In-Place XML Patching · WMF/OMML Formula Decoding · 300 DPI Figure Redrawing</text>
+
+    <!-- Layer 1.1: Input Artifact -->
+    <rect x="44" y="170" width="596" height="52" rx="10" fill="url(#io-blue)" stroke="#60a5fa" stroke-width="1.5"/>
+    <rect x="58" y="182" width="68" height="28" rx="6" fill="#1e40af"/>
+    <text x="92" y="200" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">INPUT</text>
+    <text x="140" y="193" class="card-title" fill="#1e3a8a">原版教师/学生 Word 学案模板（.docx）</text>
+    <text x="140" y="211" class="card-desc" fill="#1e40af">包含老旧 MathType WMF 公式碎片、低清扫描配图、裁剪属性及浮动归纳框残留段落</text>
+
+    <line x1="342" y1="222" x2="342" y2="244" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+    <!-- Layer 1.2: Structural Inspector -->
+    <rect x="44" y="246" width="596" height="148" rx="10" fill="#f8fafc" stroke="#93c5fd" stroke-width="1.5"/>
+    <rect x="58" y="258" width="110" height="22" rx="4" fill="#dbeafe"/>
+    <text x="113" y="273" text-anchor="middle" class="layer-tag" fill="#1e40af">1.1 结构解析与审计</text>
+    <text x="178" y="273" class="card-title">文档全自动解包与多模态审计引擎</text>
+    <rect x="442" y="256" width="184" height="24" rx="5" fill="#1e293b"/>
+    <text x="534" y="272" text-anchor="middle" class="font-mono code-pill" fill="#93c5fd">inspect_docx_worksheet.py</text>
+
+    <!-- 3 Sub-cards inside 1.1 -->
+    <rect x="58" y="290" width="182" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" filter="url(#shadow-sm)"/>
+    <text x="70" y="311" class="card-title" font-size="12.5" fill="#1e3a8a">① 公式矢量解码</text>
+    <text x="70" y="330" class="card-desc">解析遗留 &lt;w:object&gt; WMF</text>
+    <text x="70" y="346" class="card-desc">与原生 &lt;m:oMath&gt; 节点，</text>
+    <text x="70" y="362" class="card-desc">自动还原为内联 $LaTeX$</text>
+
+    <rect x="251" y="290" width="182" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" filter="url(#shadow-sm)"/>
+    <text x="263" y="311" class="card-title" font-size="12.5" fill="#1e3a8a">② 配图与裁剪审计</text>
+    <text x="263" y="330" class="card-desc">过滤公式切片，导出真实配图</text>
+    <text x="263" y="346" class="card-desc">审计 DPI、Word 物理宽高</text>
+    <text x="263" y="362" class="card-desc">及 &lt;a:srcRect&gt; 裁剪边界</text>
+
+    <rect x="444" y="290" width="182" height="90" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" filter="url(#shadow-sm)"/>
+    <text x="456" y="311" class="card-title" font-size="12.5" fill="#1e3a8a">③ 浮动框与蓝图提取</text>
+    <text x="456" y="330" class="card-desc">扫描 AlternateContent 双分支</text>
+    <text x="456" y="346" class="card-desc">定位框下被遮挡残留段落，</text>
+    <text x="456" y="362" class="card-desc">输出 audit_report.json</text>
+
+    <line x1="190" y1="394" x2="190" y2="416" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+    <line x1="494" y1="394" x2="494" y2="416" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+    <!-- Layer 1.3: Parallel Math Solvability & Figure Redrawing -->
+    <rect x="44" y="418" width="286" height="128" rx="10" fill="#f8fafc" stroke="#93c5fd" stroke-width="1.5"/>
+    <rect x="56" y="430" width="122" height="22" rx="4" fill="#dbeafe"/>
+    <text x="117" y="445" text-anchor="middle" class="layer-tag" fill="#1e40af">1.2 数学可解性校验</text>
+    <rect x="184" y="429" width="134" height="22" rx="4" fill="#1e293b"/>
+    <text x="251" y="444" text-anchor="middle" class="font-mono" font-size="10" font-weight="600" fill="#93c5fd">audit_figure_script.py</text>
+    <text x="58" y="472" class="card-desc">• <tspan font-weight="700" fill="#0f172a">零自由常数约束</tspan>：垂足/交点由方程推导</text>
+    <text x="58" y="492" class="card-desc">• <tspan font-weight="700" fill="#0f172a">代数消元必检</tspan>：验证未知参数 100% 消去</text>
+    <text x="58" y="512" class="card-desc">• <tspan font-weight="700" fill="#0f172a">题干↔图形闭合</tspan>：顶点字母 1:1 严格一致</text>
+    <text x="58" y="532" class="card-desc">• <tspan font-weight="700" fill="#0f172a">课堂容量守恒</tspan>：契合 40 分钟教学节奏</text>
+
+    <rect x="354" y="418" width="286" height="128" rx="10" fill="#f8fafc" stroke="#93c5fd" stroke-width="1.5"/>
+    <rect x="366" y="430" width="126" height="22" rx="4" fill="#dbeafe"/>
+    <text x="429" y="445" text-anchor="middle" class="layer-tag" fill="#1e40af">1.3 高清配图并发重绘</text>
+    <rect x="498" y="429" width="130" height="22" rx="4" fill="#1e293b"/>
+    <text x="563" y="444" text-anchor="middle" class="font-mono" font-size="10" font-weight="600" fill="#93c5fd">ExamFigure Engine</text>
+    <text x="368" y="472" class="card-desc">• <tspan font-weight="700" fill="#0f172a">出版级分辨率</tspan>：白底 ≥ 2400px (300 DPI)</text>
+    <text x="368" y="492" class="card-desc">• <tspan font-weight="700" fill="#0f172a">标准字体体系</tspan>：宋体 + TNR 斜体变量</text>
+    <text x="368" y="512" class="card-desc">• <tspan font-weight="700" fill="#0f172a">二维叠置分式</tspan>：严禁斜杠拼凑与刻度压线</text>
+    <text x="368" y="532" class="card-desc">• <tspan font-weight="700" fill="#0f172a">多智能体并发</tspan>：配图 ≥ 3 张时并行重绘</text>
+
+    <line x1="190" y1="546" x2="190" y2="568" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+    <line x1="494" y1="546" x2="494" y2="568" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+    <!-- Layer 1.4: In-Place XML Patcher -->
+    <rect x="44" y="570" width="596" height="126" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8"/>
+    <rect x="58" y="582" width="128" height="22" rx="4" fill="#2563eb"/>
+    <text x="122" y="597" text-anchor="middle" class="layer-tag" fill="#ffffff">1.4 原地无损 XML 修补</text>
+    <text x="198" y="597" class="card-title">Word DOM 定点无损修补引擎</text>
+    <rect x="454" y="580" width="172" height="24" rx="5" fill="#1e293b"/>
+    <text x="540" y="596" text-anchor="middle" class="font-mono code-pill" fill="#93c5fd">docx_inplace_patcher.py</text>
+
+    <text x="60" y="624" class="card-desc">• <tspan font-weight="700" fill="#1e3a8a">公式全量升级</tspan>：剥离全部 WMF 对象（WMF=0），注入 12pt 原生 &lt;m:oMath&gt; 结构化公式与正斜体分词</text>
+    <text x="60" y="645" class="card-desc">• <tspan font-weight="700" fill="#1e3a8a">双分支同步与清残</tspan>：同步更新 wps:txbx 与 v:textbox，剥离 o:gfxdata 缓存，清空浮动框下残留段落</text>
+    <text x="60" y="666" class="card-desc">• <tspan font-weight="700" fill="#1e3a8a">高清图无损替换</tspan>：替换 word/media/image*.png 并自动清零 &lt;a:srcRect&gt; 裁剪，执行 audit_cleanliness()</text>
+    <text x="60" y="686" class="card-desc">• <tspan font-weight="700" fill="#1e3a8a">纯粹学生视角</tspan>：保持填空、表格与作图坐标纸留白，不塞入教案化剧透标签</text>
+
+    <line x1="342" y1="696" x2="342" y2="718" stroke="#2563eb" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+    <!-- Layer 1.5: Stage 1 Output -->
+    <rect x="44" y="720" width="596" height="56" rx="10" fill="#0f172a" stroke="#1e40af" stroke-width="1.5"/>
+    <rect x="58" y="734" width="96" height="28" rx="6" fill="#2563eb"/>
+    <text x="106" y="752" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STAGE 1 OUT</text>
+    <text x="168" y="744" class="card-title-light">交付《xxx_学生学案_优化版.docx》+《学案优化修改清单》</text>
+    <text x="168" y="763" class="card-desc-light">附带每道重绘题目的几何可解性验算式与题干↔图形顶点字母核对结果</text>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- CENTER BRIDGE: STAGE GATE & SINGLE SOURCE OF TRUTH                    -->
+  <!-- ===================================================================== -->
+  <g class="font-sans">
+    <!-- Vertical Dashed Guide Line -->
+    <line x1="740" y1="160" x2="740" y2="750" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,5"/>
+
+    <!-- Connector from Stage 1 Output (bottom left) up to Center Gate -->
+    <path d="M 640 748 L 692 748 Q 708 748 708 732 L 708 518" fill="none" stroke="#d97706" stroke-width="2.5" marker-end="url(#arr-amber)"/>
+
+    <!-- Center Stage Gate Card -->
+    <rect x="674" y="340" width="132" height="172" rx="12" fill="url(#gate-grad)" stroke="#f59e0b" stroke-width="2.2" filter="url(#shadow-lg)"/>
+    <rect x="690" y="354" width="100" height="24" rx="12" fill="#d97706"/>
+    <text x="740" y="370" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="800" fill="#ffffff">STAGE GATE</text>
+    <text x="740" y="398" text-anchor="middle" class="card-title" font-size="14" fill="#78350f">人工审阅与</text>
+    <text x="740" y="418" text-anchor="middle" class="card-title" font-size="14" fill="#78350f">定稿确认门禁</text>
+    <line x1="690" y1="430" x2="790" y2="430" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="740" y="450" text-anchor="middle" class="card-desc" font-size="11" fill="#92400e">审阅定稿或微调</text>
+    <text x="740" y="468" text-anchor="middle" class="card-desc" font-size="11" fill="#92400e">锁定唯一真实数据源</text>
+    <rect x="686" y="480" width="108" height="20" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+    <text x="740" y="494" text-anchor="middle" class="font-mono" font-size="9.5" font-weight="700" fill="#b45309">Single Source of Truth</text>
+
+    <!-- Connector from Center Gate up to Stage 2 Input (top right) -->
+    <path d="M 772 340 L 772 212 Q 772 196 788 196 L 834 196" fill="none" stroke="#0d9488" stroke-width="2.5" marker-end="url(#arr-teal)"/>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- RIGHT PANEL: STAGE 02 (Interactive Seewo HTML Courseware Pipeline)    -->
+  <!-- ===================================================================== -->
+  <g class="font-sans">
+    <rect x="820" y="96" width="636" height="700" rx="14" fill="#ffffff" stroke="#99f6e4" stroke-width="2" filter="url(#shadow-lg)"/>
+    <path d="M 820 110 A 14 14 0 0 1 834 96 L 1442 96 A 14 14 0 0 1 1456 110 L 1456 154 L 820 154 Z" fill="url(#s2-hdr)"/>
+    <rect x="838" y="110" width="76" height="24" rx="5" fill="rgba(255,255,255,0.18)"/>
+    <text x="876" y="126" text-anchor="middle" class="font-mono" font-size="11.5" font-weight="800" fill="#ffffff">STAGE 02</text>
+    <text x="926" y="123" class="stage-hdr">希沃大屏交互式动态课件构建与仿真流水线（.html）</text>
+    <text x="926" y="143" class="stage-sub">1:1 Blueprint Alignment · Multi-Agent Chunk Builders · 5-Gate Headless Simulation</text>
+
+    <!-- Layer 2.1: Locked Blueprint & Shell Architecture -->
+    <rect x="840" y="170" width="596" height="106" rx="10" fill="url(#io-teal)" stroke="#2dd4bf" stroke-width="1.5"/>
+    <rect x="854" y="182" width="118" height="22" rx="4" fill="#0f766e"/>
+    <text x="913" y="197" text-anchor="middle" class="layer-tag" fill="#ffffff">2.1 蓝图与交互壳层</text>
+    <text x="984" y="197" class="card-title">定稿蓝图与希沃大屏标准 HTML 壳层底座</text>
+    <rect x="1244" y="180" width="178" height="24" rx="5" fill="#1e293b"/>
+    <text x="1333" y="196" text-anchor="middle" class="font-mono code-pill" fill="#5eead4">layers/seewo_shell_*.html</text>
+
+    <text x="856" y="222" class="card-desc" fill="#115e59">• <tspan font-weight="700">五类自适应版式（Layouts A–E）</tspan>：全宽居中 / 左解右图 / 四图选项矩阵 / 表解图联动 / 多卡片翻转</text>
+    <text x="856" y="242" class="card-desc" fill="#115e59">• <tspan font-weight="700">内置几何与坐标引擎</tspan>：createCoordCanvas() 数学坐标底座、renderMultiPanelScene() 多子图容器</text>
+    <text x="856" y="262" class="card-desc" fill="#115e59">• <tspan font-weight="700">波利亚级 SVG 标注库</tspan>：svgLegendBar 通栏图例、svgNumberedAngle 数字角、svgCalloutTag 引线框</text>
+
+    <line x1="935" y1="276" x2="935" y2="298" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
+    <line x1="1138" y1="276" x2="1138" y2="298" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
+    <line x1="1341" y1="276" x2="1341" y2="298" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
+
+    <!-- Layer 2.2: 3-Way Parallel Multi-Agent Chunk Builders -->
+    <rect x="840" y="300" width="596" height="142" rx="10" fill="#f8fafc" stroke="#5eead4" stroke-width="1.5"/>
+    <rect x="854" y="312" width="144" height="22" rx="4" fill="#ccfbf1"/>
+    <text x="926" y="327" text-anchor="middle" class="layer-tag" fill="#115e59">2.2 模块化并发构建</text>
+    <text x="1010" y="327" class="card-title">多智能体（Multi-Agent）三模块 1:1 并发编写</text>
+
+    <!-- Chunk 1 -->
+    <rect x="854" y="344" width="182" height="86" rx="8" fill="#ffffff" stroke="#99f6e4" stroke-width="1.4" filter="url(#shadow-sm)"/>
+    <rect x="864" y="352" width="162" height="20" rx="4" fill="#f0fdfa"/>
+    <text x="945" y="366" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="700" fill="#0f766e">chunk1_intro_explore.js</text>
+    <text x="866" y="388" class="card-title" font-size="12.5" fill="#134e4a">情境引入与新知探究</text>
+    <text x="866" y="406" class="card-desc">课题导览封面、情境建模</text>
+    <text x="866" y="421" class="card-desc">核心概念与多模型动态探究</text>
+
+    <!-- Chunk 2 -->
+    <rect x="1047" y="344" width="182" height="86" rx="8" fill="#ffffff" stroke="#99f6e4" stroke-width="1.4" filter="url(#shadow-sm)"/>
+    <rect x="1057" y="352" width="162" height="20" rx="4" fill="#f0fdfa"/>
+    <text x="1138" y="366" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="700" fill="#0f766e">chunk2_apply.js</text>
+    <text x="1059" y="388" class="card-title" font-size="12.5" fill="#134e4a">新知应用与典例精析</text>
+    <text x="1059" y="406" class="card-desc">例题拆页精讲、辅助线动态生长</text>
+    <text x="1059" y="421" class="card-desc">数字角 ∠1, ∠2 图文同步推导</text>
+
+    <!-- Chunk 3 -->
+    <rect x="1240" y="344" width="182" height="86" rx="8" fill="#ffffff" stroke="#99f6e4" stroke-width="1.4" filter="url(#shadow-sm)"/>
+    <rect x="1250" y="352" width="162" height="20" rx="4" fill="#f0fdfa"/>
+    <text x="1331" y="366" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="700" fill="#0f766e">chunk3_train_summary.js</text>
+    <text x="1252" y="388" class="card-title" font-size="12.5" fill="#134e4a">分层训练与课堂小结</text>
+    <text x="1252" y="406" class="card-desc">压轴变式探究、定性滑块观察</text>
+    <text x="1252" y="421" class="card-desc">全课知识图谱与模型通法总结</text>
+
+    <line x1="935" y1="442" x2="935" y2="464" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
+    <line x1="1138" y1="442" x2="1138" y2="464" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
+    <line x1="1341" y1="442" x2="1341" y2="464" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
+
+    <!-- Layer 2.3: Compiler & 5-Gate Headless Verification Engine -->
+    <rect x="840" y="466" width="596" height="230" rx="10" fill="#f0fdfa" stroke="#14b8a6" stroke-width="1.8"/>
+    <rect x="854" y="478" width="136" height="22" rx="4" fill="#0d9488"/>
+    <text x="922" y="493" text-anchor="middle" class="layer-tag" fill="#ffffff">2.3 编译与五重门禁校验</text>
+    <text x="1002" y="493" class="card-title" fill="#134e4a">一键合并编译与无头运行时仿真引擎</text>
+    <rect x="1226" y="476" width="196" height="24" rx="5" fill="#1e293b"/>
+    <text x="1324" y="492" text-anchor="middle" class="font-mono code-pill" fill="#5eead4">compile_seewo_courseware.py</text>
+
+    <!-- 5 Gate Bars -->
+    <rect x="856" y="510" width="564" height="30" rx="6" fill="#ffffff" stroke="#99f6e4" stroke-width="1.2"/>
+    <rect x="862" y="515" width="64" height="20" rx="4" fill="#ccfbf1"/>
+    <text x="894" y="529" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="800" fill="#0f766e">GATE 01</text>
+    <text x="938" y="529" class="gate-item">JXA / AST 语法与顶栏导航契约校验（COURSEWARE_PHASES 字符容量与封面结构检查）</text>
+
+    <rect x="856" y="546" width="564" height="30" rx="6" fill="#ffffff" stroke="#99f6e4" stroke-width="1.2"/>
+    <rect x="862" y="551" width="64" height="20" rx="4" fill="#ccfbf1"/>
+    <text x="894" y="565" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="800" fill="#0f766e">GATE 02</text>
+    <text x="938" y="565" class="gate-item">1:1 步数一致性契约校验（.step 推导卡片数 === stepBar 进度圆点数 ≥ 填空最大 data-step）</text>
+
+    <rect x="856" y="582" width="564" height="30" rx="6" fill="#ffffff" stroke="#99f6e4" stroke-width="1.2"/>
+    <rect x="862" y="587" width="64" height="20" rx="4" fill="#ccfbf1"/>
+    <text x="894" y="601" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="800" fill="#0f766e">GATE 03</text>
+    <text x="938" y="601" class="gate-item">数学排版与符号门禁（拦截裸写 √、单行斜杠分式 a/b、相似三角形非法 (AA)/(SAS) 记号）</text>
+
+    <rect x="856" y="618" width="564" height="30" rx="6" fill="#ffffff" stroke="#99f6e4" stroke-width="1.2"/>
+    <rect x="862" y="623" width="64" height="20" rx="4" fill="#ccfbf1"/>
+    <text x="894" y="637" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="800" fill="#0f766e">GATE 04</text>
+    <text x="938" y="637" class="gate-item">SVG 几何包围盒零碰撞审计（Text / Rect / Ellipse / ForeignObject 像素级重叠检测）</text>
+
+    <rect x="856" y="654" width="564" height="30" rx="6" fill="#ffffff" stroke="#99f6e4" stroke-width="1.2"/>
+    <rect x="862" y="659" width="64" height="20" rx="4" fill="#ccfbf1"/>
+    <text x="894" y="673" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="800" fill="#0f766e">GATE 05</text>
+    <text x="938" y="673" class="gate-item">全页面 step = 0..maxStep 生命周期无头仿真与模式按钮（modeButtons）往返切换验证</text>
+
+    <line x1="1138" y1="696" x2="1138" y2="718" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
+
+    <!-- Layer 2.4: Stage 2 Output -->
+    <rect x="840" y="720" width="596" height="56" rx="10" fill="#0f172a" stroke="#0f766e" stroke-width="1.5"/>
+    <rect x="854" y="734" width="96" height="28" rx="6" fill="#0d9488"/>
+    <text x="902" y="752" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STAGE 2 OUT</text>
+    <text x="964" y="744" class="card-title-light">交付单文件零依赖《xxx_动态讲解课件.html》</text>
+    <text x="964" y="763" class="card-desc-light">16:9 希沃白板大屏 &amp; iPad 触屏即开即用 · 初始状态零剧透 · 分步推导与 SVG 动态几何联动</text>
+  </g>
+</svg>
