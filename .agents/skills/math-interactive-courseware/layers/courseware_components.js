@@ -229,9 +229,9 @@
       s = replaceMacroBalanced(s, '\\arc', 1, false, function (letters) {
         var inner = compileMathToHtml(letters, true);
         return saveBlock(
-          '<span class="cw-arc" style="position:relative;display:inline-block;vertical-align:baseline;padding-top:0.32em;margin:0 1px;line-height:1;">' +
-          '<svg viewBox="0 0 28 7" preserveAspectRatio="none" style="position:absolute;top:0.02em;left:-1px;width:calc(100% + 2px);height:0.32em;overflow:visible;display:block;pointer-events:none;">' +
-          '<path d="M 1 6 Q 14 -0.8 27 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+          '<span class="cw-arc" style="position:relative;display:inline-block;vertical-align:baseline;padding-top:0.20em;margin:0 1px;line-height:1;">' +
+          '<svg viewBox="0 0 28 7" preserveAspectRatio="none" style="position:absolute;top:0.01em;left:0.05em;width:calc(100% + 0.02em);height:0.25em;overflow:visible;display:block;pointer-events:none;">' +
+          '<path d="M 1 5.8 Q 14 0.2 27 5.8" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/>' +
           '</svg>' +
           '<span>' + inner + '</span>' +
           '</span>'
@@ -270,7 +270,7 @@
       .replace(/\\Rightarrow\b/g, '⇒')
       .replace(/\\rightarrow\b/g, '→');
 
-    // 4.5 矢量全等符号 \cong / ≌（杜绝 macOS Times New Roman U+224C 顶部带闭环圈的西文字形，严格还原北师大教材“上∽下=”标准全等号）
+    // 4.5 矢量几何符号替换：全等号 ≌、垂直号 ⊥、圆符号 ⊙（消除字体基线沉降与字形过细问题）
     var CONG_SVG =
       '<svg class="cw-cong" viewBox="0 0 16 15" style="width:0.84em;height:0.78em;vertical-align:-0.08em;margin:0 2px;overflow:visible;display:inline-block;">' +
       '<path d="M 1.4 4.5 C 3.2 0.6, 6.2 0.6, 8.0 4.5 C 9.8 8.4, 12.8 8.4, 14.6 4.5" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/>' +
@@ -280,11 +280,27 @@
     s = s.replace(/≌/g, function () {
       return saveBlock(CONG_SVG);
     });
+    var PERP_SVG =
+      '<svg class="cw-perp" viewBox="0 0 14 14" style="width:0.74em;height:0.74em;vertical-align:0em;margin:0 0.08em;overflow:visible;display:inline-block;">' +
+      '<line x1="7" y1="1.2" x2="7" y2="13.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<line x1="1.2" y1="13.2" x2="12.8" y2="13.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+      '</svg>';
+    s = s.replace(/⊥/g, function () {
+      return saveBlock(PERP_SVG);
+    });
+    var ODOT_SVG =
+      '<svg class="cw-odot" viewBox="0 0 15 15" style="width:0.78em;height:0.78em;vertical-align:-0.04em;margin:0 0.06em;overflow:visible;display:inline-block;">' +
+      '<circle cx="7.5" cy="7.5" r="6.1" fill="none" stroke="currentColor" stroke-width="1.45"/>' +
+      '<circle cx="7.5" cy="7.5" r="1.35" fill="currentColor"/>' +
+      '</svg>';
+    s = s.replace(/⊙/g, function () {
+      return saveBlock(ODOT_SVG);
+    });
 
-    // 5. 矢量闭合根号 \sqrt{...}
+    // 5. 矢量闭合根号 \sqrt{...}（绝对定位根号钩，确保被开方数与根号外数字基线 100% 齐平）
     var SQRT_HOOK_SVG =
-      '<svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;">' +
-      '<path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:0.56em;height:100%;display:block;overflow:visible;pointer-events:none;">' +
+      '<path d="M 0.6 11.2 L 3.0 9.4 L 6.2 17.6 L 11.2 0.7 L 12.2 0.7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>' +
       '</svg>';
     var guardSqrt = 0;
     while (s.indexOf('\\sqrt') !== -1 && guardSqrt < 10) {
@@ -1549,10 +1565,13 @@
           '<polygon points="' + ox.toFixed(1) + ',' + (pad.top - 14) + ' ' + (ox - 4).toFixed(1) + ',' + (pad.top - 5) + ' ' + (ox + 4).toFixed(1) + ',' + (pad.top - 5) + '" fill="' + axisColor + '"/>'
         );
 
+        var oDx = o.originDx !== undefined ? o.originDx : -10;
+        var oDy = o.originDy !== undefined ? o.originDy : 16;
+        var oAnchor = o.originAnchor || 'start';
         topOverlays.push(
-          '<text x="' + (ox - 10).toFixed(1) + '" y="' + (oy + 16).toFixed(1) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">O</text>' +
-          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.xLabel || 'x') + '</text>' +
-          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.yLabel || 'y') + '</text>'
+          '<text x="' + (ox + oDx).toFixed(1) + '" y="' + (oy + oDy).toFixed(1) + '" text-anchor="' + oAnchor + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155" stroke="#ffffff" stroke-width="4.2" paint-order="stroke">O</text>' +
+          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="4.2" paint-order="stroke">' + (o.xLabel || 'x') + '</text>' +
+          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="4.2" paint-order="stroke">' + (o.yLabel || 'y') + '</text>'
         );
         return api;
       },
@@ -1624,31 +1643,46 @@
 
       /**
        * 铅锤高辅助线 PM 与面积割补三角形阴影（直接白边光晕标注，无胶囊框）
+       * 自动识别 yTop / yBot 中哪一个是直线 AB 上的交点 M、哪一个是抛物线上的动点 P，
+       * 确保阴影三角形始终连接 △PAB（而非误连 △MAB）。
        */
       drawLeadVertical: function (xP, yTop, yBot, ptA, ptB, o) {
         o = o || {};
         var pTop = toPx([xP, yTop]);
         var pBot = toPx([xP, yBot]);
+        var pP = pTop;
+        var pM = pBot;
         if (ptA && ptB) {
           var pA = toPx(ptA), pB = toPx(ptB);
+          var yOnAB = ptA[1] + ((xP - ptA[0]) / ((ptB[0] - ptA[0]) || 1)) * (ptB[1] - ptA[1]);
+          if (Math.abs(yTop - yOnAB) < Math.abs(yBot - yOnAB)) {
+            pM = pTop;
+            pP = pBot;
+          } else {
+            pP = pTop;
+            pM = pBot;
+          }
+          if (o.vertex === 'bottom') { pP = pBot; pM = pTop; }
+          else if (o.vertex === 'top') { pP = pTop; pM = pBot; }
           parts.push(
-            '<polygon points="' + pA[0].toFixed(1) + ',' + pA[1].toFixed(1) + ' ' + pTop[0].toFixed(1) + ',' + pTop[1].toFixed(1) + ' ' + pB[0].toFixed(1) + ',' + pB[1].toFixed(1) + '" fill="rgba(37,99,235,0.15)" stroke="#2563eb" stroke-width="1.8"/>'
+            '<polygon points="' + pA[0].toFixed(1) + ',' + pA[1].toFixed(1) + ' ' + pP[0].toFixed(1) + ',' + pP[1].toFixed(1) + ' ' + pB[0].toFixed(1) + ',' + pB[1].toFixed(1) + '" fill="rgba(37,99,235,0.14)" stroke="#2563eb" stroke-width="1.8" stroke-linejoin="round"/>'
           );
         }
         parts.push(
           '<line x1="' + pTop[0].toFixed(1) + '" y1="' + pTop[1].toFixed(1) + '" x2="' + pBot[0].toFixed(1) + '" y2="' + pBot[1].toFixed(1) + '" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="6 3"/>'
         );
         topOverlays.push(
-          '<circle cx="' + pTop[0].toFixed(1) + '" cy="' + pTop[1].toFixed(1) + '" r="4.8" fill="#dc2626" stroke="#fff" stroke-width="1.6"/>' +
-          '<circle cx="' + pBot[0].toFixed(1) + '" cy="' + pBot[1].toFixed(1) + '" r="4.5" fill="#d97706" stroke="#fff" stroke-width="1.6"/>'
+          '<circle cx="' + pP[0].toFixed(1) + '" cy="' + pP[1].toFixed(1) + '" r="4.8" fill="#dc2626" stroke="#fff" stroke-width="1.6"/>' +
+          '<circle cx="' + pM[0].toFixed(1) + '" cy="' + pM[1].toFixed(1) + '" r="4.5" fill="#d97706" stroke="#fff" stroke-width="1.6"/>'
         );
         if (o.label) {
-          var midY = (pTop[1] + pBot[1]) / 2 + 5;
+          var lblX = pTop[0] + (o.labelDx !== undefined ? o.labelDx : 10);
+          var lblY = o.labelY !== undefined ? toPx([xP, o.labelY])[1] : ((pTop[1] + pBot[1]) / 2 + (o.labelDy !== undefined ? o.labelDy : 5));
           topOverlays.push(
-            renderSvgMathDirect(pTop[0] + 10, midY, o.label, {
-              size: 15,
+            renderSvgMathDirect(lblX, lblY, o.label, {
+              size: o.fontSize || 15,
               color: '#dc2626',
-              anchor: 'start'
+              anchor: o.anchor || 'start'
             })
           );
         }
@@ -1670,16 +1704,16 @@
         var col = o.color || '#0f172a';
         var isOpen = Boolean(o.open);
         topOverlays.push(
-          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (o.r || 4.5) + '" fill="' + (isOpen ? '#ffffff' : col) + '" stroke="' + col + '" stroke-width="2"/>'
+          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (o.r || 4.5) + '" fill="' + (isOpen ? '#ffffff' : col) + '" stroke="' + (isOpen ? col : '#ffffff') + '" stroke-width="1.8"/>'
         );
         if (label) {
           var dx = o.dx !== undefined ? o.dx : 10;
           var dy = o.dy !== undefined ? o.dy : -8;
           topOverlays.push(
             renderSvgMathDirect(p[0] + dx, p[1] + dy, label, {
-              size: 14.5,
+              size: o.fontSize || 14.5,
               color: col,
-              anchor: 'start'
+              anchor: o.anchor || 'start'
             })
           );
         }
@@ -2278,10 +2312,55 @@ window.UI = {
     c.restore();
   }
 
-  function traceShapePath(c, stroke, w, dashed) {
+  function drawHaloText(c, txt, x, y, haloWidth) {
+    c.save();
+    c.lineJoin = 'round';
+    c.lineWidth = haloWidth || 4;
+    c.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+    c.strokeText(txt, x, y);
+    c.fillText(txt, x, y);
+    c.restore();
+  }
+
+  function normalizeShapePoints(stroke) {
+    const pts = stroke.points;
+    if (!pts || !pts.length) return pts;
+    const p1 = pts[0];
+    const p2 = pts[pts.length - 1];
+    let x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
+    const st = stroke.shapeType || 'axes';
+    const dist = Math.hypot(x2 - x1, y2 - y1);
+
+    if (st === 'numberline') {
+      if (dist < 18) {
+        return [{ x: x1 - 180, y: y1, w: p1.w }, { x: x1 + 180, y: y1, w: p1.w }];
+      }
+      // 锁死纵坐标为起笔点 y1，彻底杜绝拖拽数轴时上下漂移
+      return [{ x: x1, y: y1, w: p1.w }, { x: x2, y: y1, w: p1.w }];
+    }
+
+    if (st === 'axes') {
+      if (dist < 20) {
+        return [{ x: x1 - 140, y: y1 - 110, w: p1.w }, { x: x1 + 140, y: y1 + 110, w: p1.w }];
+      }
+      let dx = x2 - x1, dy = y2 - y1;
+      const aw = Math.abs(dx), ah = Math.abs(dy);
+      if (aw > 40 && ah > 40 && Math.abs(aw - ah) / Math.max(aw, ah) < 0.14) {
+        const sq = Math.round((aw + ah) / 2);
+        x2 = x1 + (dx >= 0 ? sq : -sq);
+        y2 = y1 + (dy >= 0 ? sq : -sq);
+      }
+      return [{ x: x1, y: y1, w: p1.w }, { x: x2, y: y2, w: p1.w }];
+    }
+
+    return [p1, p2];
+  }
+
+  function traceShapePath(c, stroke, w, dashed, isPreview) {
     const pts = stroke.points;
     if (!pts || !pts.length) return;
-    const p1 = pts[0], p2 = pts[pts.length - 1];
+    const norm = normalizeShapePoints(stroke);
+    const p1 = norm[0], p2 = norm[norm.length - 1];
     const x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
     const dx = x2 - x1, dy = y2 - y1, dist = Math.hypot(dx, dy);
     const st = stroke.shapeType || 'axes';
@@ -2343,7 +2422,24 @@ window.UI = {
       c.ellipse(cx, cy, Math.max(1, rx), Math.max(1, ry), 0, 0, Math.PI * 2);
       c.stroke();
     } else if (st === 'numberline') {
-      const minX = Math.min(x1, x2), maxX = Math.max(x1, x2), ny = y2, len = maxX - minX;
+      const minX = Math.min(x1, x2), maxX = Math.max(x1, x2), ny = y1, len = maxX - minX;
+      if (isPreview && len > 8) {
+        const midPx = (minX + maxX) / 2;
+        c.save();
+        c.strokeStyle = 'rgba(37, 99, 235, 0.35)';
+        c.lineWidth = 1.4;
+        c.setLineDash([4, 4]);
+        c.beginPath();
+        c.moveTo(midPx, ny - 26);
+        c.lineTo(midPx, ny + 36);
+        c.stroke();
+        c.fillStyle = 'rgba(37, 99, 235, 0.75)';
+        c.beginPath();
+        c.arc(minX, ny, 4, 0, Math.PI * 2);
+        c.arc(maxX, ny, 4, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
       c.beginPath();
       c.moveTo(minX, ny);
       c.lineTo(maxX, ny);
@@ -2351,21 +2447,24 @@ window.UI = {
       if (len > 24) {
         drawInkArrowHead(c, maxX, ny, 0, Math.max(13, w * 2.6));
         const midX = (minX + maxX) / 2;
-        const step = Math.max(44, Math.round(len / 6));
+        // 固定 48px 单位刻度步长，彻底消除拖拽时数字来回缩放跳动
+        const step = 48;
         c.save();
         c.setLineDash([]);
-        c.lineWidth = Math.max(2, w * 0.72);
-        c.font = '600 19px "Times New Roman", serif';
+        c.font = '700 18px "Times New Roman", serif';
         c.textAlign = 'center';
         c.textBaseline = 'top';
-        const maxK = Math.floor((len / 2 - 22) / step);
+        const maxK = Math.floor((len / 2 - 26) / step);
         for (let k = -maxK; k <= maxK; k++) {
-          const tx = midX + k * step, th = k === 0 ? 11 : 7;
+          const tx = midX + k * step, th = k === 0 ? 10 : 6;
+          c.lineWidth = k === 0 ? Math.max(2.4, w * 0.9) : Math.max(1.8, w * 0.72);
           c.beginPath();
           c.moveTo(tx, ny - th);
           c.lineTo(tx, ny + th);
           c.stroke();
-          if (maxK <= 5 || k === 0 || k % 2 === 0) c.fillText(String(k), tx, ny + 12);
+          if (maxK <= 6 || k === 0 || k % 2 === 0) {
+            drawHaloText(c, String(k), tx, ny + 12, 4);
+          }
         }
         c.restore();
       }
@@ -2374,6 +2473,48 @@ window.UI = {
       const minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
       const ox = (minX + maxX) / 2, oy = (minY + maxY) / 2;
       const wSpan = maxX - minX, hSpan = maxY - minY;
+      // 固定 44px 单位步长，确保格点与刻度比例恒定不抖动
+      const step = 44;
+
+      if (isPreview && wSpan > 20 && hSpan > 20) {
+        c.save();
+        c.strokeStyle = 'rgba(37, 99, 235, 0.36)';
+        c.lineWidth = 1.4;
+        c.setLineDash([5, 4]);
+        c.strokeRect(minX, minY, wSpan, hSpan);
+        c.beginPath();
+        c.arc(ox, oy, 5, 0, Math.PI * 2);
+        c.stroke();
+        c.restore();
+      }
+
+      // 淡雅单位辅助方格网（方便描点与画函数图像，不遮挡底层文字）
+      if (wSpan > 90 && hSpan > 90) {
+        const kxGrid = Math.floor((wSpan / 2 - 22) / step);
+        const kyGrid = Math.floor((hSpan / 2 - 22) / step);
+        c.save();
+        c.globalAlpha *= 0.15;
+        c.lineWidth = 1;
+        c.setLineDash([3, 3]);
+        for (let k = -kxGrid; k <= kxGrid; k++) {
+          if (k === 0) continue;
+          const gx = ox + k * step;
+          c.beginPath();
+          c.moveTo(gx, minY + 12);
+          c.lineTo(gx, maxY - 8);
+          c.stroke();
+        }
+        for (let k = -kyGrid; k <= kyGrid; k++) {
+          if (k === 0) continue;
+          const gy = oy + k * step;
+          c.beginPath();
+          c.moveTo(minX + 8, gy);
+          c.lineTo(maxX - 12, gy);
+          c.stroke();
+        }
+        c.restore();
+      }
+
       c.beginPath();
       c.moveTo(minX, oy);
       c.lineTo(maxX, oy);
@@ -2384,11 +2525,13 @@ window.UI = {
         const arrSz = Math.max(12, w * 2.5);
         drawInkArrowHead(c, maxX, oy, 0, arrSz);
         drawInkArrowHead(c, ox, minY, -Math.PI / 2, arrSz);
-        const step = Math.max(40, Math.round(Math.min(wSpan, hSpan) / 5));
         c.save();
         c.setLineDash([]);
         c.lineWidth = Math.max(1.8, w * 0.65);
         const kx = Math.floor((wSpan / 2 - 24) / step);
+        c.font = '600 14px "Times New Roman", serif';
+        c.textAlign = 'center';
+        c.textBaseline = 'top';
         for (let k = -kx; k <= kx; k++) {
           if (k === 0) continue;
           const tx = ox + k * step;
@@ -2396,23 +2539,31 @@ window.UI = {
           c.moveTo(tx, oy - 5);
           c.lineTo(tx, oy + 5);
           c.stroke();
+          if (Math.abs(k) === 1 || (kx <= 4 && k !== 0) || k % 2 === 0) {
+            drawHaloText(c, String(k), tx, oy + 8, 3.5);
+          }
         }
         const ky = Math.floor((hSpan / 2 - 24) / step);
+        c.textAlign = 'right';
+        c.textBaseline = 'middle';
         for (let k = -ky; k <= ky; k++) {
           if (k === 0) continue;
-          const ty = oy + k * step;
+          const ty = oy - k * step;
           c.beginPath();
           c.moveTo(ox - 5, ty);
           c.lineTo(ox + 5, ty);
           c.stroke();
+          if (Math.abs(k) === 1 || (ky <= 4 && k !== 0) || k % 2 === 0) {
+            drawHaloText(c, String(k), ox - 8, ty, 3.5);
+          }
         }
-        c.font = 'italic bold 22px "Times New Roman", serif';
+        c.font = 'italic bold 21px "Times New Roman", serif';
         c.textAlign = 'left';
         c.textBaseline = 'top';
-        c.fillText('x', maxX - 18, oy + 10);
-        c.fillText('y', ox + 12, minY + 2);
+        drawHaloText(c, 'x', maxX - 18, oy + 10, 4);
+        drawHaloText(c, 'y', ox + 12, minY + 2, 4);
         c.textAlign = 'right';
-        c.fillText('O', ox - 8, oy + 6);
+        drawHaloText(c, 'O', ox - 8, oy + 6, 4);
         c.restore();
       }
     }
@@ -2447,7 +2598,7 @@ window.UI = {
     c.setLineDash([]);
   }
 
-  function paintStrokeOnContext(target, stroke, strokeCanvas, strokeCtx, dpr) {
+  function paintStrokeOnContext(target, stroke, strokeCanvas, strokeCtx, dpr, isPreview) {
     const pts = stroke.points;
     if (!pts || !pts.length) return;
     const w = pts[0].w || (stroke.tool === 'eraser' ? stroke.size * 5.2 : stroke.tool === 'highlight' ? stroke.size * 4.2 : stroke.size);
@@ -2459,7 +2610,7 @@ window.UI = {
       target.globalCompositeOperation = 'source-over';
       target.strokeStyle = stroke.color;
       target.fillStyle = stroke.color;
-      traceShapePath(target, stroke, w, isDash);
+      traceShapePath(target, stroke, w, isDash, isPreview);
       target.restore();
       return;
     }
@@ -3138,7 +3289,7 @@ window.UI = {
     function redraw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(baseCanvas, 0, 0);
-      if (activeStroke) paintStrokeOnContext(ctx, activeStroke, strokeCanvas, strokeCtx, dpr);
+      if (activeStroke) paintStrokeOnContext(ctx, activeStroke, strokeCanvas, strokeCtx, dpr, true);
     }
 
     function ptFromEvent(e) {
@@ -3180,6 +3331,9 @@ window.UI = {
       if (!activeStroke || e.pointerId !== activePid) return;
       if (!cancel) {
         activeStroke.points.push(ptFromEvent(e));
+        if (activeStroke.tool === 'shape') {
+          activeStroke.points = normalizeShapePoints(activeStroke);
+        }
         state.undo.push(state.strokes.slice());
         state.redo = [];
         state.strokes.push(activeStroke);
@@ -3263,6 +3417,7 @@ window.UI = {
     ACTION_ICONS,
     createDefaultProfiles,
     drawInkArrowHead,
+    normalizeShapePoints,
     traceShapePath,
     traceBezierPath,
     paintStrokeOnContext,

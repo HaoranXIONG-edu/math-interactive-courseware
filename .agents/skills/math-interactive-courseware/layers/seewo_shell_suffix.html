@@ -1048,8 +1048,8 @@ function inkPoint(e){
 function drawInkArrowHead(c,tx,ty,ang,sz){window.InkAnnotationLayer.drawInkArrowHead(c,tx,ty,ang,sz)}
 function traceShapePath(c,stroke,w,dashed){window.InkAnnotationLayer.traceShapePath(c,stroke,w,dashed)}
 function traceBezierPath(c,pts,w,dashed){window.InkAnnotationLayer.traceBezierPath(c,pts,w,dashed)}
-function paintInk(target,stroke){window.InkAnnotationLayer.paintStrokeOnContext(target,stroke,inkStroke,strokeCtx,INK_DPR)}
-function redrawInk(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(inkBase,0,0);if(activeStroke)paintInk(ctx,activeStroke,false)}
+function paintInk(target,stroke,isPreview){window.InkAnnotationLayer.paintStrokeOnContext(target,stroke,inkStroke,strokeCtx,INK_DPR,isPreview)}
+function redrawInk(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(inkBase,0,0);if(activeStroke)paintInk(ctx,activeStroke,true)}
 function rebuildInk(){baseCtx.clearRect(0,0,canvas.width,canvas.height);inkPage().strokes.forEach(s=>paintInk(baseCtx,s));redrawInk();updateInkTools()}
 function restoreInk(){if(activePointer!==null&&canvas.hasPointerCapture(activePointer))canvas.releasePointerCapture(activePointer);activeStroke=null;activePointer=null;drawing=false;rebuildInk()}
 function clearPen(){if(!inkPage().strokes.length)return;inkSnapshot();inkPage().strokes=[];rebuildInk()}
@@ -1121,7 +1121,7 @@ canvas.onpointermove=e=>{
 };
 function finishInk(e,cancelled=false){
  if(!drawing||e.pointerId!==activePointer)return;
- if(!cancelled){activeStroke.points.push(inkPoint(e,activeStroke.points.at(-1)));inkSnapshot();inkPage().strokes.push(activeStroke);paintInk(baseCtx,activeStroke)}
+ if(!cancelled){activeStroke.points.push(inkPoint(e,activeStroke.points.at(-1)));if(activeStroke.tool==='shape'&&window.InkAnnotationLayer?.normalizeShapePoints){activeStroke.points=window.InkAnnotationLayer.normalizeShapePoints(activeStroke);}inkSnapshot();inkPage().strokes.push(activeStroke);paintInk(baseCtx,activeStroke,false)}
  activeStroke=null;drawing=false;activePointer=null;if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);redrawInk();updateInkTools();
 }
 canvas.onpointerup=e=>finishInk(e);canvas.onpointercancel=e=>finishInk(e,true);

@@ -115,6 +115,8 @@ sup span, sup i, sup b,
 .fraction, .frac {
   display: inline-flex;
   vertical-align: middle;
+  position: relative;
+  top: -0.07em;
   flex-direction: column;
   align-items: center;
   text-align: center;
@@ -133,17 +135,30 @@ sup span, sup i, sup b,
   padding: 1px 0.22em 0;
 }
 .sqrt {
-  display: inline-flex !important;
-  align-items: stretch !important;
+  display: inline-block !important;
   vertical-align: baseline !important;
   position: relative !important;
-  padding-left: 0.56em !important;
+  padding-left: 0.54em !important;
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
   font-weight: inherit;
   line-height: 1 !important;
   margin: 0 2px 0 1px !important;
   white-space: nowrap !important;
+}
+.sqrt:has(> .sqrt-hook)::before {
+  content: none !important;
+  display: none !important;
+}
+.sqrt-hook {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 0.56em !important;
+  height: 100% !important;
+  display: block !important;
+  overflow: visible !important;
+  pointer-events: none !important;
 }
 .sqrt::before {
   content: "" !important;
@@ -159,8 +174,8 @@ sup span, sup i, sup b,
 .sqrt > span {
   display: inline-block !important;
   border-top: 1.6px solid currentColor !important;
-  padding: 2px 2px 0 1px !important;
-  line-height: 0.96 !important;
+  padding: 1px 3px 0 2px !important;
+  line-height: 1.02 !important;
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
 }

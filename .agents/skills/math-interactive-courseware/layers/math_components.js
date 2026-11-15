@@ -224,9 +224,9 @@
       s = replaceMacroBalanced(s, '\\arc', 1, false, function (letters) {
         var inner = compileMathToHtml(letters, true);
         return saveBlock(
-          '<span class="cw-arc" style="position:relative;display:inline-block;vertical-align:baseline;padding-top:0.32em;margin:0 1px;line-height:1;">' +
-          '<svg viewBox="0 0 28 7" preserveAspectRatio="none" style="position:absolute;top:0.02em;left:-1px;width:calc(100% + 2px);height:0.32em;overflow:visible;display:block;pointer-events:none;">' +
-          '<path d="M 1 6 Q 14 -0.8 27 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+          '<span class="cw-arc" style="position:relative;display:inline-block;vertical-align:baseline;padding-top:0.20em;margin:0 1px;line-height:1;">' +
+          '<svg viewBox="0 0 28 7" preserveAspectRatio="none" style="position:absolute;top:0.01em;left:0.05em;width:calc(100% + 0.02em);height:0.25em;overflow:visible;display:block;pointer-events:none;">' +
+          '<path d="M 1 5.8 Q 14 0.2 27 5.8" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/>' +
           '</svg>' +
           '<span>' + inner + '</span>' +
           '</span>'
@@ -265,7 +265,7 @@
       .replace(/\\Rightarrow\b/g, '⇒')
       .replace(/\\rightarrow\b/g, '→');
 
-    // 4.5 矢量全等符号 \cong / ≌（杜绝 macOS Times New Roman U+224C 顶部带闭环圈的西文字形，严格还原北师大教材“上∽下=”标准全等号）
+    // 4.5 矢量几何符号替换：全等号 ≌、垂直号 ⊥、圆符号 ⊙（消除字体基线沉降与字形过细问题）
     var CONG_SVG =
       '<svg class="cw-cong" viewBox="0 0 16 15" style="width:0.84em;height:0.78em;vertical-align:-0.08em;margin:0 2px;overflow:visible;display:inline-block;">' +
       '<path d="M 1.4 4.5 C 3.2 0.6, 6.2 0.6, 8.0 4.5 C 9.8 8.4, 12.8 8.4, 14.6 4.5" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/>' +
@@ -275,11 +275,27 @@
     s = s.replace(/≌/g, function () {
       return saveBlock(CONG_SVG);
     });
+    var PERP_SVG =
+      '<svg class="cw-perp" viewBox="0 0 14 14" style="width:0.74em;height:0.74em;vertical-align:0em;margin:0 0.08em;overflow:visible;display:inline-block;">' +
+      '<line x1="7" y1="1.2" x2="7" y2="13.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<line x1="1.2" y1="13.2" x2="12.8" y2="13.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+      '</svg>';
+    s = s.replace(/⊥/g, function () {
+      return saveBlock(PERP_SVG);
+    });
+    var ODOT_SVG =
+      '<svg class="cw-odot" viewBox="0 0 15 15" style="width:0.78em;height:0.78em;vertical-align:-0.04em;margin:0 0.06em;overflow:visible;display:inline-block;">' +
+      '<circle cx="7.5" cy="7.5" r="6.1" fill="none" stroke="currentColor" stroke-width="1.45"/>' +
+      '<circle cx="7.5" cy="7.5" r="1.35" fill="currentColor"/>' +
+      '</svg>';
+    s = s.replace(/⊙/g, function () {
+      return saveBlock(ODOT_SVG);
+    });
 
-    // 5. 矢量闭合根号 \sqrt{...}
+    // 5. 矢量闭合根号 \sqrt{...}（绝对定位根号钩，确保被开方数与根号外数字基线 100% 齐平）
     var SQRT_HOOK_SVG =
-      '<svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;">' +
-      '<path d="M 0.6 11.6 L 3.0 9.6 L 6.2 18.2 L 11.2 0.75 L 12 0.75" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:0.56em;height:100%;display:block;overflow:visible;pointer-events:none;">' +
+      '<path d="M 0.6 11.2 L 3.0 9.4 L 6.2 17.6 L 11.2 0.7 L 12.2 0.7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>' +
       '</svg>';
     var guardSqrt = 0;
     while (s.indexOf('\\sqrt') !== -1 && guardSqrt < 10) {
@@ -1544,10 +1560,13 @@
           '<polygon points="' + ox.toFixed(1) + ',' + (pad.top - 14) + ' ' + (ox - 4).toFixed(1) + ',' + (pad.top - 5) + ' ' + (ox + 4).toFixed(1) + ',' + (pad.top - 5) + '" fill="' + axisColor + '"/>'
         );
 
+        var oDx = o.originDx !== undefined ? o.originDx : -10;
+        var oDy = o.originDy !== undefined ? o.originDy : 16;
+        var oAnchor = o.originAnchor || 'start';
         topOverlays.push(
-          '<text x="' + (ox - 10).toFixed(1) + '" y="' + (oy + 16).toFixed(1) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">O</text>' +
-          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.xLabel || 'x') + '</text>' +
-          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.yLabel || 'y') + '</text>'
+          '<text x="' + (ox + oDx).toFixed(1) + '" y="' + (oy + oDy).toFixed(1) + '" text-anchor="' + oAnchor + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155" stroke="#ffffff" stroke-width="4.2" paint-order="stroke">O</text>' +
+          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="4.2" paint-order="stroke">' + (o.xLabel || 'x') + '</text>' +
+          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="4.2" paint-order="stroke">' + (o.yLabel || 'y') + '</text>'
         );
         return api;
       },
@@ -1619,31 +1638,46 @@
 
       /**
        * 铅锤高辅助线 PM 与面积割补三角形阴影（直接白边光晕标注，无胶囊框）
+       * 自动识别 yTop / yBot 中哪一个是直线 AB 上的交点 M、哪一个是抛物线上的动点 P，
+       * 确保阴影三角形始终连接 △PAB（而非误连 △MAB）。
        */
       drawLeadVertical: function (xP, yTop, yBot, ptA, ptB, o) {
         o = o || {};
         var pTop = toPx([xP, yTop]);
         var pBot = toPx([xP, yBot]);
+        var pP = pTop;
+        var pM = pBot;
         if (ptA && ptB) {
           var pA = toPx(ptA), pB = toPx(ptB);
+          var yOnAB = ptA[1] + ((xP - ptA[0]) / ((ptB[0] - ptA[0]) || 1)) * (ptB[1] - ptA[1]);
+          if (Math.abs(yTop - yOnAB) < Math.abs(yBot - yOnAB)) {
+            pM = pTop;
+            pP = pBot;
+          } else {
+            pP = pTop;
+            pM = pBot;
+          }
+          if (o.vertex === 'bottom') { pP = pBot; pM = pTop; }
+          else if (o.vertex === 'top') { pP = pTop; pM = pBot; }
           parts.push(
-            '<polygon points="' + pA[0].toFixed(1) + ',' + pA[1].toFixed(1) + ' ' + pTop[0].toFixed(1) + ',' + pTop[1].toFixed(1) + ' ' + pB[0].toFixed(1) + ',' + pB[1].toFixed(1) + '" fill="rgba(37,99,235,0.15)" stroke="#2563eb" stroke-width="1.8"/>'
+            '<polygon points="' + pA[0].toFixed(1) + ',' + pA[1].toFixed(1) + ' ' + pP[0].toFixed(1) + ',' + pP[1].toFixed(1) + ' ' + pB[0].toFixed(1) + ',' + pB[1].toFixed(1) + '" fill="rgba(37,99,235,0.14)" stroke="#2563eb" stroke-width="1.8" stroke-linejoin="round"/>'
           );
         }
         parts.push(
           '<line x1="' + pTop[0].toFixed(1) + '" y1="' + pTop[1].toFixed(1) + '" x2="' + pBot[0].toFixed(1) + '" y2="' + pBot[1].toFixed(1) + '" stroke="#dc2626" stroke-width="2.4" stroke-dasharray="6 3"/>'
         );
         topOverlays.push(
-          '<circle cx="' + pTop[0].toFixed(1) + '" cy="' + pTop[1].toFixed(1) + '" r="4.8" fill="#dc2626" stroke="#fff" stroke-width="1.6"/>' +
-          '<circle cx="' + pBot[0].toFixed(1) + '" cy="' + pBot[1].toFixed(1) + '" r="4.5" fill="#d97706" stroke="#fff" stroke-width="1.6"/>'
+          '<circle cx="' + pP[0].toFixed(1) + '" cy="' + pP[1].toFixed(1) + '" r="4.8" fill="#dc2626" stroke="#fff" stroke-width="1.6"/>' +
+          '<circle cx="' + pM[0].toFixed(1) + '" cy="' + pM[1].toFixed(1) + '" r="4.5" fill="#d97706" stroke="#fff" stroke-width="1.6"/>'
         );
         if (o.label) {
-          var midY = (pTop[1] + pBot[1]) / 2 + 5;
+          var lblX = pTop[0] + (o.labelDx !== undefined ? o.labelDx : 10);
+          var lblY = o.labelY !== undefined ? toPx([xP, o.labelY])[1] : ((pTop[1] + pBot[1]) / 2 + (o.labelDy !== undefined ? o.labelDy : 5));
           topOverlays.push(
-            renderSvgMathDirect(pTop[0] + 10, midY, o.label, {
-              size: 15,
+            renderSvgMathDirect(lblX, lblY, o.label, {
+              size: o.fontSize || 15,
               color: '#dc2626',
-              anchor: 'start'
+              anchor: o.anchor || 'start'
             })
           );
         }
@@ -1665,16 +1699,16 @@
         var col = o.color || '#0f172a';
         var isOpen = Boolean(o.open);
         topOverlays.push(
-          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (o.r || 4.5) + '" fill="' + (isOpen ? '#ffffff' : col) + '" stroke="' + col + '" stroke-width="2"/>'
+          '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (o.r || 4.5) + '" fill="' + (isOpen ? '#ffffff' : col) + '" stroke="' + (isOpen ? col : '#ffffff') + '" stroke-width="1.8"/>'
         );
         if (label) {
           var dx = o.dx !== undefined ? o.dx : 10;
           var dy = o.dy !== undefined ? o.dy : -8;
           topOverlays.push(
             renderSvgMathDirect(p[0] + dx, p[1] + dy, label, {
-              size: 14.5,
+              size: o.fontSize || 14.5,
               color: col,
-              anchor: 'start'
+              anchor: o.anchor || 'start'
             })
           );
         }
