@@ -1036,9 +1036,10 @@ canvas.height=inkBase.height=inkStroke.height=INK_STAGE_H*INK_DPR;
 const baseCtx=inkBase.getContext('2d'),strokeCtx=inkStroke.getContext('2d');
 [ctx,baseCtx,strokeCtx].forEach(c=>{c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high'});
 const inkSettings={color:'#d94040',size:5.5,tool:'pen',dashed:false,shapeType:'axes'};
-const inkPages=new Map();let activeStroke=null,activePointer=null,inkFrame=0;
+const inkPages=new Map();let activeStroke=null,activePointer=null,inkFrame=0,selectedAxesIdx=-1,activeAxesDrag=null,hoveredAxesHandleId=null;
 function inkPage(){if(!inkPages.has(index))inkPages.set(index,{strokes:[],undo:[],redo:[]});return inkPages.get(index)}
-function inkSnapshot(){const p=inkPage();p.undo.push(p.strokes.slice());if(p.undo.length>100)p.undo.shift();p.redo=[]}
+function cloneInkStrokes(arr){return window.InkAnnotationLayer?.cloneStrokes?window.InkAnnotationLayer.cloneStrokes(arr):arr.slice()}
+function inkSnapshot(){const p=inkPage();p.undo.push(cloneInkStrokes(p.strokes));if(p.undo.length>100)p.undo.shift();p.redo=[]}
 function inkPoint(e){
  const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*INK_STAGE_W/r.width,y=(e.clientY-r.top)*INK_STAGE_H/r.height;
  const tool=activeStroke?.tool||inkSettings.tool,size=activeStroke?.size||inkSettings.size;
@@ -1049,13 +1050,20 @@ function drawInkArrowHead(c,tx,ty,ang,sz){window.InkAnnotationLayer.drawInkArrow
 function traceShapePath(c,stroke,w,dashed){window.InkAnnotationLayer.traceShapePath(c,stroke,w,dashed)}
 function traceBezierPath(c,pts,w,dashed){window.InkAnnotationLayer.traceBezierPath(c,pts,w,dashed)}
 function paintInk(target,stroke,isPreview){window.InkAnnotationLayer.paintStrokeOnContext(target,stroke,inkStroke,strokeCtx,INK_DPR,isPreview)}
-function redrawInk(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(inkBase,0,0);if(activeStroke)paintInk(ctx,activeStroke,true)}
+function redrawInk(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(inkBase,0,0);
+ if(activeStroke){paintInk(ctx,activeStroke,true);return;}
+ const strokes=inkPage().strokes;
+ if(penOn&&inkSettings.tool!=='cursor'&&inkSettings.tool!=='eraser'&&selectedAxesIdx>=0&&selectedAxesIdx<strokes.length&&strokes[selectedAxesIdx]?.tool==='shape'&&(strokes[selectedAxesIdx]?.shapeType||'axes')==='axes'&&window.InkAnnotationLayer?.drawAxesHandles){
+  window.InkAnnotationLayer.drawAxesHandles(ctx,strokes[selectedAxesIdx],INK_DPR,activeAxesDrag?activeAxesDrag.handleId:hoveredAxesHandleId);
+ }
+}
 function rebuildInk(){baseCtx.clearRect(0,0,canvas.width,canvas.height);inkPage().strokes.forEach(s=>paintInk(baseCtx,s));redrawInk();updateInkTools()}
-function restoreInk(){if(activePointer!==null&&canvas.hasPointerCapture(activePointer))canvas.releasePointerCapture(activePointer);activeStroke=null;activePointer=null;drawing=false;rebuildInk()}
-function clearPen(){if(!inkPage().strokes.length)return;inkSnapshot();inkPage().strokes=[];rebuildInk()}
-function inkUndo(){const p=inkPage();if(!p.undo.length)return;p.redo.push(p.strokes.slice());p.strokes=p.undo.pop();rebuildInk()}
-function inkRedo(){const p=inkPage();if(!p.redo.length)return;p.undo.push(p.strokes.slice());p.strokes=p.redo.pop();rebuildInk()}
-function setPenMode(enabled){penOn=enabled;canvas.classList.toggle('enabled',penOn);$('#inkToolbar').hidden=!penOn;$('#pen').classList.toggle('pen-active',penOn);$('#pen').textContent=penOn?'✏️ 退出批注':'✏️ 批注';$('#pen').setAttribute('aria-expanded',String(penOn));updateInkTools()}
+function restoreInk(){if(activePointer!==null&&canvas.hasPointerCapture(activePointer))canvas.releasePointerCapture(activePointer);activeStroke=null;activeAxesDrag=null;selectedAxesIdx=-1;activePointer=null;drawing=false;rebuildInk()}
+function clearPen(){if(!inkPage().strokes.length)return;inkSnapshot();inkPage().strokes=[];selectedAxesIdx=-1;rebuildInk()}
+function inkUndo(){const p=inkPage();if(!p.undo.length)return;p.redo.push(cloneInkStrokes(p.strokes));p.strokes=p.undo.pop();selectedAxesIdx=p.strokes.findLastIndex(s=>s&&s.tool==='shape'&&(s.shapeType||'axes')==='axes');rebuildInk()}
+function inkRedo(){const p=inkPage();if(!p.redo.length)return;p.undo.push(cloneInkStrokes(p.strokes));p.strokes=p.redo.pop();selectedAxesIdx=p.strokes.findLastIndex(s=>s&&s.tool==='shape'&&(s.shapeType||'axes')==='axes');rebuildInk()}
+function setPenMode(enabled){penOn=enabled;canvas.classList.toggle('enabled',penOn);$('#inkToolbar').hidden=!penOn;$('#pen').classList.toggle('pen-active',penOn);$('#pen').textContent=penOn?'✏️ 退出批注':'✏️ 批注';$('#pen').setAttribute('aria-expanded',String(penOn));updateInkTools();redrawInk()}
 function updateInkTools(){
  document.querySelectorAll('[data-ink-color]').forEach(b=>{const active=b.dataset.inkColor===inkSettings.color;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
  document.querySelectorAll('[data-ink-tool]').forEach(b=>{const active=b.dataset.inkTool===inkSettings.tool;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))});
@@ -1070,11 +1078,29 @@ $('#pen').onclick=()=>setPenMode(!penOn);$('#clearPen').onclick=clearPen;$('#ink
 $('#inkUndo').onclick=inkUndo;$('#inkRedo').onclick=inkRedo;$('#inkClear').onclick=clearPen;
 $('#inkSize').oninput=e=>{inkSettings.size=+e.target.value;updateInkTools()};
 $('#inkCustomColor').oninput=e=>{inkSettings.color=e.target.value;updateInkTools()};
-$('#inkToolbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.inkColor){inkSettings.color=b.dataset.inkColor;if(inkSettings.tool==='eraser')inkSettings.tool='pen';updateInkTools()}if(b.dataset.inkTool){inkSettings.tool=b.dataset.inkTool;updateInkTools()}});
+$('#inkToolbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.inkColor){inkSettings.color=b.dataset.inkColor;if(inkSettings.tool==='eraser')inkSettings.tool='pen';updateInkTools()}if(b.dataset.inkTool){inkSettings.tool=b.dataset.inkTool;if(inkSettings.tool==='shape'&&inkSettings.shapeType==='axes'&&selectedAxesIdx===-1){selectedAxesIdx=inkPage().strokes.findLastIndex(s=>s&&s.tool==='shape'&&(s.shapeType||'axes')==='axes');}updateInkTools();redrawInk()}if(b.dataset.inkShape&&b.dataset.inkShape==='axes'&&selectedAxesIdx===-1){selectedAxesIdx=inkPage().strokes.findLastIndex(s=>s&&s.tool==='shape'&&(s.shapeType||'axes')==='axes');redrawInk()}});
 canvas.onpointerdown=e=>{
  if(!penOn||drawing||e.button!==0)return;e.preventDefault();
- drawing=true;activePointer=e.pointerId;activeStroke={...inkSettings,points:[],drawnIdx:0};
- const p0=inkPoint(e);activeStroke.points.push(p0);
+ const p0=inkPoint(e);
+ const strokes=inkPage().strokes;
+ if(inkSettings.tool!=='eraser'&&window.InkAnnotationLayer?.hitTestAxesHandle){
+  const hit=window.InkAnnotationLayer.hitTestAxesHandle(strokes,p0,selectedAxesIdx,18);
+  if(hit&&(hit.strokeIndex===selectedAxesIdx||(inkSettings.tool==='shape'&&inkSettings.shapeType==='axes'))){
+   inkSnapshot();
+   selectedAxesIdx=hit.strokeIndex;
+   drawing=true;activePointer=e.pointerId;
+   activeAxesDrag={strokeIndex:hit.strokeIndex,handleId:hit.handle.id,startBounds:{...window.InkAnnotationLayer.getAxesBounds(hit.stroke)},startPt:p0};
+   canvas.setPointerCapture(e.pointerId);
+   rebuildInk();
+   return;
+  }
+  if(inkSettings.tool==='shape'&&inkSettings.shapeType==='axes'&&window.InkAnnotationLayer?.hitTestAxesStroke){
+   const hitAxisIdx=window.InkAnnotationLayer.hitTestAxesStroke(strokes,p0,12);
+   if(hitAxisIdx>=0&&hitAxisIdx!==selectedAxesIdx){selectedAxesIdx=hitAxisIdx;redrawInk();return;}
+  }
+ }
+ if(inkSettings.tool!=='shape'||inkSettings.shapeType!=='axes')selectedAxesIdx=-1;
+ drawing=true;activePointer=e.pointerId;activeStroke={...inkSettings,points:[p0],drawnIdx:0};
  canvas.setPointerCapture(e.pointerId);
  if((activeStroke.tool==='pen'||activeStroke.tool==='marker')&&!activeStroke.dashed){
   ctx.save();ctx.setTransform(INK_DPR,0,0,INK_DPR,0,0);
@@ -1085,7 +1111,25 @@ canvas.onpointerdown=e=>{
  }
 };
 canvas.onpointermove=e=>{
- if(!drawing||e.pointerId!==activePointer)return;e.preventDefault();
+ if(!drawing||e.pointerId!==activePointer){
+  if(penOn&&inkSettings.tool!=='cursor'&&inkSettings.tool!=='eraser'&&selectedAxesIdx>=0&&window.InkAnnotationLayer?.hitTestAxesHandle){
+   const pHover=inkPoint(e);
+   const hit=window.InkAnnotationLayer.hitTestAxesHandle(inkPage().strokes,pHover,selectedAxesIdx,18);
+   const nextHover=(hit&&hit.strokeIndex===selectedAxesIdx)?hit.handle.id:null;
+   if(nextHover!==hoveredAxesHandleId){hoveredAxesHandleId=nextHover;redrawInk();}
+  }
+  return;
+ }
+ e.preventDefault();
+ if(activeAxesDrag){
+  const p=inkPoint(e);
+  const targetStroke=inkPage().strokes[activeAxesDrag.strokeIndex];
+  if(targetStroke&&window.InkAnnotationLayer?.applyAxesHandleDrag){
+   window.InkAnnotationLayer.applyAxesHandleDrag(targetStroke,activeAxesDrag.handleId,p,activeAxesDrag.startBounds,activeAxesDrag.startPt);
+   if(!inkFrame)inkFrame=requestAnimationFrame(()=>{inkFrame=0;rebuildInk()});
+  }
+  return;
+ }
  const samples=e.getCoalescedEvents?.();
  let added=false;
  for(const sample of samples?.length?samples:[e]){
@@ -1121,7 +1165,18 @@ canvas.onpointermove=e=>{
 };
 function finishInk(e,cancelled=false){
  if(!drawing||e.pointerId!==activePointer)return;
- if(!cancelled){activeStroke.points.push(inkPoint(e,activeStroke.points.at(-1)));if(activeStroke.tool==='shape'&&window.InkAnnotationLayer?.normalizeShapePoints){activeStroke.points=window.InkAnnotationLayer.normalizeShapePoints(activeStroke);}inkSnapshot();inkPage().strokes.push(activeStroke);paintInk(baseCtx,activeStroke,false)}
+ if(activeAxesDrag){
+  activeAxesDrag=null;drawing=false;activePointer=null;
+  if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
+  rebuildInk();
+  return;
+ }
+ if(!cancelled){
+  activeStroke.points.push(inkPoint(e,activeStroke.points.at(-1)));
+  if(activeStroke.tool==='shape'&&window.InkAnnotationLayer?.normalizeShapePoints){activeStroke.points=window.InkAnnotationLayer.normalizeShapePoints(activeStroke);}
+  inkSnapshot();inkPage().strokes.push(activeStroke);paintInk(baseCtx,activeStroke,false);
+  if(activeStroke.tool==='shape'&&(activeStroke.shapeType||'axes')==='axes')selectedAxesIdx=inkPage().strokes.length-1;
+ }
  activeStroke=null;drawing=false;activePointer=null;if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);redrawInk();updateInkTools();
 }
 canvas.onpointerup=e=>finishInk(e);canvas.onpointercancel=e=>finishInk(e,true);
@@ -1271,7 +1326,7 @@ function initFloatingInk(){
  let folded=false,moved=false,drag=null;
  const footerTop=()=>document.querySelector('footer').getBoundingClientRect().top;
  const clamp=(value,min,max)=>Math.max(min,Math.min(Math.max(min,max),value));
- const setPosition=(node,x,y)=>{const r=node.getBoundingClientRect();node.style.left=clamp(x,8,innerWidth-r.width-8)+'px';node.style.top=clamp(y,8,footerTop()-r.height-8)+'px'};
+ const setPosition=(node,x,y)=>{const r=node.getBoundingClientRect();const cx=clamp(x,8,innerWidth-r.width-8),cy=clamp(y,8,footerTop()-r.height-8);node.style.left=cx+'px';node.style.top=cy+'px';if(node===toolbar){document.getElementById('inkSubMenu')?.classList.toggle('flip-down',cy<105)}};
  const sync=()=>{document.body.classList.remove('ink-open');document.documentElement.style.setProperty('--ink-dock-height','0px');toolbar.hidden=!penOn||folded;bubble.hidden=!penOn||!folded;const node=folded?bubble:toolbar;if(penOn){const r=node.getBoundingClientRect();setPosition(node,parseFloat(node.style.left)||Math.round((innerWidth-r.width)/2),parseFloat(node.style.top)||(footerTop()-r.height-12))}bubble.style.setProperty('--active-ink',inkSettings.color);toolbar.style.setProperty('--active-ink',inkSettings.color)};
  const fold=()=>{const r=toolbar.getBoundingClientRect();folded=true;bubble.style.left=(r.right-52)+'px';bubble.style.top=r.top+'px';sync()};
  const unfold=()=>{const r=bubble.getBoundingClientRect();folded=false;toolbar.classList.add('ink-simple');more.textContent='设置';more.setAttribute('aria-expanded','false');toolbar.hidden=false;setPosition(toolbar,r.right-toolbar.getBoundingClientRect().width,r.top);sync()};
@@ -1280,12 +1335,12 @@ function initFloatingInk(){
  const originalSetPenMode=setPenMode;setPenMode=enabled=>{if(enabled&&!penOn){folded=false;if(inkSettings.tool==='cursor')inkSettings.tool='pen';}originalSetPenMode(enabled);if(enabled&&inkSettings.tool==='cursor')canvas.classList.remove('enabled');sync()};
  $('#inkClose').textContent='完成批注';$('#inkDrag').setAttribute('tabindex','0');$('#inkDrag').addEventListener('keydown',e=>{const delta={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[e.key];if(!delta)return;e.preventDefault();e.stopPropagation();const r=toolbar.getBoundingClientRect();setPosition(toolbar,r.left+delta[0],r.top+delta[1])});$('#inkMode').setAttribute('role','status');
  function attachDrag(handle,node,isBubble=false){
-  handle.addEventListener('pointerdown',e=>{if(e.button!==0||(!isBubble&&e.target.closest('button')))return;const r=node.getBoundingClientRect();drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top};moved=false;handle.setPointerCapture(e.pointerId);e.preventDefault()});
+  handle.addEventListener('pointerdown',e=>{if(e.button!==0||(!isBubble&&e.target.closest('button,input,select,#inkSubMenu')))return;const r=node.getBoundingClientRect();drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top};moved=false;handle.setPointerCapture(e.pointerId);e.preventDefault()});
   handle.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>5)moved=true;if(moved)setPosition(node,drag.left+dx,drag.top+dy)});
   handle.addEventListener('pointerup',e=>{if(!drag||drag.id!==e.pointerId)return;const clicked=!moved;drag=null;if(handle.hasPointerCapture(e.pointerId))handle.releasePointerCapture(e.pointerId);if(isBubble&&clicked)unfold()});
   handle.addEventListener('pointercancel',()=>{drag=null;moved=true});
  }
- attachDrag($('#inkDrag'),toolbar);attachDrag(bubble,bubble,true);
+ attachDrag(toolbar,toolbar);attachDrag(bubble,bubble,true);
  bubble.addEventListener('click',e=>{if(e.detail===0)unfold()});
  canvas.addEventListener('pointerdown',()=>{document.getElementById('inkSubMenu')?.classList.remove('palette-open')});
  toolbar.addEventListener('click',()=>{bubble.style.setProperty('--active-ink',inkSettings.color);toolbar.style.setProperty('--active-ink',inkSettings.color)});

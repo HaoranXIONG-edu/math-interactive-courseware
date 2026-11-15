@@ -169,7 +169,7 @@
     c.restore();
   }
 
-  function normalizeShapePoints(stroke) {
+  function normalizeShapePoints(stroke, skipInitBounds) {
     const pts = stroke.points;
     if (!pts || !pts.length) return pts;
     const p1 = pts[0];
@@ -188,19 +188,232 @@
 
     if (st === 'axes') {
       if (dist < 20) {
-        return [{ x: x1 - 140, y: y1 - 110, w: p1.w }, { x: x1 + 140, y: y1 + 110, w: p1.w }];
+        x2 = x1 + 140;
+        y2 = y1 + 110;
+        x1 = x1 - 140;
+        y1 = y1 - 110;
+      } else {
+        let dx = x2 - x1, dy = y2 - y1;
+        const aw = Math.abs(dx), ah = Math.abs(dy);
+        if (aw > 40 && ah > 40 && Math.abs(aw - ah) / Math.max(aw, ah) < 0.14) {
+          const sq = Math.round((aw + ah) / 2);
+          x2 = x1 + (dx >= 0 ? sq : -sq);
+          y2 = y1 + (dy >= 0 ? sq : -sq);
+        }
       }
-      let dx = x2 - x1, dy = y2 - y1;
-      const aw = Math.abs(dx), ah = Math.abs(dy);
-      if (aw > 40 && ah > 40 && Math.abs(aw - ah) / Math.max(aw, ah) < 0.14) {
-        const sq = Math.round((aw + ah) / 2);
-        x2 = x1 + (dx >= 0 ? sq : -sq);
-        y2 = y1 + (dy >= 0 ? sq : -sq);
+      if (!skipInitBounds && !stroke.axesBounds) {
+        const minX = Math.min(x1, x2), maxX = Math.max(x1, x2);
+        const minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
+        stroke.axesBounds = {
+          ox: Math.round((minX + maxX) / 2),
+          oy: Math.round((minY + maxY) / 2),
+          minX: Math.round(minX),
+          maxX: Math.round(maxX),
+          minY: Math.round(minY),
+          maxY: Math.round(maxY)
+        };
       }
       return [{ x: x1, y: y1, w: p1.w }, { x: x2, y: y2, w: p1.w }];
     }
 
     return [p1, p2];
+  }
+
+  function getAxesBounds(stroke) {
+    if (stroke && stroke.axesBounds && typeof stroke.axesBounds.ox === 'number') {
+      return stroke.axesBounds;
+    }
+    const norm = normalizeShapePoints(stroke, true) || [];
+    if (!norm.length) return { ox: 0, oy: 0, minX: -140, maxX: 140, minY: -110, maxY: 110 };
+    const p1 = norm[0], p2 = norm[norm.length - 1];
+    const minX = Math.min(p1.x, p2.x), maxX = Math.max(p1.x, p2.x);
+    const minY = Math.min(p1.y, p2.y), maxY = Math.max(p1.y, p2.y);
+    return {
+      ox: (minX + maxX) / 2,
+      oy: (minY + maxY) / 2,
+      minX,
+      maxX,
+      minY,
+      maxY
+    };
+  }
+
+  function cloneStroke(s) {
+    if (!s) return s;
+    return {
+      ...s,
+      points: Array.isArray(s.points) ? s.points.map(p => ({ ...p })) : [],
+      axesBounds: s.axesBounds ? { ...s.axesBounds } : undefined
+    };
+  }
+
+  function cloneStrokes(arr) {
+    return Array.isArray(arr) ? arr.map(cloneStroke) : [];
+  }
+
+  function getAxesHandles(stroke) {
+    if (!stroke || stroke.tool !== 'shape' || (stroke.shapeType || 'axes') !== 'axes') return [];
+    const b = getAxesBounds(stroke);
+    return [
+      { id: 'posX',   x: b.maxX + 7, y: b.oy,       axis: 'x', dir: '+x', cursor: 'ew-resize', label: '+x 半轴' },
+      { id: 'negX',   x: b.minX - 7, y: b.oy,       axis: 'x', dir: '-x', cursor: 'ew-resize', label: '-x 半轴' },
+      { id: 'posY',   x: b.ox,       y: b.minY - 7, axis: 'y', dir: '+y', cursor: 'ns-resize', label: '+y 半轴' },
+      { id: 'negY',   x: b.ox,       y: b.maxY + 7, axis: 'y', dir: '-y', cursor: 'ns-resize', label: '-y 半轴' },
+      { id: 'origin', x: b.ox,       y: b.oy,       axis: 'o', dir: 'O',  cursor: 'move',      label: '平移坐标系' }
+    ];
+  }
+
+  function hitTestAxesHandle(strokes, pt, preferredIdx, hitRadius = 18) {
+    if (!Array.isArray(strokes) || !pt) return null;
+    const indices = [];
+    if (typeof preferredIdx === 'number' && preferredIdx >= 0 && preferredIdx < strokes.length) {
+      indices.push(preferredIdx);
+    }
+    for (let i = strokes.length - 1; i >= 0; i--) {
+      if (i !== preferredIdx) indices.push(i);
+    }
+    for (const idx of indices) {
+      const s = strokes[idx];
+      if (!s || s.tool !== 'shape' || (s.shapeType || 'axes') !== 'axes') continue;
+      const handles = getAxesHandles(s);
+      for (const h of handles) {
+        if (Math.hypot(pt.x - h.x, pt.y - h.y) <= hitRadius) {
+          return { strokeIndex: idx, stroke: s, handle: h };
+        }
+      }
+    }
+    return null;
+  }
+
+  function hitTestAxesStroke(strokes, pt, tolerance = 12) {
+    if (!Array.isArray(strokes) || !pt) return -1;
+    for (let i = strokes.length - 1; i >= 0; i--) {
+      const s = strokes[i];
+      if (!s || s.tool !== 'shape' || (s.shapeType || 'axes') !== 'axes') continue;
+      const b = getAxesBounds(s);
+      const onX = pt.x >= b.minX - tolerance && pt.x <= b.maxX + tolerance && Math.abs(pt.y - b.oy) <= tolerance;
+      const onY = pt.y >= b.minY - tolerance && pt.y <= b.maxY + tolerance && Math.abs(pt.x - b.ox) <= tolerance;
+      if (onX || onY) return i;
+    }
+    return -1;
+  }
+
+  function applyAxesHandleDrag(stroke, handleId, pt, startBounds, startPt) {
+    if (!stroke || !startBounds || !pt) return;
+    const b = { ...startBounds };
+    if (handleId === 'posX') {
+      b.maxX = Math.round(Math.max(b.ox + 36, pt.x));
+    } else if (handleId === 'negX') {
+      b.minX = Math.round(Math.min(b.ox - 12, pt.x));
+    } else if (handleId === 'posY') {
+      b.minY = Math.round(Math.min(b.oy - 36, pt.y));
+    } else if (handleId === 'negY') {
+      b.maxY = Math.round(Math.max(b.oy + 12, pt.y));
+    } else if (handleId === 'origin' && startPt) {
+      const dx = Math.round(pt.x - startPt.x);
+      const dy = Math.round(pt.y - startPt.y);
+      b.ox += dx;
+      b.oy += dy;
+      b.minX += dx;
+      b.maxX += dx;
+      b.minY += dy;
+      b.maxY += dy;
+    }
+    stroke.axesBounds = b;
+    const w = (stroke.points && stroke.points[0] && stroke.points[0].w) || stroke.size || 2.5;
+    stroke.points = [
+      { x: b.minX, y: b.minY, w },
+      { x: b.maxX, y: b.maxY, w }
+    ];
+  }
+
+  function drawAxesHandles(target, stroke, dpr, activeHandleId) {
+    if (!target || !stroke || stroke.tool !== 'shape' || (stroke.shapeType || 'axes') !== 'axes') return;
+    const b = getAxesBounds(stroke);
+    const handles = getAxesHandles(stroke);
+    const step = 44;
+    target.save();
+    target.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // 虚线外框提示当前处于可单独调节半轴长度状态
+    target.strokeStyle = 'rgba(37, 99, 235, 0.28)';
+    target.lineWidth = 1.3;
+    target.setLineDash([5, 4]);
+    target.strokeRect(b.minX, b.minY, b.maxX - b.minX, b.maxY - b.minY);
+    target.setLineDash([]);
+
+    handles.forEach(h => {
+      const isAct = h.id === activeHandleId;
+      if (h.id === 'origin') {
+        target.beginPath();
+        target.arc(h.x, h.y, isAct ? 7 : 5.5, 0, Math.PI * 2);
+        target.fillStyle = isAct ? '#dbeafe' : 'rgba(255, 255, 255, 0.92)';
+        target.fill();
+        target.lineWidth = 2;
+        target.strokeStyle = isAct ? '#1d4ed8' : '#3b82f6';
+        target.stroke();
+        return;
+      }
+
+      const r = isAct ? 9 : 7.5;
+      // 外发光圈
+      target.beginPath();
+      target.arc(h.x, h.y, r + 3.5, 0, Math.PI * 2);
+      target.fillStyle = isAct ? 'rgba(217, 119, 6, 0.22)' : 'rgba(37, 99, 235, 0.16)';
+      target.fill();
+
+      // 手柄圆盘
+      target.beginPath();
+      target.arc(h.x, h.y, r, 0, Math.PI * 2);
+      target.fillStyle = isAct ? '#fef3c7' : '#ffffff';
+      target.fill();
+      target.lineWidth = 2.2;
+      target.strokeStyle = isAct ? '#d97706' : '#2563eb';
+      target.stroke();
+
+      // 手柄内部双向微箭头指示（水平 ↔ 或 垂直 ↕）
+      target.beginPath();
+      target.lineWidth = 1.6;
+      target.strokeStyle = isAct ? '#b45309' : '#1d4ed8';
+      if (h.axis === 'x') {
+        target.moveTo(h.x - 3.8, h.y);
+        target.lineTo(h.x + 3.8, h.y);
+        target.moveTo(h.x - 1.8, h.y - 2.2);
+        target.lineTo(h.x - 4.0, h.y);
+        target.lineTo(h.x - 1.8, h.y + 2.2);
+        target.moveTo(h.x + 1.8, h.y - 2.2);
+        target.lineTo(h.x + 4.0, h.y);
+        target.lineTo(h.x + 1.8, h.y + 2.2);
+      } else {
+        target.moveTo(h.x, h.y - 3.8);
+        target.lineTo(h.x, h.y + 3.8);
+        target.moveTo(h.x - 2.2, h.y - 1.8);
+        target.lineTo(h.x, h.y - 4.0);
+        target.lineTo(h.x + 2.2, h.y - 1.8);
+        target.moveTo(h.x - 2.2, h.y + 1.8);
+        target.lineTo(h.x, h.y + 4.0);
+        target.lineTo(h.x + 2.2, h.y + 1.8);
+      }
+      target.stroke();
+
+      // 拖拽时实时显示该半轴当前的刻度单位长度
+      if (isAct) {
+        let pxLen = 0;
+        let reserve = 16;
+        if (h.id === 'posX') { pxLen = b.maxX - b.ox; reserve = 24; }
+        else if (h.id === 'negX') { pxLen = b.ox - b.minX; reserve = 16; }
+        else if (h.id === 'posY') { pxLen = b.oy - b.minY; reserve = 24; }
+        else if (h.id === 'negY') { pxLen = b.maxY - b.oy; reserve = 16; }
+        const units = Math.max(0, Math.floor((pxLen - reserve) / step));
+        const tipText = `${h.dir}半轴: ${units} 单位`;
+        target.font = '700 13px "Songti SC", "SimSun", sans-serif';
+        target.textAlign = 'center';
+        target.textBaseline = 'bottom';
+        drawHaloText(target, tipText, h.x, h.y - 13, 4);
+      }
+    });
+
+    target.restore();
   }
 
   function traceShapePath(c, stroke, w, dashed, isPreview) {
@@ -316,12 +529,18 @@
         c.restore();
       }
     } else if (st === 'axes') {
-      const minX = Math.min(x1, x2), maxX = Math.max(x1, x2);
-      const minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
-      const ox = (minX + maxX) / 2, oy = (minY + maxY) / 2;
+      const b = getAxesBounds(stroke);
+      const minX = b.minX, maxX = b.maxX, minY = b.minY, maxY = b.maxY;
+      const ox = b.ox, oy = b.oy;
       const wSpan = maxX - minX, hSpan = maxY - minY;
-      // 固定 44px 单位步长，确保格点与刻度比例恒定不抖动
+      const lenPosX = Math.max(0, maxX - ox), lenNegX = Math.max(0, ox - minX);
+      const lenPosY = Math.max(0, oy - minY), lenNegY = Math.max(0, maxY - oy);
+      // 固定 44px 单位步长，确保单侧拉伸半轴时格点与刻度比例恒定不抖动
       const step = 44;
+      const kxPos = Math.floor(Math.max(0, lenPosX - 24) / step);
+      const kxNeg = Math.floor(Math.max(0, lenNegX - 16) / step);
+      const kyPos = Math.floor(Math.max(0, lenPosY - 24) / step);
+      const kyNeg = Math.floor(Math.max(0, lenNegY - 16) / step);
 
       if (isPreview && wSpan > 20 && hSpan > 20) {
         c.save();
@@ -335,15 +554,13 @@
         c.restore();
       }
 
-      // 淡雅单位辅助方格网（方便描点与画函数图像，不遮挡底层文字）
-      if (wSpan > 90 && hSpan > 90) {
-        const kxGrid = Math.floor((wSpan / 2 - 22) / step);
-        const kyGrid = Math.floor((hSpan / 2 - 22) / step);
+      // 淡雅单位辅助方格网（按各半轴实际长度独立生成，方便描点与画函数图像）
+      if (wSpan > 60 && hSpan > 60) {
         c.save();
         c.globalAlpha *= 0.15;
         c.lineWidth = 1;
         c.setLineDash([3, 3]);
-        for (let k = -kxGrid; k <= kxGrid; k++) {
+        for (let k = -kxNeg; k <= kxPos; k++) {
           if (k === 0) continue;
           const gx = ox + k * step;
           c.beginPath();
@@ -351,9 +568,9 @@
           c.lineTo(gx, maxY - 8);
           c.stroke();
         }
-        for (let k = -kyGrid; k <= kyGrid; k++) {
+        for (let k = -kyNeg; k <= kyPos; k++) {
           if (k === 0) continue;
-          const gy = oy + k * step;
+          const gy = oy - k * step;
           c.beginPath();
           c.moveTo(minX + 8, gy);
           c.lineTo(maxX - 12, gy);
@@ -375,32 +592,32 @@
         c.save();
         c.setLineDash([]);
         c.lineWidth = Math.max(1.8, w * 0.65);
-        const kx = Math.floor((wSpan / 2 - 24) / step);
+        const maxKx = Math.max(kxNeg, kxPos);
         c.font = '600 14px "Times New Roman", serif';
         c.textAlign = 'center';
         c.textBaseline = 'top';
-        for (let k = -kx; k <= kx; k++) {
+        for (let k = -kxNeg; k <= kxPos; k++) {
           if (k === 0) continue;
           const tx = ox + k * step;
           c.beginPath();
           c.moveTo(tx, oy - 5);
           c.lineTo(tx, oy + 5);
           c.stroke();
-          if (Math.abs(k) === 1 || (kx <= 4 && k !== 0) || k % 2 === 0) {
+          if (Math.abs(k) === 1 || (maxKx <= 5 && k !== 0) || k % 2 === 0) {
             drawHaloText(c, String(k), tx, oy + 8, 3.5);
           }
         }
-        const ky = Math.floor((hSpan / 2 - 24) / step);
+        const maxKy = Math.max(kyNeg, kyPos);
         c.textAlign = 'right';
         c.textBaseline = 'middle';
-        for (let k = -ky; k <= ky; k++) {
+        for (let k = -kyNeg; k <= kyPos; k++) {
           if (k === 0) continue;
           const ty = oy - k * step;
           c.beginPath();
           c.moveTo(ox - 5, ty);
           c.lineTo(ox + 5, ty);
           c.stroke();
-          if (Math.abs(k) === 1 || (ky <= 4 && k !== 0) || k % 2 === 0) {
+          if (Math.abs(k) === 1 || (maxKy <= 5 && k !== 0) || k % 2 === 0) {
             drawHaloText(c, String(k), ox - 8, ty, 3.5);
           }
         }
@@ -830,13 +1047,21 @@
       bottom: 18px;
       transform: translateX(-50%);
       z-index: 20;
+      touch-action: none;
+    }
+    .ink-demo-dock-wrap.is-moved {
+      transform: none;
+      bottom: auto;
+    }
+    .ink-demo-dock-wrap[hidden] {
+      display: none !important;
     }
     .ink-demo-toolbar {
       display: flex;
       flex-direction: row;
       align-items: center;
       gap: 10px;
-      padding: 10px 16px;
+      padding: 10px 14px;
       border-radius: 24px;
       background: rgba(30, 41, 59, 0.78);
       border: 1.5px solid rgba(255, 255, 255, 0.48);
@@ -845,6 +1070,93 @@
       -webkit-backdrop-filter: blur(14px) saturate(140%);
       color: #ffffff;
       position: relative;
+      cursor: grab;
+      touch-action: none;
+    }
+    .ink-demo-toolbar:active {
+      cursor: grabbing;
+    }
+    .ink-demo-drag {
+      width: 28px;
+      height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 26px;
+      line-height: 1;
+      cursor: grab;
+      user-select: none;
+      padding-right: 6px;
+      border-right: 1.5px solid rgba(255, 255, 255, 0.28);
+      touch-action: none;
+    }
+    .ink-demo-drag:hover {
+      color: #ffffff;
+    }
+    .ink-demo-drag:active {
+      cursor: grabbing;
+    }
+    .ink-demo-bubble {
+      position: absolute;
+      right: 22px;
+      bottom: 18px;
+      z-index: 25;
+      height: 54px;
+      min-width: 54px;
+      padding: 0 16px 0 13px;
+      border-radius: 999px;
+      background: rgba(24, 34, 52, 0.88);
+      color: #ffffff;
+      border: 2.5px solid var(--active-ink, #384d8f);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.36), 0 0 0 3px rgba(255, 255, 255, 0.42);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .ink-demo-bubble[hidden] {
+      display: none !important;
+    }
+    .ink-demo-bubble:hover {
+      transform: scale(1.05);
+      background: rgba(30, 41, 59, 0.96);
+    }
+    .ink-demo-bubble:active {
+      cursor: grabbing;
+    }
+    .ink-demo-bubble svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+    .ink-demo-bubble-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--active-ink, #384d8f);
+      border: 1.5px solid #ffffff;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    .ink-demo-bubble-label {
+      font-family: 'SimSun', 'Songti SC', serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      pointer-events: none;
+      white-space: nowrap;
     }
     .ink-demo-toolbar .ink-btn {
       width: 52px;
@@ -938,6 +1250,10 @@
     }
     .ink-demo-submenu.open {
       display: flex;
+    }
+    .ink-demo-submenu.flip-down {
+      bottom: auto;
+      top: calc(100% + 12px);
     }
     .ink-demo-submenu .sub-btn {
       width: 40px;
@@ -1042,8 +1358,8 @@
           <div style="height:68px;"></div>
         </div>
         <canvas class="ink-demo-canvas" width="${stageW * dpr}" height="${stageH * dpr}"></canvas>
-        <div class="ink-demo-dock-wrap">
-          <div class="ink-demo-toolbar">
+        <div class="ink-demo-dock-wrap" id="demoDockWrap">
+          <div class="ink-demo-toolbar" id="demoToolbar" title="按住左侧拖拽柄或工具栏空白处可自由移动位置">
             <div class="ink-demo-submenu open">
               <div class="ink-demo-shapes" style="display:flex;align-items:center;gap:4px;">
                 ${SHAPES.map(sh => `<button type="button" class="sub-btn" data-demo-shape="${sh.id}" title="${sh.tip}">${sh.icon}</button>`).join('')}
@@ -1058,13 +1374,21 @@
                 ${COLORS.map(c => `<button type="button" class="swatch-btn" data-demo-color="${c.hex}" style="background:${c.hex}" title="${c.label}"></button>`).join('')}
               </div>
             </div>
+            <div class="ink-demo-drag" id="demoDrag" title="按住拖动批注工具栏位置" aria-label="拖动批注工具栏">⠿</div>
             ${TOOLS.map(t => `<button type="button" class="ink-btn${t.hasSubMenu ? ' has-caret' : ''}" data-demo-tool="${t.id}" title="${t.tip}">${t.icon}${t.hasSubMenu ? ACTION_ICONS.caret : ''}</button>`).join('')}
             <div class="ink-demo-sep"></div>
             <button type="button" class="ink-btn" id="demoUndo" title="${ACTION_ICONS.undo[0]}">${ACTION_ICONS.undo[1]}</button>
             <button type="button" class="ink-btn" id="demoRedo" title="${ACTION_ICONS.redo[0]}">${ACTION_ICONS.redo[1]}</button>
             <button type="button" class="ink-btn danger" id="demoClear" title="${ACTION_ICONS.clear[0]}">${ACTION_ICONS.clear[1]}</button>
+            <div class="ink-demo-sep"></div>
+            <button type="button" class="ink-btn" id="demoFold" title="最小化收起为悬浮球（避免遮挡底层图形）" aria-label="最小化收起为悬浮球">${ACTION_ICONS.fold[1]}</button>
           </div>
         </div>
+        <button type="button" class="ink-demo-bubble" id="demoBubble" hidden title="点击展开批注栏 · 按住可拖动位置" aria-label="展开批注工具栏">
+          ${ACTION_ICONS.bubble}
+          <span class="ink-demo-bubble-dot"></span>
+          <span class="ink-demo-bubble-label">批注</span>
+        </button>
       </div>
     `;
 
@@ -1081,6 +1405,106 @@
     const shapesWrap = container.querySelector('.ink-demo-shapes');
     const shapeSep = container.querySelector('#demoShapeSep');
     const statusEl = container.querySelector('#inkDemoStatus');
+    const stageEl = container.querySelector('.ink-demo-stage');
+    const dockWrap = container.querySelector('#demoDockWrap');
+    const toolbarEl = container.querySelector('#demoToolbar');
+    const bubbleEl = container.querySelector('#demoBubble');
+
+    function clampVal(v, min, max) {
+      return Math.max(min, Math.min(Math.max(min, max), v));
+    }
+
+    function setNodeStagePos(node, leftPx, topPx) {
+      if (!stageEl || !node) return;
+      const sr = stageEl.getBoundingClientRect();
+      const nr = node.getBoundingClientRect();
+      const clampedL = clampVal(leftPx, 8, sr.width - nr.width - 8);
+      const clampedT = clampVal(topPx, 8, sr.height - nr.height - 8);
+      node.classList.add('is-moved');
+      node.style.left = `${Math.round(clampedL)}px`;
+      node.style.top = `${Math.round(clampedT)}px`;
+      node.style.right = 'auto';
+      node.style.bottom = 'auto';
+      node.style.transform = 'none';
+      if (node === dockWrap && subMenu) {
+        subMenu.classList.toggle('flip-down', clampedT < 92);
+      }
+    }
+
+    function foldDemoToolbar() {
+      if (!stageEl || !dockWrap || !bubbleEl) return;
+      const sr = stageEl.getBoundingClientRect();
+      const dr = dockWrap.getBoundingClientRect();
+      dockWrap.hidden = true;
+      bubbleEl.hidden = false;
+      const br = bubbleEl.getBoundingClientRect();
+      const targetL = (dr.right - sr.left) - br.width;
+      const targetT = (dr.top - sr.top) + (dr.height - br.height) / 2;
+      setNodeStagePos(bubbleEl, targetL, targetT);
+    }
+
+    function unfoldDemoToolbar() {
+      if (!stageEl || !dockWrap || !bubbleEl) return;
+      const sr = stageEl.getBoundingClientRect();
+      const br = bubbleEl.getBoundingClientRect();
+      bubbleEl.hidden = true;
+      dockWrap.hidden = false;
+      const dr = dockWrap.getBoundingClientRect();
+      const targetL = (br.right - sr.left) - dr.width;
+      const targetT = (br.top - sr.top) - (dr.height - br.height) / 2;
+      setNodeStagePos(dockWrap, targetL, targetT);
+    }
+
+    function attachStageDrag(handleEl, targetNode, isBubble = false) {
+      if (!handleEl || !targetNode || !stageEl) return;
+      let dragState = null;
+      let hasMoved = false;
+      handleEl.addEventListener('pointerdown', ev => {
+        if (ev.button !== 0) return;
+        if (!isBubble && ev.target.closest('button, .ink-demo-submenu')) return;
+        const sr = stageEl.getBoundingClientRect();
+        const tr = targetNode.getBoundingClientRect();
+        dragState = {
+          pid: ev.pointerId,
+          startX: ev.clientX,
+          startY: ev.clientY,
+          initLeft: tr.left - sr.left,
+          initTop: tr.top - sr.top
+        };
+        hasMoved = false;
+        handleEl.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        ev.stopPropagation();
+      });
+      handleEl.addEventListener('pointermove', ev => {
+        if (!dragState || ev.pointerId !== dragState.pid) return;
+        const dx = ev.clientX - dragState.startX;
+        const dy = ev.clientY - dragState.startY;
+        if (Math.hypot(dx, dy) > 4) hasMoved = true;
+        if (hasMoved) {
+          setNodeStagePos(targetNode, dragState.initLeft + dx, dragState.initTop + dy);
+        }
+      });
+      handleEl.addEventListener('pointerup', ev => {
+        if (!dragState || ev.pointerId !== dragState.pid) return;
+        const wasClick = !hasMoved;
+        dragState = null;
+        if (handleEl.hasPointerCapture(ev.pointerId)) handleEl.releasePointerCapture(ev.pointerId);
+        if (isBubble && wasClick) {
+          unfoldDemoToolbar();
+        }
+      });
+      handleEl.addEventListener('pointercancel', () => {
+        dragState = null;
+        hasMoved = false;
+      });
+    }
+
+    attachStageDrag(toolbarEl, dockWrap, false);
+    attachStageDrag(bubbleEl, bubbleEl, true);
+    bubbleEl?.addEventListener('click', ev => {
+      if (ev.detail === 0) unfoldDemoToolbar();
+    });
 
     function syncUI() {
       canvas.classList.toggle('cursor-mode', state.tool === 'cursor');
@@ -1115,16 +1539,36 @@
       });
       container.querySelector('#demoUndo').disabled = !state.undo.length;
       container.querySelector('#demoRedo').disabled = !state.redo.length;
+      if (bubbleEl) bubbleEl.style.setProperty('--active-ink', state.color);
 
       const toolObj = TOOLS.find(t => t.id === state.tool);
       const shapeObj = SHAPES.find(s => s.id === state.shapeType);
       if (statusEl) {
-        statusEl.textContent = `当前模式：${toolObj ? toolObj.label : state.tool}${state.tool === 'shape' && shapeObj ? ' · ' + shapeObj.label : ''}${state.dashed ? '（虚线模式）' : ''}`;
+        const axesHint = (state.tool === 'shape' && state.shapeType === 'axes') ? '（拖出后可拉动四端手柄单独调节 ±x、±y 半轴长度）' : '';
+        statusEl.textContent = `当前模式：${toolObj ? toolObj.label : state.tool}${state.tool === 'shape' && shapeObj ? ' · ' + shapeObj.label : ''}${state.dashed ? '（虚线模式）' : ''}${axesHint}`;
       }
     }
 
     let activeStroke = null;
     let activePid = null;
+    let activeAxesDrag = null;
+    let hoveredAxesHandleId = null;
+    let selectedAxesIdx = -1;
+    for (let i = state.strokes.length - 1; i >= 0; i--) {
+      const s = state.strokes[i];
+      if (s && s.tool === 'shape' && (s.shapeType || 'axes') === 'axes') {
+        normalizeShapePoints(s);
+        if (selectedAxesIdx === -1) selectedAxesIdx = i;
+      }
+    }
+
+    function findLastAxesIndex() {
+      for (let i = state.strokes.length - 1; i >= 0; i--) {
+        const s = state.strokes[i];
+        if (s && s.tool === 'shape' && (s.shapeType || 'axes') === 'axes') return i;
+      }
+      return -1;
+    }
 
     function rebuild() {
       baseCtx.clearRect(0, 0, baseCanvas.width, baseCanvas.height);
@@ -1136,7 +1580,24 @@
     function redraw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(baseCanvas, 0, 0);
-      if (activeStroke) paintStrokeOnContext(ctx, activeStroke, strokeCanvas, strokeCtx, dpr, true);
+      if (activeStroke) {
+        paintStrokeOnContext(ctx, activeStroke, strokeCanvas, strokeCtx, dpr, true);
+      } else if (
+        selectedAxesIdx >= 0 &&
+        selectedAxesIdx < state.strokes.length &&
+        state.strokes[selectedAxesIdx] &&
+        state.strokes[selectedAxesIdx].tool === 'shape' &&
+        (state.strokes[selectedAxesIdx].shapeType || 'axes') === 'axes' &&
+        state.tool !== 'cursor' &&
+        state.tool !== 'eraser'
+      ) {
+        drawAxesHandles(
+          ctx,
+          state.strokes[selectedAxesIdx],
+          dpr,
+          activeAxesDrag ? activeAxesDrag.handleId : hoveredAxesHandleId
+        );
+      }
     }
 
     function ptFromEvent(e) {
@@ -1150,6 +1611,40 @@
     canvas.addEventListener('pointerdown', e => {
       if (state.tool === 'cursor' || e.button !== 0) return;
       e.preventDefault();
+      const p0 = ptFromEvent(e);
+
+      // 优先检测是否点击在已生成坐标系的 ±x / ±y 半轴调节手柄（或原点平移手柄）上
+      if (state.tool !== 'eraser') {
+        const hit = hitTestAxesHandle(state.strokes, p0, selectedAxesIdx, 18);
+        if (hit && (hit.strokeIndex === selectedAxesIdx || (state.tool === 'shape' && state.shapeType === 'axes'))) {
+          state.undo.push(cloneStrokes(state.strokes));
+          state.redo = [];
+          selectedAxesIdx = hit.strokeIndex;
+          activePid = e.pointerId;
+          activeAxesDrag = {
+            strokeIndex: hit.strokeIndex,
+            handleId: hit.handle.id,
+            startBounds: { ...getAxesBounds(hit.stroke) },
+            startPt: p0
+          };
+          canvas.setPointerCapture(e.pointerId);
+          rebuild();
+          return;
+        }
+        if (state.tool === 'shape' && state.shapeType === 'axes') {
+          const hitAxisIdx = hitTestAxesStroke(state.strokes, p0, 12);
+          if (hitAxisIdx >= 0 && hitAxisIdx !== selectedAxesIdx) {
+            selectedAxesIdx = hitAxisIdx;
+            redraw();
+            return;
+          }
+        }
+      }
+
+      if (state.tool !== 'shape' || state.shapeType !== 'axes') {
+        selectedAxesIdx = -1;
+      }
+
       activePid = e.pointerId;
       activeStroke = {
         tool: state.tool,
@@ -1157,16 +1652,38 @@
         size: state.size,
         dashed: state.dashed,
         shapeType: state.shapeType,
-        points: [ptFromEvent(e)]
+        points: [p0]
       };
       canvas.setPointerCapture(e.pointerId);
       redraw();
     });
 
     canvas.addEventListener('pointermove', e => {
-      if (!activeStroke || e.pointerId !== activePid) return;
-      e.preventDefault();
       const p = ptFromEvent(e);
+      if (activeAxesDrag && e.pointerId === activePid) {
+        e.preventDefault();
+        const targetStroke = state.strokes[activeAxesDrag.strokeIndex];
+        if (targetStroke) {
+          applyAxesHandleDrag(targetStroke, activeAxesDrag.handleId, p, activeAxesDrag.startBounds, activeAxesDrag.startPt);
+          rebuild();
+        }
+        return;
+      }
+      if (!activeStroke || e.pointerId !== activePid) {
+        if (state.tool !== 'cursor' && state.tool !== 'eraser' && selectedAxesIdx >= 0) {
+          const hit = hitTestAxesHandle(state.strokes, p, selectedAxesIdx, 18);
+          const nextHover = (hit && hit.strokeIndex === selectedAxesIdx) ? hit.handle.id : null;
+          canvas.style.cursor = (hit && hit.strokeIndex === selectedAxesIdx) ? hit.handle.cursor : 'crosshair';
+          if (nextHover !== hoveredAxesHandleId) {
+            hoveredAxesHandleId = nextHover;
+            redraw();
+          }
+        } else if (canvas.style.cursor !== 'crosshair') {
+          canvas.style.cursor = 'crosshair';
+        }
+        return;
+      }
+      e.preventDefault();
       const last = activeStroke.points[activeStroke.points.length - 1];
       if (Math.hypot(p.x - last.x, p.y - last.y) > 0.2) {
         activeStroke.points.push(p);
@@ -1175,15 +1692,25 @@
     });
 
     function endStroke(e, cancel = false) {
+      if (activeAxesDrag && e.pointerId === activePid) {
+        activeAxesDrag = null;
+        activePid = null;
+        if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+        rebuild();
+        return;
+      }
       if (!activeStroke || e.pointerId !== activePid) return;
       if (!cancel) {
         activeStroke.points.push(ptFromEvent(e));
         if (activeStroke.tool === 'shape') {
           activeStroke.points = normalizeShapePoints(activeStroke);
         }
-        state.undo.push(state.strokes.slice());
+        state.undo.push(cloneStrokes(state.strokes));
         state.redo = [];
         state.strokes.push(activeStroke);
+        if (activeStroke.tool === 'shape' && (activeStroke.shapeType || 'axes') === 'axes') {
+          selectedAxesIdx = state.strokes.length - 1;
+        }
       }
       activeStroke = null;
       activePid = null;
@@ -1208,15 +1735,23 @@
           state.size = prof.size;
           state.dashed = prof.dashed;
           if (prof.shapeType) state.shapeType = prof.shapeType;
+          if (t === 'shape' && state.shapeType === 'axes' && selectedAxesIdx === -1) {
+            selectedAxesIdx = findLastAxesIndex();
+          }
         } else {
           state.tool = t;
           subMenu.classList.remove('open');
         }
+        redraw();
         syncUI();
       } else if (btn.dataset.demoShape) {
         state.tool = 'shape';
         state.shapeType = btn.dataset.demoShape;
         profiles.shape.shapeType = state.shapeType;
+        if (state.shapeType === 'axes' && selectedAxesIdx === -1) {
+          selectedAxesIdx = findLastAxesIndex();
+        }
+        redraw();
         syncUI();
       } else if (btn.dataset.demoDash) {
         state.dashed = !state.dashed;
@@ -1233,20 +1768,25 @@
         syncUI();
       } else if (btn.id === 'demoUndo') {
         if (!state.undo.length) return;
-        state.redo.push(state.strokes.slice());
+        state.redo.push(cloneStrokes(state.strokes));
         state.strokes = state.undo.pop();
+        selectedAxesIdx = findLastAxesIndex();
         rebuild();
       } else if (btn.id === 'demoRedo') {
         if (!state.redo.length) return;
-        state.undo.push(state.strokes.slice());
+        state.undo.push(cloneStrokes(state.strokes));
         state.strokes = state.redo.pop();
+        selectedAxesIdx = findLastAxesIndex();
         rebuild();
       } else if (btn.id === 'demoClear') {
         if (!state.strokes.length) return;
-        state.undo.push(state.strokes.slice());
+        state.undo.push(cloneStrokes(state.strokes));
         state.redo = [];
         state.strokes = [];
+        selectedAxesIdx = -1;
         rebuild();
+      } else if (btn.id === 'demoFold') {
+        foldDemoToolbar();
       }
     });
 
@@ -1265,6 +1805,14 @@
     createDefaultProfiles,
     drawInkArrowHead,
     normalizeShapePoints,
+    getAxesBounds,
+    cloneStroke,
+    cloneStrokes,
+    getAxesHandles,
+    hitTestAxesHandle,
+    hitTestAxesStroke,
+    applyAxesHandleDrag,
+    drawAxesHandles,
     traceShapePath,
     traceBezierPath,
     paintStrokeOnContext,

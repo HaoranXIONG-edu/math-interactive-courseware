@@ -504,6 +504,14 @@ body #inkToolbar.ink-floating #inkSubMenu {
 body #inkToolbar.ink-floating #inkSubMenu.palette-open {
   display: flex !important;
 }
+body #inkToolbar.ink-floating #inkSubMenu.flip-down {
+  bottom: auto !important;
+  top: calc(100% + 10px) !important;
+}
+body #inkToolbar.ink-floating #inkSubMenu.flip-down::before,
+body #inkToolbar.ink-floating #inkSubMenu.flip-down::after {
+  display: none !important;
+}
 body #inkToolbar.ink-floating #inkSubMenu::before {
   content: "";
   position: absolute;
