@@ -130,9 +130,9 @@ window.UI = {
             const p = palette[idx % palette.length];
             const stepAttr = c.step ? `class="step" data-step="${c.step}"` : '';
             return `<div ${stepAttr} style="background:${p.bg};border:1.8px solid ${p.border};border-radius:14px;padding:12px 15px;display:flex;flex-direction:column;gap:6px;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span style="background:${p.titleBg};color:${p.titleColor};font-size:16px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0;">${window._mathRender(c.badge || `要点 ${idx + 1}`)}</span>
-                    <span style="font-size:19px;font-weight:700;color:#0f172a;">${window._mathRender(c.title || '')}</span>
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;">
+                    <span style="background:${p.titleBg};color:${p.titleColor};font-size:15px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0;">${window._mathRender(c.badge || `要点 ${idx + 1}`)}</span>
+                    <span style="font-size:18px;font-weight:700;color:#0f172a;line-height:1.3;">${window._mathRender(c.title || '')}</span>
                 </div>
                 <div style="font-size:18.5px;line-height:1.5;color:#1e293b;">${window._mathRender(c.body || '')}</div>
             </div>`;

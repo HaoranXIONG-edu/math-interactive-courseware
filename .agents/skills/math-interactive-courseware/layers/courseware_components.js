@@ -1549,10 +1549,10 @@
           '<polygon points="' + ox.toFixed(1) + ',' + (pad.top - 14) + ' ' + (ox - 4).toFixed(1) + ',' + (pad.top - 5) + ' ' + (ox + 4).toFixed(1) + ',' + (pad.top - 5) + '" fill="' + axisColor + '"/>'
         );
 
-        parts.push(
-          '<text x="' + (ox - 10).toFixed(1) + '" y="' + (oy + 16).toFixed(1) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155">O</text>' +
-          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">' + (o.xLabel || 'x') + '</text>' +
-          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">' + (o.yLabel || 'y') + '</text>'
+        topOverlays.push(
+          '<text x="' + (ox - 10).toFixed(1) + '" y="' + (oy + 16).toFixed(1) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">O</text>' +
+          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.xLabel || 'x') + '</text>' +
+          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.yLabel || 'y') + '</text>'
         );
         return api;
       },
@@ -2090,9 +2090,9 @@ window.UI = {
             const p = palette[idx % palette.length];
             const stepAttr = c.step ? `class="step" data-step="${c.step}"` : '';
             return `<div ${stepAttr} style="background:${p.bg};border:1.8px solid ${p.border};border-radius:14px;padding:12px 15px;display:flex;flex-direction:column;gap:6px;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span style="background:${p.titleBg};color:${p.titleColor};font-size:16px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0;">${window._mathRender(c.badge || `要点 ${idx + 1}`)}</span>
-                    <span style="font-size:19px;font-weight:700;color:#0f172a;">${window._mathRender(c.title || '')}</span>
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;">
+                    <span style="background:${p.titleBg};color:${p.titleColor};font-size:15px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0;">${window._mathRender(c.badge || `要点 ${idx + 1}`)}</span>
+                    <span style="font-size:18px;font-weight:700;color:#0f172a;line-height:1.3;">${window._mathRender(c.title || '')}</span>
                 </div>
                 <div style="font-size:18.5px;line-height:1.5;color:#1e293b;">${window._mathRender(c.body || '')}</div>
             </div>`;

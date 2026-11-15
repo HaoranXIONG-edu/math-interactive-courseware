@@ -1544,10 +1544,10 @@
           '<polygon points="' + ox.toFixed(1) + ',' + (pad.top - 14) + ' ' + (ox - 4).toFixed(1) + ',' + (pad.top - 5) + ' ' + (ox + 4).toFixed(1) + ',' + (pad.top - 5) + '" fill="' + axisColor + '"/>'
         );
 
-        parts.push(
-          '<text x="' + (ox - 10).toFixed(1) + '" y="' + (oy + 16).toFixed(1) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155">O</text>' +
-          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">' + (o.xLabel || 'x') + '</text>' +
-          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a">' + (o.yLabel || 'y') + '</text>'
+        topOverlays.push(
+          '<text x="' + (ox - 10).toFixed(1) + '" y="' + (oy + 16).toFixed(1) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="14" font-weight="700" fill="#334155" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">O</text>' +
+          '<text x="' + (W - pad.right + 8) + '" y="' + (oy + 18).toFixed(1) + '" text-anchor="end" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.xLabel || 'x') + '</text>' +
+          '<text x="' + (ox + 12).toFixed(1) + '" y="' + (pad.top - 2) + '" font-family="\'Times New Roman\', serif" font-style="italic" font-size="15" font-weight="700" fill="#0f172a" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">' + (o.yLabel || 'y') + '</text>'
         );
         return api;
       },
