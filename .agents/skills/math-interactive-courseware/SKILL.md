@@ -1,9 +1,9 @@
 ---
 name: math-interactive-courseware
-description: Use this skill whenever the user asks to optimize a middle/high school math student worksheet (.docx) and/or generate an interactive HTML dynamic presentation courseware (动态讲解课件.html) for classroom/Seewo smartboard use. Provides the full-screen Seewo/Goodnotes interactive HTML shell, 5 adaptive question layouts (Layouts A–E), zero-spoiler step-by-step progression rules, in-place Word XML patching rules, and a parallel Multi-Agent build pipeline.
+description: Use this skill whenever the user asks to optimize a middle/high school math student worksheet (.docx) and/or generate an interactive HTML dynamic presentation courseware (动态讲解课件.html) for classroom smartboard use. Provides the full-screen Goodnotes interactive HTML shell, 5 adaptive question layouts (Layouts A–E), zero-spoiler step-by-step progression rules, in-place Word XML patching rules, and a parallel Multi-Agent build pipeline.
 ---
 
-# 数学学案无损优化与交互式 HTML 动态讲解课件（希沃大屏版）开发技能
+# 数学学案无损优化与交互式 HTML 动态讲解课件（教室大屏版）开发技能
 
 当用户要求“优化某节数学学案（`.docx`）并生成交互式 HTML 动态演示课件”时，必须严格执行本规范。
 
@@ -42,7 +42,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 3. **步骤 2.3（一键编译 + 1对1步数一致性门禁 + 全页面运行时仿真）**：
    - 调用编译脚本合并输出 `.html`，脚本会自动执行 **JS 语法检验**、**顶栏 `COURSEWARE_PHASES` 与封面页校验**、**DOM 结构校验（`.screen-page.lab-visible` / `.screen-lower`）**、**1对1 步数对齐校验（`.step` 卡片数 === `stepBar` 圆点数 >= 填空最大 `data-step`）**、**`modeButtons` 同步校验**、**SVG 非法 `<0` 乱码扫描**以及**全页面 `step = 0..maxStep` 运行时仿真渲染测试**，任何一页违背契约即刻报错拦截：
      ```bash
-     python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_courseware.py \
+     python3 .agents/skills/math-interactive-courseware/scripts/compile_courseware.py \
        --title "2.2.3 反比例函数中“k”的几何意义" \
        --chunks chunk1_intro_explore.js chunk2_apply.js chunk3_train_summary.js \
        --output "2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html"
@@ -98,7 +98,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 1. **一题一页 & 追问独立成页**：每个 `追问` 独立成页，并在 `.screen-stem` 顶部放置 `20px` 浅青色 `【关联前问总结】` 横幅（**切勿把题干、归纳框或关联前问总结塞进左侧 `.screen-notes` 挤压推导区空间**）。
 2. **`step = 0` 绝对纯净与直接点击步进（零显眼“下一步”按钮）**：
    - **题干答题栏同步回填（必选）**：所有填空题横线与选择题括号必须使用 `<span class="screen-blank" data-step="3" data-ans="..."></span>`（选择题加 `choice-bracket` 类，如 `<span class="screen-blank choice-bracket" data-step="3" data-ans="B"></span>`）放置在 `.screen-stem` 题干对应位置。初始状态为空白横线或空括号 `（   ）`；当步骤推进到 `data-step`（或最后一步 `maxStep`）时，自动以醒目红字手写批注风格填入题干答题栏中，严禁只把答案埋在解析末尾。
-   - **点击步骤条直接展开（去显眼“下一步”按钮）**：普通视图下隐藏显眼的蓝色 `▶ 下一步` 按钮；未解锁的 `.step.step-locked` 显示为仅含步骤序号与阶段标题的折叠引导条（如 `01 步骤1（设点表边） · 点击展开 ▸`），教师在希沃白板上**直接点击任意步骤卡片**（或点击顶部轻量数字进度圆点 `1, 2, 3`、按空格/回车键）即可展开该步解析并同步触发右侧 SVG 动态几何演示。
+   - **点击步骤条直接展开（去显眼“下一步”按钮）**：普通视图下隐藏显眼的蓝色 `▶ 下一步` 按钮；未解锁的 `.step.step-locked` 显示为仅含步骤序号与阶段标题的折叠引导条（如 `01 步骤1（设点表边） · 点击展开 ▸`），教师在交互白板上**直接点击任意步骤卡片**（或点击顶部轻量数字进度圆点 `1, 2, 3`、按空格/回车键）即可展开该步解析并同步触发右侧 SVG 动态几何演示。
    - **无配图题的辅助坐标系零剧透**：若原学案某题无配图，而课件右侧提供了辅助坐标系（如三点比大小、区间最值），**在 `step = 0` 时右侧 SVG 只允许渲染空白平面直角坐标系（坐标轴、网格与刻度），严禁提前画出双曲线或点坐标**！必须等 `step >= 1` 判定 $k$ 的正负后才动态绘出曲线。
    - **有配图题的辅助线零剧透**：`step = 0` 严格还原原题配图，辅助线（如连接 $AO$、作垂线构造一线三垂直）与数字角（$\angle 1, \angle 2$）在 `step >= 1` 时才以彩色虚线浮现。
 3. **SVG 排版与防乱码规范（严禁裸斜杠、严禁裸 `<` 号、严禁中文夹空格）**：
@@ -222,7 +222,7 @@ window.defineSlide({
 
 ### 3.6 多问长题拆页精讲规范（控制单页信息密度）
 
-为保障 1600×900 教室希沃大屏上的最佳视觉呼吸感（杜绝顶部 `.screen-stem` 过长挤压下方步骤区、杜绝单页塞入过多推导步骤或同屏堆叠多张不同配图），凡遇到**多问综合题或长题干题**，必须将子问题拆分为连续的多个独立页面（如 `问题2(1)(2)` 与 `问题2(3)`、`第5题(1)` 与 `第5题(2)`）进行分页精讲：
+为保障 1600×900 教室教室大屏上的最佳视觉呼吸感（杜绝顶部 `.screen-stem` 过长挤压下方步骤区、杜绝单页塞入过多推导步骤或同屏堆叠多张不同配图），凡遇到**多问综合题或长题干题**，必须将子问题拆分为连续的多个独立页面（如 `问题2(1)(2)` 与 `问题2(3)`、`第5题(1)` 与 `第5题(2)`）进行分页精讲：
 
 1. **强制拆页触发条件（满足任一即拆页）**：
    - **子问题数量较多**：单道大题包含 $\ge 3$ 个小问（如 `（1）`、`（2）`、`（3）`、`（4）`）；
@@ -256,7 +256,7 @@ window.defineSlide({
 5. **视觉层级与色块垫底规范**：
    - 绘制顺序严格遵循：**① 底层柔和三角形色块（透明度 `0.15–0.24`） $\to$ ② 原题实线（深黑 `#0f172a`, `2.6px`）与辅助虚线（朱红 `#dc2626`, `dash="7 4"`） $\to$ ③ 角弧、短杠与直角标 $\to$ ④ 顶层顶点圆点、18px 顶点斜体字母与顶部图例条**。
 6. **禁止嵌套子 `<svg>` 规范（防止 `.visual svg` 100% 拉伸变形）**：
-   - 在非 `layout-c` 页面的 `#scene` 主 `<svg>` 内部（包括 `<foreignObject>` 内部），**绝对禁止再次嵌套 `<svg>` 标签**！所有图例图标、几何符号必须使用原生 `<path>`、`<polygon>`、`<line>`、`<rect>`、`<circle>` 绘制（`compile_seewo_courseware.py` 已内置 `FORBIDDEN NESTED <svg> DETECTED` 编译门禁）。
+   - 在非 `layout-c` 页面的 `#scene` 主 `<svg>` 内部（包括 `<foreignObject>` 内部），**绝对禁止再次嵌套 `<svg>` 标签**！所有图例图标、几何符号必须使用原生 `<path>`、`<polygon>`、`<line>`、`<rect>`、`<circle>` 绘制（`compile_courseware.py` 已内置 `FORBIDDEN NESTED <svg> DETECTED` 编译门禁）。
 7. **`<foreignObject>` 与 `<text>` 全包围盒零碰撞门禁**：
    - 图内所有 `<foreignObject>`（如 `svgFoCard`、`svgCalloutTag`）的矩形包围盒 `(x, y, width, height)` 严禁与任何 `<text>` 顶点字母、边长数值或其他 `<foreignObject>` 重叠（编译脚本自动执行 `SVG FOREIGNOBJECT-TEXT OVERLAP` 与 `FOREIGNOBJECT-FOREIGNOBJECT OVERLAP` 检测）。
 8. **相似三角形严禁括号证明符号 & 根号完整顶线（`.sqrt`）门禁**：
@@ -280,7 +280,7 @@ window.defineSlide({
         分子居中在上方、水平分数线居中、分母在下方，自动去除不必要的分子外层括号。
      3. **模型总结与流程图卡片**：在模型全景卡片中的高比、边长比例（如 $\frac{PF}{PE} = \frac{4}{3}n$），同样必须调用 `.fraction` 或 `svgFoCard` 呈现上下叠置分式，严禁在 `<text>` 中写 `PF/PE = (4/3)n`。
    - **编译门禁拦截（`BARE SLASH FRACTION IN SVG TEXT DETECTED`）**：
-     `compile_seewo_courseware.py` 自动扫描所有 chunk 中的 SVG `<text>` 标签内容，若检测到纯文本单行斜杠分式（如 `\d+/\d+` 或 `/\d+\(`），立即报错拦截并提示改用 `svgFoLabel` / `.fraction` 渲染。
+     `compile_courseware.py` 自动扫描所有 chunk 中的 SVG `<text>` 标签内容，若检测到纯文本单行斜杠分式（如 `\d+/\d+` 或 `/\d+\(`），立即报错拦截并提示改用 `svgFoLabel` / `.fraction` 渲染。
 
 
 

@@ -3,9 +3,9 @@
 [![CI Verification](https://github.com/HaoranXIONG-edu/math-interactive-courseware/actions/workflows/verify-courseware.yml/badge.svg)](https://github.com/HaoranXIONG-edu/math-interactive-courseware/actions/workflows/verify-courseware.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9+-green.svg)](https://www.python.org/)
-[![Platform](https://img.shields.io/badge/platform-Seewo%20%7C%20Web%20%7C%20iPad-orange.svg)]()
+[![Platform](https://img.shields.io/badge/platform-Smartboard%20%7C%20Web%20%7C%20iPad-orange.svg)]()
 
-> 面向中学数学课堂教学、希沃（Seewo）白板大屏及触屏设备的学案优化与交互式课件构建工具链。支持从 Word 学案原地 XML 无损修补（`.docx`）到单文件 SVG 动态交互课件（`.html`）的标准化构建与校验。
+> 面向中学数学课堂教学、教室智慧大屏及触屏设备的学案优化与交互式课件构建工具链。支持从 Word 学案原地 XML 无损修补（`.docx`）到单文件 SVG 动态交互课件（`.html`）的标准化构建与校验。
 
 ---
 
@@ -56,7 +56,7 @@
      - `chunk3_train_summary.js`：分层训练与课堂小结。
    - 统一调用壳层接口：`window.defineSlide({...})`、`window.createCoordCanvas({...})`、`window.renderMultiPanelScene(step, panels)`。
 3. **编译与自动化校验**：
-   - 运行 `compile_seewo_courseware.py` 注入交互壳层并执行自动化校验：
+   - 运行 `compile_courseware.py` 注入交互壳层并执行自动化校验：
      - JavaScript 语法检查；
      - 步骤一致性校验（`.step` 卡片数与进度圆点数、填空 `data-step` 严格对齐）；
      - DOM 与公式排版校验（根式顶线 `.sqrt`、二维叠置分式 `.fraction`、禁止嵌套 `<svg>`）；
@@ -82,7 +82,7 @@
 
 ## 三、自适应页面版式体系（Layouts A–E）
 
-为适配希沃一体机（16:9，推荐标准画布 1600×900）以及平板触控，课件内置 5 种响应式页面版式：
+为适配教室一体机大屏（16:9，推荐标准画布 1600×900）以及平板触控，课件内置 5 种响应式页面版式：
 
 | 版式类型 | 适用题型与场景 | 页面结构与设计规范 |
 | :--- | :--- | :--- |
@@ -164,9 +164,9 @@ patcher.patch_paragraph(target_index, new_xml_fragment)
 patcher.save("优化版学案.docx")
 ```
 
-### 4. 单课例课件编译与自动化仿真 (`compile_seewo_courseware.py`)
+### 4. 单课例课件编译与自动化仿真 (`compile_courseware.py`)
 ```bash
-python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_courseware.py \
+python3 .agents/skills/math-interactive-courseware/scripts/compile_courseware.py \
   --title "2.2.3 反比例函数中“k”的几何意义" \
   --chunks "lessons/2.2.3_反比例函数中“k”的几何意义/build/chunk1_intro_explore.js" \
            "lessons/2.2.3_反比例函数中“k”的几何意义/build/chunk2_apply.js" \
@@ -182,13 +182,13 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_seewo_coursew
 ├── .github/workflows/verify-courseware.yml     # GitHub Actions 五重门禁自动化 CI 流水线
 ├── .agents/skills/math-interactive-courseware/ # 核心技能与流水线定义
 │   ├── SKILL.md                                # 规范说明书（全套开发规则与接口契约）
-│   ├── layers/                                 # 希沃大屏标准 HTML 壳层
-│   │   ├── seewo_shell_prefix.html             # 顶层交互容器、样式表、数学引擎库
-│   │   └── seewo_shell_suffix.html             # 播放控制条、快捷键、手写荧光笔
+│   ├── layers/                                 # 教室大屏标准 HTML 壳层
+│   │   ├── shell_prefix.html             # 顶层交互容器、样式表、数学引擎库
+│   │   └── shell_suffix.html             # 播放控制条、快捷键、手写荧光笔
 │   └── scripts/                                # 核心自动化编译与修补工具
 │       ├── inspect_docx_worksheet.py           # 学案结构解析与 WMF/OMML 公式解码器
 │       ├── docx_inplace_patcher.py             # 原地无损 Word XML 补丁器
-│       ├── compile_seewo_courseware.py         # 课件一键编译器与契约门禁仿真器（支持 JXA / Node）
+│       ├── compile_courseware.py         # 课件一键编译器与契约门禁仿真器（支持 JXA / Node）
 │       └── audit_figure_script.py              # 配图真实数学坐标与可解性校验器
 ├── docs/                                       # 技术规范与开发总结文档
 │   ├── assets/architecture_pipeline.svg        # 双阶段解耦构建架构矢量图

@@ -18,15 +18,15 @@ def run_js_check(js_file_path, is_syntax_only=False):
         raise RuntimeError("Neither 'osascript' (macOS JXA) nor 'node' (Node.js) was found in PATH for JS verification.")
 
 def main():
-    parser = argparse.ArgumentParser(description="Compile Seewo Interactive Math Courseware from JS chunks")
+    parser = argparse.ArgumentParser(description="Compile Interactive Math Courseware from JS chunks")
     parser.add_argument("--title", required=True, help="Courseware title, e.g., 2.2.2 反比例函数的图象（2）")
     parser.add_argument("--chunks", nargs="+", required=True, help="Ordered list of JS chunk files")
     parser.add_argument("--output", required=True, help="Output HTML file path")
     args = parser.parse_args()
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    prefix = open(os.path.join(base_dir, "layers", "seewo_shell_prefix.html"), "r", encoding="utf-8").read()
-    suffix = open(os.path.join(base_dir, "layers", "seewo_shell_suffix.html"), "r", encoding="utf-8").read()
+    prefix = open(os.path.join(base_dir, "layers", "shell_prefix.html"), "r", encoding="utf-8").read()
+    suffix = open(os.path.join(base_dir, "layers", "shell_suffix.html"), "r", encoding="utf-8").read()
     annotation_js_path = os.path.join(base_dir, "layers", "annotation_components.js")
     if os.path.isfile(annotation_js_path):
         annotation_js = open(annotation_js_path, "r", encoding="utf-8").read()

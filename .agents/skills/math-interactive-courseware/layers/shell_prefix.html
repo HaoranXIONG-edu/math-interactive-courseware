@@ -3146,7 +3146,7 @@ window.renderStandardCover = function(cfg = {}) {
   `;
 };
 
-// ================= 数学真实坐标系 SVG 确定性绘图底座（SeewoCoordCanvas，杜绝口算像素与图形画错） =================
+// ================= 数学真实坐标系 SVG 确定性绘图底座（CoordCanvas，杜绝口算像素与图形画错） =================
 window.createCoordCanvas = function(arg1 = {}, arg2, arg3) {
   const opts = (typeof arg1 === 'number')
     ? Object.assign({ width: arg1, height: arg2 }, arg3 || {})

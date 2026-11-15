@@ -16,7 +16,7 @@ COMPILER = os.path.join(
     "skills",
     "math-interactive-courseware",
     "scripts",
-    "compile_seewo_courseware.py",
+    "compile_courseware.py",
 )
 
 LESSONS = [

@@ -2343,7 +2343,7 @@ function initFigureDraggable(card) {{
 
   handle.addEventListener('mousedown', onMouseDown);
 
-  // 触摸屏支持 (希沃大屏)
+  // 触摸屏支持 (教室大屏)
   handle.addEventListener('touchstart', function(e) {{
     if (e.touches.length !== 1) return;
     const touch = e.touches[0];
