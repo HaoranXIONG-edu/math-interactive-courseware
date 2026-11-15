@@ -1,3 +1,8 @@
+// =========================================================================
+// 数学交互式课件组件库聚合入口 (courseware_components.js)
+// 架构分层：1) math_components.js  2) ui_components.js  3) annotation_components.js
+// =========================================================================
+
 /**
  * =============================================================================
  * 1. 数学学科与图形组件库 — Math & Geometry Component Library (math_components.js)
@@ -265,6 +270,17 @@
       .replace(/\\Rightarrow\b/g, '⇒')
       .replace(/\\rightarrow\b/g, '→');
 
+    // 4.5 矢量全等符号 \cong / ≌（杜绝 macOS Times New Roman U+224C 顶部带闭环圈的西文字形，严格还原北师大教材“上∽下=”标准全等号）
+    var CONG_SVG =
+      '<svg class="cw-cong" viewBox="0 0 16 15" style="width:0.84em;height:0.78em;vertical-align:-0.08em;margin:0 2px;overflow:visible;display:inline-block;">' +
+      '<path d="M 1.4 4.5 C 3.2 0.6, 6.2 0.6, 8.0 4.5 C 9.8 8.4, 12.8 8.4, 14.6 4.5" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/>' +
+      '<line x1="1.3" y1="9.8" x2="14.7" y2="9.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+      '<line x1="1.3" y1="13.0" x2="14.7" y2="13.0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+      '</svg>';
+    s = s.replace(/≌/g, function () {
+      return saveBlock(CONG_SVG);
+    });
+
     // 5. 矢量闭合根号 \sqrt{...}
     var SQRT_HOOK_SVG =
       '<svg class="sqrt-hook" viewBox="0 0 12 20" preserveAspectRatio="none" style="width:0.56em;height:auto;display:block;flex-shrink:0;margin-right:-0.5px;overflow:visible;">' +
@@ -342,7 +358,7 @@
     });
 
     function tokenizeSimpleMath(str) {
-      var tokenRe = /\u0000BLK\d+\u0000|[0-9.]+(?:\s*(?:cm|mm|km|kg|mg|hm|Pa|Hz|min|max|m|s|h|g|L|V|A|W|N)\b)?|\b(?:Rt|sin|cos|tan|cot|min|max|cm|mm|km|kg|mg|hm|Pa|Hz)\b|[a-zA-Zαβ]+|[+=<>≤≥≠±×÷·⋯:(),.|/?∠△⊥∥∽≌⊙▱∵∴°①②③④⑤%-]+|[\u4e00-\u9fa5，。；：？！、“”‘’（）【】《》—…]+|\s+/g;
+      var tokenRe = /\u0000BLK\d+\u0000|[0-9.]+(?:\s*(?:cm|mm|km|kg|mg|hm|Pa|Hz|min|max|m|s|h|g|L|V|A|W|N)\b)?|\b(?:Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|hm|Pa|Hz)\b|[a-zA-Zαβ]+|[+=<>≤≥≠±×÷·⋯:(),.|/?∠△⊥∥∽≌⊙▱∵∴°①②③④⑤%-]+|[\u4e00-\u9fa5，。；：？！、“”‘’（）【】《》—…]+|\s+/g;
       var m = String(str).match(tokenRe);
       if (!m) return String(str);
       return m
@@ -352,7 +368,7 @@
           if (/^[0-9.]/.test(tk)) {
             return '<span class="num">' + tk.replace(/\s+/g, '') + '</span>';
           }
-          if (/^(?:Rt|sin|cos|tan|cot|min|max|cm|mm|km|kg|mg|hm|Pa|Hz)$/.test(tk)) {
+          if (/^(?:Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|hm|Pa|Hz)$/.test(tk)) {
             return '<span class="num">' + tk + '</span>';
           }
           if (/^[a-zA-Zαβ]+$/.test(tk)) {
@@ -449,9 +465,14 @@
           continue;
         }
       }
-      // 收集普通文本直到下一个 \frac 或 \sqrt 或 √
+      if (s.charAt(i) === '≌') {
+        tokens.push({ type: 'cong' });
+        i += 1;
+        continue;
+      }
+      // 收集普通文本直到下一个 \frac 或 \sqrt 或 √ 或 ≌
       var nextIdx = s.length;
-      ['\\frac', '\\sqrt', '√'].forEach(function (kw) {
+      ['\\frac', '\\sqrt', '√', '≌'].forEach(function (kw) {
         var p = s.indexOf(kw, i);
         if (p !== -1 && p < nextIdx) nextIdx = p;
       });
@@ -470,6 +491,7 @@
     var fracFs = Math.round(fs * 0.84 * 10) / 10;
     tks.forEach(function (tk) {
       if (tk.type === 'text') sum += estimateSvgTokenWidth(tk.text, fs);
+      else if (tk.type === 'cong') sum += fs * 0.96;
       else if (tk.type === 'sqrt') sum += 10 + estimateSvgTokenWidth(tk.rad, fs) + 3;
       else if (tk.type === 'frac') sum += Math.max(estimateSvgExprWidth(tk.num, fracFs), estimateSvgExprWidth(tk.den, fracFs)) + 8;
     });
@@ -483,6 +505,7 @@
     var color = o.color || MATH_THEME.colors.ink;
     var halo = o.halo !== undefined ? o.halo : MATH_THEME.stroke.halo;
     var anchor = o.anchor || 'middle';
+    var haloAttr = halo > 0 ? ' stroke="#ffffff" stroke-width="' + halo + '" paint-order="stroke"' : '';
 
     var tokens = parseSvgMathTokens(rawExpr);
     // 计算每个 token 的宽度
@@ -490,6 +513,8 @@
     tokens.forEach(function (tk) {
       if (tk.type === 'text') {
         tk.w = estimateSvgTokenWidth(tk.text, fs);
+      } else if (tk.type === 'cong') {
+        tk.w = fs * 0.96;
       } else if (tk.type === 'frac') {
         var nw = estimateSvgExprWidth(tk.num, fracFs);
         var dw = estimateSvgExprWidth(tk.den, fracFs);
@@ -514,10 +539,39 @@
         out.push(
           '<text x="' + curX.toFixed(1) + '" y="' + cy.toFixed(1) + '" ' +
           'font-family="\'Times New Roman\', \'Songti SC\', SimSun, serif" ' +
-          'font-size="' + fs + '" font-weight="700" fill="' + color + '" text-anchor="start" ' +
-          'stroke="#ffffff" stroke-width="' + halo + '" paint-order="stroke">' +
+          'font-size="' + fs + '" font-weight="700" fill="' + color + '" text-anchor="start"' +
+          haloAttr + '>' +
           fmtText(tk.text, fs) +
           '</text>'
+        );
+        curX += tk.w;
+      } else if (tk.type === 'cong') {
+        var sc = fs / 15.5;
+        var ox = curX + 0.5;
+        var oy = cy - fs * 0.78;
+        var waveD =
+          'M ' + (ox + 1.2 * sc).toFixed(1) + ' ' + (oy + 4.2 * sc).toFixed(1) +
+          ' C ' + (ox + 3.0 * sc).toFixed(1) + ' ' + (oy + 0.5 * sc).toFixed(1) + ', ' +
+                  (ox + 5.8 * sc).toFixed(1) + ' ' + (oy + 0.5 * sc).toFixed(1) + ', ' +
+                  (ox + 7.5 * sc).toFixed(1) + ' ' + (oy + 4.2 * sc).toFixed(1) +
+          ' C ' + (ox + 9.2 * sc).toFixed(1) + ' ' + (oy + 7.9 * sc).toFixed(1) + ', ' +
+                  (ox + 12.0 * sc).toFixed(1) + ' ' + (oy + 7.9 * sc).toFixed(1) + ', ' +
+                  (ox + 13.8 * sc).toFixed(1) + ' ' + (oy + 4.2 * sc).toFixed(1);
+        var l1y = (oy + 9.1 * sc).toFixed(1);
+        var l2y = (oy + 12.1 * sc).toFixed(1);
+        var lx1 = (ox + 1.1 * sc).toFixed(1);
+        var lx2 = (ox + 13.9 * sc).toFixed(1);
+        if (halo > 0) {
+          out.push(
+            '<path d="' + waveD + '" fill="none" stroke="#ffffff" stroke-width="' + (halo + 1) + '" stroke-linecap="round"/>' +
+            '<line x1="' + lx1 + '" y1="' + l1y + '" x2="' + lx2 + '" y2="' + l1y + '" stroke="#ffffff" stroke-width="' + (halo + 1) + '" stroke-linecap="round"/>' +
+            '<line x1="' + lx1 + '" y1="' + l2y + '" x2="' + lx2 + '" y2="' + l2y + '" stroke="#ffffff" stroke-width="' + (halo + 1) + '" stroke-linecap="round"/>'
+          );
+        }
+        out.push(
+          '<path d="' + waveD + '" fill="none" stroke="' + color + '" stroke-width="1.55" stroke-linecap="round"/>' +
+          '<line x1="' + lx1 + '" y1="' + l1y + '" x2="' + lx2 + '" y2="' + l1y + '" stroke="' + color + '" stroke-width="1.5" stroke-linecap="round"/>' +
+          '<line x1="' + lx1 + '" y1="' + l2y + '" x2="' + lx2 + '" y2="' + l2y + '" stroke="' + color + '" stroke-width="1.5" stroke-linecap="round"/>'
         );
         curX += tk.w;
       } else if (tk.type === 'frac') {
@@ -605,7 +659,7 @@
 
       function formatFlatTokens(seg, isSubOrSup) {
         if (!seg) return '';
-        var tokenRe = /(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
+        var tokenRe = /(Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
         var out = '';
         var m;
         var baseTokenFs = isSubOrSup ? subFs : fs;
@@ -619,7 +673,7 @@
           if (tk === '△') {
             var triFs = Math.round(baseTokenFs * 0.82 * 10) / 10;
             out += '<tspan' + dyAttr + ' font-family="\'Songti SC\', \'SimSun\', serif" font-style="normal" font-size="' + triFs + '">' + safeTk + '</tspan>';
-          } else if (/^(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
+          } else if (/^(Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
             out += '<tspan' + dyAttr + ' font-family="\'Times New Roman\', Times, serif" font-style="normal" font-size="' + baseTokenFs + '">' + safeTk + '</tspan>';
           } else if (/^[A-Za-z]+$/.test(tk)) {
             out += '<tspan' + dyAttr + ' font-family="\'Times New Roman\', Times, serif" font-style="italic" font-size="' + baseTokenFs + '">' + safeTk + '</tspan>';
@@ -720,7 +774,11 @@
         }
         var tx = curX + m.iconW + 4;
         var ty = cy + 4.5;
-        out += '<text x="' + tx.toFixed(1) + '" y="' + ty.toFixed(1) + '" font-family="\'Times New Roman\', \'Songti SC\', SimSun, serif" font-weight="700" font-size="' + fs + '" fill="' + color + '" text-anchor="start">' + window.svgAutoFormatText(m.rawTxt, fs) + '</text>';
+        if (m.rawTxt.indexOf('≌') !== -1 || m.rawTxt.indexOf('\\cong') !== -1 || m.rawTxt.indexOf('\\frac') !== -1 || m.rawTxt.indexOf('\\sqrt') !== -1 || m.rawTxt.indexOf('√') !== -1) {
+          out += renderSvgMathDirect(tx, ty, m.rawTxt, { size: fs, color: color, halo: 0, anchor: 'start' });
+        } else {
+          out += '<text x="' + tx.toFixed(1) + '" y="' + ty.toFixed(1) + '" font-family="\'Times New Roman\', \'Songti SC\', SimSun, serif" font-weight="700" font-size="' + fs + '" fill="' + color + '" text-anchor="start">' + window.svgAutoFormatText(m.rawTxt, fs) + '</text>';
+        }
         curX += m.totalW + gap;
         if (idx < measured.length - 1) {
           var sepX = curX - gap / 2;

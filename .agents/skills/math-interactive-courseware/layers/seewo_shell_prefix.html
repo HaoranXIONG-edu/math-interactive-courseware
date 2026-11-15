@@ -2948,7 +2948,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
 
   function formatFlatTokens(seg, isSubOrSup = false) {
     if (!seg) return '';
-    const tokenRe = /(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
+    const tokenRe = /(Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
     let out = '';
     let m;
     const baseTokenFs = isSubOrSup ? subFs : fs;
@@ -2962,7 +2962,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
       if (tk === '△') {
         const triFs = Math.round(baseTokenFs * 0.80 * 10) / 10;
         out += `<tspan${dyAttr} font-family="'Songti SC', 'SimSun', serif" font-style="normal" font-size="${triFs}">${safeTk}</tspan>`;
-      } else if (/^(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
+      } else if (/^(Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
         out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${baseTokenFs}">${safeTk}</tspan>`;
       } else if (/^[A-Za-z]+$/.test(tk)) {
         out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="italic" font-size="${baseTokenFs}">${safeTk}</tspan>`;
@@ -3586,7 +3586,11 @@ window.svgLegendBar = function(items, opts = {}) {
     }
     const tx = curX + m.iconW + 4;
     const ty = cy + 4.5;
-    out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    if ((m.rawTxt.includes('≌') || m.rawTxt.includes('\\cong') || m.rawTxt.includes('\\frac') || m.rawTxt.includes('\\sqrt') || m.rawTxt.includes('√')) && window.MathFormula && typeof window.MathFormula.svgDirect === 'function') {
+      out += window.MathFormula.svgDirect(tx, ty, m.rawTxt, { size: fs, color, halo: 0, anchor: 'start' });
+    } else {
+      out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    }
     curX += m.totalW + gap;
     if (idx < measured.length - 1) {
       const sepX = curX - gap / 2;

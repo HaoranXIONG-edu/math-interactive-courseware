@@ -2948,7 +2948,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
 
   function formatFlatTokens(seg, isSubOrSup = false) {
     if (!seg) return '';
-    const tokenRe = /(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
+    const tokenRe = /(Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|kPa|Pa|△|[A-Za-z]+|[\u4e00-\u9fff，。：；？！、（）“”]+|[^A-Za-z△\u4e00-\u9fff，。：；？！、（）“”]+)/g;
     let out = '';
     let m;
     const baseTokenFs = isSubOrSup ? subFs : fs;
@@ -2962,7 +2962,7 @@ window.svgAutoFormatText = function(rawText, baseSize) {
       if (tk === '△') {
         const triFs = Math.round(baseTokenFs * 0.80 * 10) / 10;
         out += `<tspan${dyAttr} font-family="'Songti SC', 'SimSun', serif" font-style="normal" font-size="${triFs}">${safeTk}</tspan>`;
-      } else if (/^(Rt|sin|cos|tan|min|max|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
+      } else if (/^(Rt|sin|cos|tan|cot|min|max|SAS|ASA|AAS|SSS|HL|cm|mm|km|kg|mg|kPa|Pa)$/.test(tk) || isUnitAfterSlashOrDigit) {
         out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="normal" font-size="${baseTokenFs}">${safeTk}</tspan>`;
       } else if (/^[A-Za-z]+$/.test(tk)) {
         out += `<tspan${dyAttr} font-family="'Times New Roman', Times, serif" font-style="italic" font-size="${baseTokenFs}">${safeTk}</tspan>`;
@@ -3586,7 +3586,11 @@ window.svgLegendBar = function(items, opts = {}) {
     }
     const tx = curX + m.iconW + 4;
     const ty = cy + 4.5;
-    out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    if ((m.rawTxt.includes('≌') || m.rawTxt.includes('\\cong') || m.rawTxt.includes('\\frac') || m.rawTxt.includes('\\sqrt') || m.rawTxt.includes('√')) && window.MathFormula && typeof window.MathFormula.svgDirect === 'function') {
+      out += window.MathFormula.svgDirect(tx, ty, m.rawTxt, { size: fs, color, halo: 0, anchor: 'start' });
+    } else {
+      out += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="'Times New Roman', 'Songti SC', SimSun, serif" font-weight="700" font-size="${fs}" fill="${color}" text-anchor="start">${window.svgAutoFormatText(m.rawTxt, fs)}</text>`;
+    }
     curX += m.totalW + gap;
     if (idx < measured.length - 1) {
       const sepX = curX - gap / 2;
@@ -8044,13 +8048,13 @@ function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';se
               当前模式：几何作图 · 平面直角坐标系 xOy
             </span>
           </div>
-          <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:24px;margin:auto 0;opacity:0.92;">
-            <div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:18px 22px;font-family:'SimSun','Songti SC',serif;font-size:22px;line-height:1.75;color:#1e293b;">
-              <div style="font-weight:700;color:#1e3a8a;margin-bottom:6px;font-size:18px;">【模拟课件底层板书区 · 可用荧光笔/画笔直接圈画批注】</div>
+          <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin:14px 0 auto;opacity:0.95;">
+            <div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:18px 22px;font-family:'SimSun','Songti SC',serif;font-size:22px;line-height:1.85;color:#1e293b;">
+              <div style="font-weight:700;color:#1e3a8a;margin-bottom:8px;font-size:16px;">【模拟课件底层板书区 · 可用荧光笔/画笔直接圈画批注】</div>
               已知反比例函数 <i class="m">y</i>=<span class="fraction"><span><span class="num">6</span></span><span><i class="m">x</i></span></span>（<i class="m">x</i>&gt;<span class="num">0</span>）的图象经过点 <i class="m">A</i>(<span class="num">2</span>,<span class="num">3</span>)，过点 <i class="m">A</i> 作 <i class="m">AB</i>⊥<i class="m">x</i> 轴于点 <i class="m">B</i>，连接 <i class="m">OA</i>，则 △<i class="m">OAB</i> 的面积 <i class="m">S</i>=<span class="num">3</span>。
             </div>
-            <div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:18px 22px;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:16px;font-weight:600;">
-              右侧尺规作图区（已预置平面直角坐标系 xOy、Rt△ 与虚线辅助线，可继续拖拽添加图形）
+            <div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:14px 18px;display:flex;flex-direction:column;justify-content:flex-start;min-height:245px;">
+              <div style="font-weight:700;color:#475569;font-size:15px;">【右侧尺规几何作图区 · 已预置坐标系 <i class="m">xOy</i>、Rt△ 与虚线辅助线】</div>
             </div>
           </div>
           <div style="height:68px;"></div>
