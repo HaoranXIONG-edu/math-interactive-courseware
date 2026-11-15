@@ -13,12 +13,13 @@
 - [一、系统架构与构建流程](#一系统架构与构建流程)
   - [阶段一：Word 学案解析与无损修补（.docx）](#阶段一word-学案解析与无损修补docx)
   - [阶段二：交互式动态课件构建与校验（.html）](#阶段二交互式动态课件构建与校验html)
-- [二、示范课例与交互式课件索引](#二示范课例与交互式课件索引)
-- [三、自适应页面版式体系（Layouts A–E）](#三自适应页面版式体系layouts-ae)
-- [四、几何图示 SVG 动态标注规范](#四几何图示-svg-动态标注规范)
-- [五、渐进式呈现与教学节奏控制规范](#五渐进式呈现与教学节奏控制规范)
-- [六、工具链接口与命令行使用说明](#六工具链接口与命令行使用说明)
-- [七、项目目录结构](#七项目目录结构)
+- [二、三大核心组件库架构（2024北师大版全六册）](#二三大核心组件库架构2024北师大版全六册)
+- [三、示范课例与交互式课件索引](#三示范课例与交互式课件索引)
+- [四、自适应页面版式体系（Layouts A–E）](#四自适应页面版式体系layouts-ae)
+- [五、几何图示 SVG 动态标注规范](#五几何图示-svg-动态标注规范)
+- [六、渐进式呈现与教学节奏控制规范](#六渐进式呈现与教学节奏控制规范)
+- [七、工具链接口与命令行使用说明](#七工具链接口与命令行使用说明)
+- [八、项目目录结构](#八项目目录结构)
 
 ---
 
@@ -65,12 +66,27 @@
 
 ---
 
-## 二、示范课例与交互式课件索引
+## 二、三大核心组件库架构（2024北师大版全六册）
 
-仓库内置 **5 节完整示范课例（共 68 页交互式幻灯片）** 与 **1 个 AI 试卷讲评工作台原型**，全部通过五重门禁无头仿真校验。可直接打开根目录 [index.html](index.html) 门户页浏览，或点击下表快速访问对应文件：
+课件底层已全面解耦为**三大独立核心组件库**（并提供合并运行时 `courseware_components.js` 与在线交互预览页 [docs/component_library_preview.html](docs/component_library_preview.html)），完整覆盖 2024 版北师大初中数学七至九年级全六册教材场景：
+
+| 组件库模块 | 源码路径 | 核心子模块与 API | 核心能力说明 |
+| :--- | :--- | :--- | :--- |
+| **1. 数学公式与图形组件库**<br>*(Math Component Library)* | [`components/math_components.js`](components/math_components.js)<br>[`layers/math_components.js`](.agents/skills/math-interactive-courseware/layers/math_components.js) | • `MathFormula.render()` / `.svg()`<br>• `createGeoCanvas()`<br>• `createFuncCanvas()`<br>• `createNumberLine()` / `createBoxPlot()`<br>• `create3DCanvas()` | • **M1 公式引擎**：自动中西文正斜体切分、连体矢量根号 $\sqrt{\quad}$、顶弧 $\overset{\frown}{AB}$、嵌套分式方程组、SVG 无胶囊白描边直接旁注<br>• **M2 平面几何画板**：波利亚阶梯数字角（$\angle 1, \angle 2$）、切线/圆弧尺规作图痕迹、将军饮马轴对称变换、通栏图例条<br>• **M3 函数画板**：一次/二次/反比例函数、对称轴、二次函数铅垂高 $\triangle PAB$ 智能阴影与旁注<br>• **M4/M5 统计与立体**：北师大标准单箭头数轴不等式解集、统计箱线图、正方体截面与圆锥侧面展开图 |
+| **2. 页面 UI 与教学交互组件库**<br>*(Page UI Component Library)* | [`components/ui_components.js`](components/ui_components.js)<br>[`layers/ui_components.js`](.agents/skills/math-interactive-courseware/layers/ui_components.js) | • `UI.bookBadge()` / `UI.prevContext()`<br>• `UI.stemCard()` / `UI.blank()` / `UI.choices()`<br>• `UI.stepCard()`<br>• `UI.stepTable()` / `UI.summaryGrid()` | • **U1 教材栏目与承接**：还原2024版北师大教材《尝试·思考》《操作·思考》《随堂练习》徽章与拆页`【前问已知】`横幅<br>• **U2 零剧透题干与填空**：支持单步点击揭晓或随步骤自动填入题干下划线填空与选择题选项网格<br>• **U3 波利亚步骤卡片**：内置 `[导角]`、`[表边]`、`[求解]` 色彩动作标签与 1:1 渐进式折叠引导条<br>• **U4 取点表与总结网格**：描点法动态表格揭晓与双栏核心模型对照卡片 |
+| **3. 课堂黑板批注与尺规作图库**<br>*(Ink & Geometry Annotation)* | [`components/annotation_components.js`](components/annotation_components.js)<br>[`layers/annotation_components.js`](.agents/skills/math-interactive-courseware/layers/annotation_components.js) | • `InkAnnotationLayer.createInteractiveDemo()`<br>• `InkAnnotationLayer.setupCoursewareToolbar()`<br>• `traceShapePath()` / `traceBezierPath()`<br>• `getAxesHandles()` / `applyAxesHandleDrag()` | • **A1 悬浮批注坞**：支持按住左侧手柄 `⠿` 或空白处**自由拖拽移动位置**，支持点击右侧 `—` **一键最小化收起为悬浮球**（避免遮挡底层数轴/图形）<br>• **5 大课堂批注工具**：触控穿透点击、二次贝塞尔平滑画笔、底层正片叠底荧光笔、块状橡皮擦、撤销/重做/清屏<br>• **8 种数学专属尺规作图**：平面直角坐标系 $xOy$（**拖出后支持单独拉动四端手柄调节 $+x, -x, +y, -y$ 各半轴长度及平移原点 $O$**）、带刻度数轴、$\triangle$、$\text{Rt}\triangle$（自动带直角标）、$\odot$、矩形、实/虚辅助线、箭头 |
+
+> 💡 **在线预览演练场**：直接打开 [`docs/component_library_preview.html`](docs/component_library_preview.html) 即可在浏览器中交互式体验全部三大组件库、切换讲解步进状态（`step=0` 零剧透 $\leftrightarrow$ `step=4` 完整展开）并在黑板演练场中拖拽坐标系半轴手柄或测试批注栏折叠。
+
+---
+
+## 三、示范课例与交互式课件索引
+
+仓库内置 **5 节完整示范课例（共 68 页交互式幻灯片）**、**1 个三大核心组件库全景演练场** 与 **1 个 AI 试卷讲评工作台原型**，全部通过五重门禁无头仿真校验。可直接打开根目录 [index.html](index.html) 门户页浏览，或点击下表快速访问对应文件：
 
 | 序号 | 课题 / 模块名称 | 幻灯片数 | 适用版式与核心特性 | 动态讲解课件（`.html`） | 优化版学生学案（`.docx`） |
 | :---: | :--- | :---: | :--- | :--- | :--- |
+| **00** | **三大核心组件库架构总览与交互演练场** | 组件库全景 | 数学公式与图形库 + 页面 UI 库 + 可拖拽/最小化尺规批注画板 | [component_library_preview.html](docs/component_library_preview.html) | [图示标注规范.md](docs/图示标注规范.md) |
 | **01** | **2.2.2 反比例函数的图象（2）** | 15 页 | `Layouts A/B` · 双曲线增减性、跨象限三点比较三法切换 | [2.2.2_动态讲解课件.html](lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_动态讲解课件.html) | [2.2.2_学生学案_优化版.docx](lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_学生学案_优化版.docx) |
 | **02** | **2.2.3 反比例函数中“k”的几何意义** | 16 页 | `Layouts A/B` · 面积定值模型、同底等高转化、多子图联动 | [2.2.3_动态讲解课件.html](lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html) | [2.2.3_学生学案_优化版.docx](lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_学生学案_优化版.docx) |
 | **03** | **2.3.1 反比例函数的应用（1）** | 18 页 | `Layouts A/B/D` · 列表描点拟合、压强/杠杆跨学科建模 | [2.3.1_动态讲解课件.html](lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_动态讲解课件.html) | [2.3.1_学生学案_优化版.docx](lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_学生学案_优化版.docx) |
@@ -80,7 +96,7 @@
 
 ---
 
-## 三、自适应页面版式体系（Layouts A–E）
+## 四、自适应页面版式体系（Layouts A–E）
 
 为适配教室一体机大屏（16:9，推荐标准画布 1600×900）以及平板触控，课件内置 5 种响应式页面版式：
 
@@ -94,7 +110,7 @@
 
 ---
 
-## 四、几何图示 SVG 动态标注规范
+## 五、几何图示 SVG 动态标注规范
 
 课件中的几何图形完全采用原生高保真 SVG 动态生成，达到与出版级纸质讲义一致的清晰度与专业度：
 
@@ -120,7 +136,7 @@
 
 ---
 
-## 五、渐进式呈现与教学节奏控制规范
+## 六、渐进式呈现与教学节奏控制规范
 
 1. **初始状态（`step = 0`）留白控制**：
    - 进入页面时，所有推导步骤卡片默认隐藏，填空处保持留白；
@@ -136,7 +152,7 @@
 
 ---
 
-## 六、工具链接口与命令行使用说明
+## 七、工具链接口与命令行使用说明
 
 ### 1. 全仓课例一键编译与五重门禁校验 (`scripts/build_all.py`)
 ```bash
@@ -176,24 +192,35 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_courseware.py
 
 ---
 
-## 七、项目目录结构
+## 八、项目目录结构
 
 ```text
+├── components/                                 # 三大核心组件库顶层源码目录（与 .agents/skills/.../layers 实时同步）
+│   ├── math_components.js                      # 【第一库】数学公式引擎与几何/函数/数轴/3D图形组件库
+│   ├── ui_components.js                        # 【第二库】页面 UI 设计、北师大教材徽章与渐进步骤组件库
+│   ├── annotation_components.js                # 【第三库】课堂黑板批注、可拖拽/最小化工具坞与8种尺规作图库
+│   └── courseware_components.js                # 三大核心组件库聚合运行时（供壳层与外部页面一键引入）
+├── docs/                                       # 组件库预览、技术规范与开发总结文档
+│   ├── component_library_preview.html          # 三大核心组件库架构总览与交互式黑板演练场（可直接打开）
+│   ├── 图示标注规范.md                          # 数学公式、函数画板与几何动态标注规范细则
+│   ├── 数学学案优化与动态交互课件开发规范总结.md  # 双阶段研发全流程总结
+│   └── assets/architecture_pipeline.svg        # 双阶段解耦构建架构矢量图
 ├── .github/workflows/verify-courseware.yml     # GitHub Actions 五重门禁自动化 CI 流水线
-├── .agents/skills/math-interactive-courseware/ # 核心技能与流水线定义
+├── .agents/skills/math-interactive-courseware/ # 核心技能、组件底座与构建流水线
 │   ├── SKILL.md                                # 规范说明书（全套开发规则与接口契约）
-│   ├── layers/                                 # 教室大屏标准 HTML 壳层
-│   │   ├── shell_prefix.html             # 顶层交互容器、样式表、数学引擎库
-│   │   └── shell_suffix.html             # 播放控制条、快捷键、手写荧光笔
+│   ├── layers/                                 # 教室大屏标准 HTML 壳层与组件底座
+│   │   ├── math_components.js                  # 数学公式与图形组件库
+│   │   ├── ui_components.js                    # 页面 UI 设计与教学交互组件库
+│   │   ├── annotation_components.js            # 课堂黑板批注与尺规作图组件库
+│   │   ├── courseware_components.js            # 三大核心组件库聚合文件
+│   │   ├── shell_prefix.html                   # 顶层交互容器、样式表、数学引擎与组件底座
+│   │   └── shell_suffix.html                   # 播放控制条、快捷键、手写画布与悬浮批注挂载器
 │   └── scripts/                                # 核心自动化编译与修补工具
 │       ├── inspect_docx_worksheet.py           # 学案结构解析与 WMF/OMML 公式解码器
 │       ├── docx_inplace_patcher.py             # 原地无损 Word XML 补丁器
-│       ├── compile_courseware.py         # 课件一键编译器与契约门禁仿真器（支持 JXA / Node）
+│       ├── compile_courseware.py               # 课件一键编译器与契约门禁仿真器（支持 JXA / Node）
 │       └── audit_figure_script.py              # 配图真实数学坐标与可解性校验器
-├── docs/                                       # 技术规范与开发总结文档
-│   ├── assets/architecture_pipeline.svg        # 双阶段解耦构建架构矢量图
-│   └── 数学学案优化与动态交互课件开发规范总结.md
-├── lessons/                                    # 分课时学案与动态课件（成品 + build 源码）
+├── lessons/                                    # 分课时学案与动态课件（成品 HTML/DOCX + build 模块源码）
 │   ├── 2.2.2_反比例函数的图象（2）/
 │   ├── 2.2.3_反比例函数中“k”的几何意义/
 │   ├── 2.3.1_反比例函数的应用（1）/

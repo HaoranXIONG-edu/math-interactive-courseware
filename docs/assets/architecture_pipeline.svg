@@ -224,17 +224,17 @@
     <text x="926" y="123" class="stage-hdr">教室大屏交互式动态课件构建与仿真流水线（.html）</text>
     <text x="926" y="143" class="stage-sub">1:1 Blueprint Alignment · Multi-Agent Chunk Builders · 5-Gate Headless Simulation</text>
 
-    <!-- Layer 2.1: Locked Blueprint & Shell Architecture -->
+    <!-- Layer 2.1: Locked Blueprint & 3-Pillar Component Library Architecture -->
     <rect x="840" y="170" width="596" height="106" rx="10" fill="url(#io-teal)" stroke="#2dd4bf" stroke-width="1.5"/>
     <rect x="854" y="182" width="118" height="22" rx="4" fill="#0f766e"/>
-    <text x="913" y="197" text-anchor="middle" class="layer-tag" fill="#ffffff">2.1 蓝图与交互壳层</text>
-    <text x="984" y="197" class="card-title">定稿蓝图与教室大屏标准 HTML 壳层底座</text>
-    <rect x="1244" y="180" width="178" height="24" rx="5" fill="#1e293b"/>
-    <text x="1333" y="196" text-anchor="middle" class="font-mono code-pill" fill="#5eead4">layers/shell_*.html</text>
+    <text x="913" y="197" text-anchor="middle" class="layer-tag" fill="#ffffff">2.1 三大核心组件库</text>
+    <text x="984" y="197" class="card-title">三大解耦组件库底座与标准 HTML 交互壳层</text>
+    <rect x="1224" y="180" width="198" height="24" rx="5" fill="#1e293b"/>
+    <text x="1323" y="196" text-anchor="middle" class="font-mono code-pill" fill="#5eead4">components/*_components.js</text>
 
-    <text x="856" y="222" class="card-desc" fill="#115e59">• <tspan font-weight="700">五类自适应版式（Layouts A–E）</tspan>：全宽居中 / 左解右图 / 四图选项矩阵 / 表解图联动 / 多卡片翻转</text>
-    <text x="856" y="242" class="card-desc" fill="#115e59">• <tspan font-weight="700">内置几何与坐标引擎</tspan>：createCoordCanvas() 数学坐标底座、renderMultiPanelScene() 多子图容器</text>
-    <text x="856" y="262" class="card-desc" fill="#115e59">• <tspan font-weight="700">波利亚级 SVG 标注库</tspan>：svgLegendBar 通栏图例、svgNumberedAngle 数字角、svgCalloutTag 引线框</text>
+    <text x="856" y="222" class="card-desc" fill="#115e59">• <tspan font-weight="700">1. 数学公式与图形库 (math_components.js)</tspan>：MathFormula 顶弧/根式/分式 + 几何/函数/数轴/3D画板</text>
+    <text x="856" y="242" class="card-desc" fill="#115e59">• <tspan font-weight="700">2. 页面 UI 与教学交互库 (ui_components.js)</tspan>：北师大教材徽章 + 零剧透填空 + 波利亚步骤卡 + Layouts A–E</text>
+    <text x="856" y="262" class="card-desc" fill="#115e59">• <tspan font-weight="700">3. 黑板批注与尺规作图库 (annotation_components.js)</tspan>：可拖拽/最小化批注坞 + 坐标系四半轴独立调节</text>
 
     <line x1="935" y1="276" x2="935" y2="298" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
     <line x1="1138" y1="276" x2="1138" y2="298" stroke="#0d9488" stroke-width="2" marker-end="url(#arr-teal)"/>
