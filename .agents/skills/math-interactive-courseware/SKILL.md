@@ -282,6 +282,34 @@ window.defineSlide({
    - **编译门禁拦截（`BARE SLASH FRACTION IN SVG TEXT DETECTED`）**：
      `compile_courseware.py` 自动扫描所有 chunk 中的 SVG `<text>` 标签内容，若检测到纯文本单行斜杠分式（如 `\d+/\d+` 或 `/\d+\(`），立即报错拦截并提示改用 `svgFoLabel` / `.fraction` 渲染。
 
+---
+
+## 四、三大解耦组件库与教室黑板批注交互规范（Three-Layer Architecture）
+
+项目组件库已完全解耦为三大独立层级（聚合入口：[courseware_components.js](./layers/courseware_components.js)，总览演练场：[component_library_preview.html](../../../docs/component_library_preview.html)）：
+
+### 4.1 第一库：数学公式与图形组件库（`layers/math_components.js`）
+- **HTML 公式编译器（`window.MathFormula.render`）**：
+  - 自动执行中西文零空格切分、变量 `Times New Roman` 斜体、数字/单位/函数名（`Rt|sin|cos|tan|cot|min|max`）及**全等判定缩写（`SAS|ASA|AAS|SSS|HL`）**正体排版；
+  - `\cong` / `≌` 统一渲染为**矢量北师大教材标准全等号**（上 `∽` 下 `=`，彻底规避西文字体闭环圈乱码）；
+  - `\sqrt{...}` 渲染为带完整水平顶线的连体矢量根号；`.fraction` 仅对分子底边框（`> span:first-child`）画唯一分数线。
+- **纯原生 SVG 无胶囊直接旁注（`window.MathFormula.svg` / `createGeoCanvas` / `createFuncCanvas`）**：
+  - 边旁代数式（`segmentLabel`）、求解目标（`targetCallout`）与函数铅垂高（`drawLeadVertical`）统一采用**白边光晕防压线无背景直标**，严禁使用笨重胶囊框或 `<foreignObject>`；
+  - `createFuncCanvas.drawAxes` 的原点 `O` 与轴标 `x, y` 置于顶层 `topOverlays` 并带白色描边光晕，防止被函数曲线穿过；
+  - 数轴组件（`createNumberLine`）严格遵循北师大八下教材，**仅数轴正方向带箭头，不等式解集折线末端不带箭头**；箱线图（`createBoxPlot`）内置防重叠下移避让。
+
+### 4.2 第二库：页面 UI 与教学交互组件库（`layers/ui_components.js`）
+- 统一提供 `UI.bookBadge`（2024北师大教材原生栏目徽章）、`UI.prevContext`（拆页 `【前问已知】` 横幅）、`UI.stemCard` / `UI.blank` / `UI.choices`（零剧透题干与选择题网格）、`UI.stepCard`（波利亚两字动作标签步骤流）、`UI.stepTable`（步进描点表格）及 `UI.summaryGrid`（自适应防单字折行总结卡片）。
+
+### 4.3 第三库：课堂黑板批注与尺规作图组件库（`layers/annotation_components.js`）
+- 由编译脚本自动内联至 `seewo_shell_suffix.html`，提供双离屏缓冲高帧率笔迹引擎、分页独立撤销/重做栈及 8 种初中数学尺规作图工具（`axes`, `numberline`, `triangle`, `rttriangle`, `circle`, `rect`, `line`, `arrow`）。
+- **坐标系（`axes`）与数轴（`numberline`）交互与渲染硬规范**：
+  1. **轻点即放（Tap-to-Stamp）**：单击或拖拽距离 `< 18px`（`axes` `< 20px`）时，由 `normalizeShapePoints` 自动以落笔点为中心生成标准尺寸完整图形（数轴 `360px` 宽、坐标系 `280×220`），不再产生无法使用的微小短线或小十字。
+  2. **数轴纵坐标锁定起笔点**：拖拽绘制数轴时纵坐标严格锁定在起笔点 `y1` 水平线上，避免手抖导致整条数轴上下漂移；单位刻度采用固定 `48px` 步长，消除拖拽时刻度与数字左右跳动。
+  3. **坐标系固定格距、准正方形吸附与淡雅单位网格**：坐标系采用固定 `44px` 单位步长；拖拽宽高接近正方形（误差 `< 14%`）时自动吸附为正交方格；内部自动绘制 `0.15` 透明度的单位虚线辅助网格，方便课堂直接在坐标系内描点作图且不遮挡底层题目。
+  4. **拖拽实时引导与防压线标注**：拖拽预览态（`isPreview = true`）实时显示淡蓝色原点十字准星/外框或数轴垂直对齐虚线，松手后自动隐藏；所有坐标轴标 `x, y, O` 与刻度数字均通过 `drawHaloText` 附带白色光晕描边，确保在任意底图上清晰可辨。
+
+
 
 
 
