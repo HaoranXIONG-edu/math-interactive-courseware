@@ -1,6 +1,6 @@
 ---
 name: math-interactive-courseware
-description: Use this skill whenever the user asks to optimize a middle/high school math student worksheet (.docx) and/or generate an interactive HTML dynamic presentation courseware (动态讲解课件.html) for classroom smartboard use. Provides the full-screen Goodnotes interactive HTML shell, 5 adaptive question layouts (Layouts A–E), zero-spoiler step-by-step progression rules, in-place Word XML patching rules, and a parallel Multi-Agent build pipeline.
+description: Use this skill whenever the user asks to optimize a middle/high school math student worksheet (.docx) and/or generate an interactive HTML dynamic presentation courseware (动态讲解课件.html) for classroom smartboard use. Provides the full-screen Goodnotes interactive HTML shell, 9 adaptive question layouts (Layouts A–I), zero-spoiler step-by-step progression rules, in-place Word XML patching rules, and a parallel Multi-Agent build pipeline.
 ---
 
 # 数学学案无损优化与交互式 HTML 动态讲解课件（教室大屏版）开发技能
@@ -80,14 +80,20 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 
 ---
 
-## 三、交互式 HTML 动态课件五大自适应版式（Layouts A–E）与零剧透规范
+## 三、交互式 HTML 动态课件九大自适应版式（Layouts A–I）与零剧透规范
 
-### 1. 五大自适应版式（按题型精准匹配）
+> **版式速查总览**：完整版式矩阵与 `window.defineSlide` 配置模板见同目录 [LAYOUTS.md](./LAYOUTS.md)。
+
+### 1. 九大自适应版式（按教学环节与题型精准匹配）
 - **版式 A (`layout-a`)**：无配图纯文字/代数/概念辨析题。上方 `.screen-stem` 100% 全宽展示题干与选项，下方 `.screen-lower.layout-a` 100% 全宽展示分步解析。**严禁为了凑左右分栏而在左侧捏造假表格！**
 - **版式 B (`layout-b`)**：单配图几何/函数综合题、探究题。上方 `.screen-stem` 100% 全宽展示完整题干（含子问题串、归纳填空框或追问顶部的 `【关联前问总结】` 横幅），下方严格**左解（`.screen-notes`）右图（`.screen-media`）**。
 - **版式 C (`layout-c`)**：含 4 个函数图象选项的选择题。上方全宽展示题干及一行 4 张放大版 SVG 选项图，下方全宽展示分步排除推导。
 - **版式 D (`layout-d`)**：列表—描点—连线作图题。上方全宽展示带两端省略号 `…` 的取点表格（初始用 `?` 遮罩 $x, y$ 数值），左下分步推导，右下交互式坐标纸。
 - **版式 E (`layout-e`)**：多点坐标验算判断卡片题。上方题干，下方全宽并排展示待验算点卡片。
+- **版式 F (`layout-f`)**：**知识归纳与流程对照版式**（彻底摆脱 `.step` 卡片束缚，适配新授课定理归纳与解题通法如 `1.移项 → 2.化积 → 3.转化 → 4.求解`）。当配置 `example: { title, stem, lines: [...] }` 时，自动渲染**顶部例题横幅 + 水平“左流程要领 ↔ 右同步演算”一一对应对照行**；无独立例题时渲染居中 PPT 风格主题顶栏知识卡（支持每卡内置 `example` 示例框）。
+- **版式 G (`layout-g`)**：**多解法对比 / 正误辨析并排版式**（一题多解同屏对比、典型错解如“漏根”辨析）。支持 2/3 列自适应高度居中对比卡、`badge`（`✓ 推荐` / `⚠ 易错`）与 `badgeType`（`'ok' | 'warn' | 'info'`）、每卡独立 `comment`（步进点评区，`23px` 高亮呈现），以及末步揭晓的底部 `summary` 总结条。
+- **版式 H (`layout-h`)**：**教研级交互对比表格版式**（方法对比归纳表如 `方法 | 理论依据 | 适用范围 | 关键步骤`、公式汇总表）。通过 `headers`、`colWidths` 与每行 `cells` 渲染（顶对齐排版，首列彩色方法胶囊提示，其余列随步进逐行揭晓），并支持底部 `summary` 选用策略总结条。
+- **版式 I (`layout-i`)**：**全屏居中交互式思维导图 / 课堂小结版式**（课堂小结、章节复习思维导图）。取消左侧冗余步骤卡片，由 `window.renderMindMapScene` 占据全屏宽度渲染高清 SVG 树状思维导图（中心主题 → 彩色分支 → 子节点 → 右侧核心解读框），支持直接点击导图分支展开，并支持底部 `summary` 课堂核心思想总结条。
 
 ### 2. 渐进式呈现（Zero-Spoiler）与零冗余规范
 0. **第 1 页必为极简正式教学封面页（`cover: true` + `window.renderStandardCover`）**：
@@ -98,7 +104,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 1. **一题一页 & 追问独立成页**：每个 `追问` 独立成页，并在 `.screen-stem` 顶部放置 `20px` 浅青色 `【关联前问总结】` 横幅（**切勿把题干、归纳框或关联前问总结塞进左侧 `.screen-notes` 挤压推导区空间**）。
 2. **`step = 0` 绝对纯净与直接点击步进（零显眼“下一步”按钮）**：
    - **题干答题栏同步回填（必选）**：所有填空题横线与选择题括号必须使用 `<span class="screen-blank" data-step="3" data-ans="..."></span>`（选择题加 `choice-bracket` 类，如 `<span class="screen-blank choice-bracket" data-step="3" data-ans="B"></span>`）放置在 `.screen-stem` 题干对应位置。初始状态为空白横线或空括号 `（   ）`；当步骤推进到 `data-step`（或最后一步 `maxStep`）时，自动以醒目红字手写批注风格填入题干答题栏中，严禁只把答案埋在解析末尾。
-   - **点击步骤条直接展开（去显眼“下一步”按钮）**：普通视图下隐藏显眼的蓝色 `▶ 下一步` 按钮；未解锁的 `.step.step-locked` 显示为仅含步骤序号与阶段标题的折叠引导条（如 `01 步骤1（设点表边） · 点击展开 ▸`），教师在交互白板上**直接点击任意步骤卡片**（或点击顶部轻量数字进度圆点 `1, 2, 3`、按空格/回车键）即可展开该步解析并同步触发右侧 SVG 动态几何演示。
+   - **点击步骤胶囊直接展开与「✎ 留白板书」模式（零剧透 + 去显眼“下一步”按钮）**：普通视图下隐藏显眼的蓝色 `▶ 下一步` 按钮；未解锁的 `.step.step-locked` 渲染为紧凑内联胶囊条（仅显示 `01 展开第 1 步 ▸` / `02 第 2 步 ▸`，**不暴露括号内的解题方法提示，避免对学生产生剧透暗示**），教师在交互白板上**直接点击任意步骤胶囊**（或点击顶部轻量数字进度圆点 `1, 2, 3`、按空格/回车键）即可展开该步解析并同步触发右侧 SVG 动态几何演示；点击顶部控制栏 `✎ 留白板书`（`board-blank-mode`）可一键隐藏所有未展开占位条，释放 100% 纯净空白区域供现场手写板书与批注。
    - **无配图题的辅助坐标系零剧透**：若原学案某题无配图，而课件右侧提供了辅助坐标系（如三点比大小、区间最值），**在 `step = 0` 时右侧 SVG 只允许渲染空白平面直角坐标系（坐标轴、网格与刻度），严禁提前画出双曲线或点坐标**！必须等 `step >= 1` 判定 $k$ 的正负后才动态绘出曲线。
    - **有配图题的辅助线零剧透**：`step = 0` 严格还原原题配图，辅助线（如连接 $AO$、作垂线构造一线三垂直）与数字角（$\angle 1, \angle 2$）在 `step >= 1` 时才以彩色虚线浮现。
 3. **SVG 排版与防乱码规范（严禁裸斜杠、严禁裸 `<` 号、严禁中文夹空格）**：
@@ -128,6 +134,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
    - `window.defineSlide(cfg)`：声明式注册课件页与配套 `sim` 函数（自动保障 `steps.length === maxStep`）。
    - `window.createCoordCanvas(opts)`：真实数学坐标系 SVG 绘图引擎（支持 `.drawAxes()`, `.drawHyperbola()`, `.drawPolygon()`, `.drawSegment()`, `.drawRightAngle()`, `.drawPoint()`, `.drawText()`, `.drawFoCard()`, `.toSvg()`）。
    - `window.renderMultiPanelScene(step, panels, opts)`：一题多图（`图(1)～图(k)`）标准容器，`step = 0` 自动渲染多图网格总览（点击任意子图跳转对应步骤），`step >= 1` 自动放大对应子图并提供 `⊞ 返回多图总览` 按钮。
+   - `window.renderMindMapScene(step, opts)`：交互式思维导图 / 课堂小结 SVG 渲染器（纯原生 SVG 图元，支持点击分支节点跳转对应步骤；`layout-i` 默认自动调用）。
    - `window.renderStandardCover(cfg)`：标准极简教学封面页渲染器（左侧章节/标题/学习目标，右侧全章统一数学徽章插画）。
    - `activeRoot()`：获取当前活动页根节点 `#content`。
    - `stepBar(step, maxStep)`：生成顶部轻量数字进度圆点条（`💡 推导进度 1 2 3`）。
@@ -302,7 +309,7 @@ window.defineSlide({
 - 统一提供 `UI.bookBadge`（2024北师大教材原生栏目徽章）、`UI.prevContext`（拆页 `【前问已知】` 横幅）、`UI.stemCard` / `UI.blank` / `UI.choices`（零剧透题干与选择题网格）、`UI.stepCard`（波利亚两字动作标签步骤流）、`UI.stepTable`（步进描点表格）及 `UI.summaryGrid`（自适应防单字折行总结卡片）。
 
 ### 4.3 第三库：课堂黑板批注与尺规作图组件库（`layers/annotation_components.js`）
-- 由编译脚本自动内联至 `seewo_shell_suffix.html`，提供双离屏缓冲高帧率笔迹引擎、分页独立撤销/重做栈及 8 种初中数学尺规作图工具（`axes`, `numberline`, `triangle`, `rttriangle`, `circle`, `rect`, `line`, `arrow`）。
+- 由编译脚本自动内联至 `shell_suffix.html`，提供双离屏缓冲高帧率笔迹引擎、分页独立撤销/重做栈及 8 种初中数学尺规作图工具（`axes`, `numberline`, `triangle`, `rttriangle`, `circle`, `rect`, `line`, `arrow`）。
 - **坐标系（`axes`）与数轴（`numberline`）交互与渲染硬规范**：
   1. **轻点即放（Tap-to-Stamp）**：单击或拖拽距离 `< 18px`（`axes` `< 20px`）时，由 `normalizeShapePoints` 自动以落笔点为中心生成标准尺寸完整图形（数轴 `360px` 宽、坐标系 `280×220`），不再产生无法使用的微小短线或小十字。
   2. **数轴纵坐标锁定起笔点**：拖拽绘制数轴时纵坐标严格锁定在起笔点 `y1` 水平线上，避免手抖导致整条数轴上下漂移；单位刻度采用固定 `48px` 步长，消除拖拽时刻度与数字左右跳动。

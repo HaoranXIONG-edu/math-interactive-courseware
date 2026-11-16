@@ -178,8 +178,8 @@ for (var idx = 0; idx < slides.length; idx++) {
     st.step = s;
     if (typeof fn === "function") fn(st, s === 0);
     else { if (s === 0 && fn.init) fn.init(st); fn.render(st); }
-    var isLayoutA = sl.html.indexOf("layout-a") >= 0 && sl.html.indexOf('id="scene"') < 0 && sl.html.indexOf("id='scene'") < 0;
-    if (!isLayoutA && (!sceneEl.innerHTML || sceneEl.innerHTML.indexOf("<svg") < 0)) {
+    var isNoSceneLayout = sl.html.indexOf('id="scene"') < 0 && sl.html.indexOf("id='scene'") < 0;
+    if (!isNoSceneLayout && (!sceneEl.innerHTML || sceneEl.innerHTML.indexOf("<svg") < 0)) {
       throw new Error("Slide " + idx + " (" + sl.sim + ") produced empty SVG at step " + s);
     }
     if (/\\<0/.test(sceneEl.innerHTML) || /\\<\\s+0/.test(sceneEl.innerHTML)) {

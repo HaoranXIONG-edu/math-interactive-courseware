@@ -1550,28 +1550,37 @@ body.canvas-zoom-mode .step-btn.next {
   opacity: 1 !important;
 }
 .screen-notes .step.step-locked {
-  display: flex !important;
+  display: inline-flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
+  width: auto !important;
+  max-width: 100% !important;
+  gap: 8px !important;
   background: #f8fafc !important;
   border: 1.5px dashed #cbd5e1 !important;
-  border-left: 5px solid #94a3b8 !important;
-  padding: 11px 16px !important;
+  border-left: 4px solid #94a3b8 !important;
+  border-radius: 999px !important;
+  padding: 5px 14px !important;
+  margin: 0 8px 8px 0 !important;
   cursor: pointer !important;
   user-select: none;
   opacity: 0.92;
+  vertical-align: middle;
 }
 .screen-notes .step.step-locked.step-next-up {
   background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%) !important;
   border: 1.5px dashed #60a5fa !important;
-  border-left: 5px solid #2563eb !important;
+  border-left: 4px solid #2563eb !important;
   opacity: 1;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08) !important;
 }
 .screen-notes .step.step-locked:hover {
   background: #dbeafe !important;
   border-color: #3b82f6 !important;
-  transform: translateX(2px);
+  transform: translateY(-1px);
+}
+.screen-notes .step.step-locked > b {
+  font-size: 16px !important;
 }
 .screen-notes .step.step-locked > span {
   display: none !important;
@@ -1579,14 +1588,33 @@ body.canvas-zoom-mode .step-btn.next {
 .screen-notes .step.step-locked::after {
   content: attr(data-lock-msg);
   font-family: 'Times New Roman', 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
-  font-size: 21.5px;
+  font-size: 17px;
   font-weight: 700;
   color: #475569;
-  flex: 1;
-  line-height: 1.35;
+  line-height: 1.3;
+  white-space: nowrap;
 }
 .screen-notes .step.step-locked.step-next-up::after {
   color: #1e3a8a;
+}
+/* 一键留白板书模式：隐藏所有未展开步骤占位条，释放 100% 纯净批注空间 */
+body.board-blank-mode .screen-notes .step.step-locked,
+body.board-blank-mode .layout-f-pair-row.is-locked,
+body.board-blank-mode .layout-f-ppt-card.is-locked,
+body.board-blank-mode .layout-g-card.is-locked,
+body.board-blank-mode .layout-h-row.is-locked {
+  display: none !important;
+}
+.step-btn.blank-board {
+  border-color: #cbd5e1;
+  color: #475569;
+  background: #ffffff;
+}
+body.board-blank-mode .step-btn.blank-board {
+  background: #fef3c7 !important;
+  border-color: #f59e0b !important;
+  color: #b45309 !important;
+  font-weight: 700;
 }
 .screen-notes .step.step-active {
   background: #f0f9ff;
@@ -2921,6 +2949,899 @@ table.stem-data-table tr > th:first-child {
   width: 110px !important;
 }
 
+
+/* 紧凑型非解题控制栏（用于 layout-f ~ layout-i，告别“推导进度/填入题干”做题感） */
+.step-ctrl-bar.is-compact {
+  padding: 6px 12px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  margin-bottom: 4px !important;
+  box-shadow: none !important;
+}
+.step-ctrl-bar.is-compact .step-hint-label {
+  font-size: 16px !important;
+  color: #475569 !important;
+}
+.step-ctrl-bar.is-compact .step-sub-hint {
+  font-size: 15px !important;
+  color: #64748b !important;
+}
+
+/* 版式 F：知识归纳与流程对照版式（彻底摆脱 .step 卡片束缚：左要领↔右演算水平对照 / 无示例时为 PPT 顶栏知识卡） */
+.screen-lower.layout-f {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.screen-lower.layout-f > .screen-media {
+  display: none !important;
+}
+.screen-lower.layout-f > .screen-notes {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 12px 20px 14px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px;
+}
+.layout-f-pair-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 4px;
+  gap: 10px;
+}
+.layout-f-pair-header {
+  display: grid;
+  grid-template-columns: 1.25fr 32px 1fr;
+  align-items: stretch;
+  gap: 12px;
+}
+.layout-f-col-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 11px;
+  font-size: 21px;
+  font-weight: 700;
+}
+.layout-f-col-head.is-rule {
+  background: linear-gradient(90deg, #eff6ff 0%, #f8fafc 100%);
+  border: 1.5px solid #bfdbfe;
+  border-left: 5px solid #2563eb;
+  color: #1e3a8a;
+}
+.layout-f-col-head.is-demo {
+  background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px solid #fcd34d;
+  border-left: 5px solid #f59e0b;
+  color: #b45309;
+}
+.layout-f-col-head.is-demo .layout-f-ex-stem {
+  color: #0f172a;
+  font-size: 22.5px;
+}
+.layout-f-pair-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.layout-f-pair-row {
+  display: grid;
+  grid-template-columns: 1.25fr 32px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.layout-f-pair-row:hover {
+  border-color: #93c5fd;
+  background: #f0f7ff;
+}
+.layout-f-pair-row.is-done {
+  background: #f8fafc;
+  border-color: #bbf7d0;
+}
+.layout-f-pair-row.is-active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+.layout-f-pair-row.is-locked {
+  background: #ffffff;
+  border-style: dashed;
+  border-color: #cbd5e1;
+}
+.layout-f-pair-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.layout-f-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #e2e8f0;
+  color: #475569;
+  flex: none;
+}
+.layout-f-pair-row.is-active .layout-f-pill {
+  background: #2563eb;
+  color: #ffffff;
+}
+.layout-f-pair-row.is-done .layout-f-pill {
+  background: #16a34a;
+  color: #ffffff;
+}
+.layout-f-rule-txt {
+  font-size: 22px;
+  line-height: 1.44;
+  color: #1e293b;
+}
+.layout-f-pair-row.is-locked .layout-f-rule-txt {
+  color: #94a3b8;
+}
+.layout-f-pair-arrow {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+.layout-f-pair-row.is-active .layout-f-pair-arrow { color: #2563eb; }
+.layout-f-pair-row.is-done .layout-f-pair-arrow { color: #16a34a; }
+.layout-f-pair-right {
+  padding: 9px 16px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1.5px solid #dbeafe;
+  font-size: 24px;
+  line-height: 1.4;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+.layout-f-pair-row.is-locked .layout-f-pair-right {
+  background: #f8fafc;
+  border-style: dashed;
+  border-color: #cbd5e1;
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: 700;
+  justify-content: center;
+}
+.layout-f-pair-row.is-active .layout-f-pair-right {
+  border-color: #2563eb;
+  background: #ffffff;
+}
+.layout-f-pair-row.is-done .layout-f-pair-right {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+/* 无示例时：PPT 风格主题顶栏知识卡 */
+.layout-f-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
+  width: 100%;
+  margin: auto 0;
+}
+.layout-f-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.layout-f-ppt-card {
+  padding: 18px 20px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-top: 5px solid #2563eb;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.layout-f-ppt-card.is-active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+}
+.layout-f-ppt-card.is-locked {
+  background: #ffffff;
+  border-style: dashed;
+  border-top-style: solid;
+  border-top-color: #cbd5e1;
+  opacity: 0.72;
+}
+.layout-f-ppt-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 23px;
+  font-weight: 700;
+  color: #1e3a8a;
+  padding-bottom: 8px;
+  border-bottom: 1.5px dashed #cbd5e1;
+}
+.layout-f-ppt-body {
+  font-size: 22.5px;
+  line-height: 1.5;
+  color: #1e293b;
+}
+.layout-f-inline-ex {
+  margin-top: 4px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px dashed #93c5fd;
+  font-size: 21.5px;
+  color: #1e293b;
+}
+.layout-f-inline-ex b {
+  color: #1d4ed8;
+}
+
+/* 版式 G：多解法对比 / 正误辨析并排版式（自适应高度居中对比卡 + 结构化解法/点评区 + 底部归纳总结） */
+.screen-lower.layout-g {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.screen-lower.layout-g > .screen-media {
+  display: none !important;
+}
+.screen-lower.layout-g > .screen-notes {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 12px 22px 16px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px;
+}
+.layout-g-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+  margin: 4px 0 0;
+  align-items: stretch;
+}
+.layout-g-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.layout-g-card {
+  padding: 18px 20px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-top: 6px solid #304580;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 220px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.layout-g-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+.layout-g-card.card-ok {
+  border-top-color: #16a34a;
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.layout-g-card.card-warn {
+  border-top-color: #dc2626;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+.layout-g-card.is-active {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.14);
+}
+.layout-g-card.is-locked {
+  background: #ffffff;
+  border-style: dashed;
+  border-top-style: solid;
+  border-top-color: #cbd5e1;
+  border-color: #cbd5e1;
+}
+.layout-g-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px dashed #cbd5e1;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+.layout-g-badge {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 3px 11px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.layout-g-badge.badge-ok { background: #16a34a; color: #fff; }
+.layout-g-badge.badge-warn { background: #dc2626; color: #fff; }
+.layout-g-badge.badge-info { background: #2563eb; color: #fff; }
+.layout-g-body {
+  font-size: 22px;
+  line-height: 1.56;
+  color: #0f172a;
+  flex: 1 1 auto;
+}
+.layout-g-body p {
+  margin: 0 0 6px 0;
+}
+.layout-g-body p:last-child {
+  margin-bottom: 0;
+}
+.layout-g-comment {
+  margin-top: auto;
+  padding: 12px 16px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  font-size: 23px;
+  line-height: 1.48;
+  color: #334155;
+}
+.layout-g-card.card-ok .layout-g-comment {
+  border-color: #86efac;
+  color: #14532d;
+}
+.layout-g-card.card-warn .layout-g-comment {
+  border-color: #fca5a5;
+  color: #7f1d1d;
+}
+.layout-g-comment-locked {
+  margin-top: auto;
+  padding: 9px 14px;
+  border-radius: 9px;
+  border: 1.5px dashed #cbd5e1;
+  text-align: center;
+  font-size: 17.5px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+.layout-g-teaser {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 20px 10px;
+}
+.layout-g-summary {
+  padding: 13px 20px;
+  border-radius: 11px;
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  border-left: 6px solid #1d4ed8;
+  font-size: 23px;
+  line-height: 1.48;
+  color: #0f172a;
+}
+
+/* 版式 H：教研级交互对比表格版式（无 .step 依赖，首列彩色方法标签 + 底部选用口诀） */
+.screen-lower.layout-h {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.screen-lower.layout-h > .screen-media {
+  display: none !important;
+}
+.screen-lower.layout-h > .screen-notes {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 12px 20px 16px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px;
+}
+.layout-h-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 4px;
+  gap: 14px;
+}
+.layout-h-table {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+}
+.layout-h-head {
+  display: grid;
+  background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 22px;
+}
+.layout-h-head > div {
+  padding: 13px 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.layout-h-head > div:last-child {
+  border-right: none;
+}
+.layout-h-row {
+  display: grid;
+  border-top: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  align-items: stretch;
+  min-height: 78px;
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+.layout-h-row:nth-child(odd) {
+  background: #fafcff;
+}
+.layout-h-row.is-active {
+  background: #eff6ff;
+  box-shadow: inset 5px 0 0 #2563eb;
+}
+.layout-h-cell {
+  padding: 14px 16px;
+  border-right: 1px solid #e2e8f0;
+  font-size: 22px;
+  line-height: 1.46;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+}
+.layout-h-cell:last-child {
+  border-right: none;
+}
+.layout-h-cell.is-key {
+  justify-content: center;
+  text-align: center;
+}
+.layout-h-key-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #1e3a8a;
+  font-size: 21px;
+  font-weight: 700;
+}
+.layout-h-row.is-active .layout-h-key-pill {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+.layout-h-row.is-locked {
+  background: #f8fafc;
+}
+.layout-h-row.is-locked .layout-h-cell:not(.is-key) {
+  color: transparent;
+  user-select: none;
+  position: relative;
+}
+.layout-h-row.is-locked .layout-h-cell:not(.is-key) * {
+  opacity: 0;
+}
+.layout-h-row.is-locked .layout-h-cell:not(.is-key)::after {
+  content: '点击揭晓';
+  position: absolute;
+  inset: 12px 16px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: 700;
+}
+.layout-h-summary {
+  padding: 12px 20px;
+  border-radius: 11px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-left: 6px solid #16a34a;
+  font-size: 22px;
+  line-height: 1.46;
+  color: #0f172a;
+}
+
+/* 版式 I：全屏居中交互式思维导图 / 课堂小结版式（告别左侧冗余步骤卡，导图占据 100% 舞台宽度） */
+.screen-lower.layout-i {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.screen-lower.layout-i > .screen-notes {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+.screen-lower.layout-i > .screen-media {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 6px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  display: flex !important;
+  flex-direction: column !important;
+}
+.screen-lower.layout-i .screen-lab {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+}
+.screen-lower.layout-i .screen-lab .visual {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  padding: 2px !important;
+  border: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+.screen-lower.layout-i .screen-lab .visual > svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  border: 0 !important;
+}
+.layout-i-summary {
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  border-left: 6px solid #1d4ed8;
+  font-size: 22px;
+  line-height: 1.45;
+  color: #0f172a;
+}
+
+
+
+/* ================= 函数图象画布全屏放大展示模式 (Canvas Full-Screen Zoom) ================= */
+.screen-lab {
+  position: relative !important;
+}
+.canvas-zoom-btn {
+  position: absolute !important;
+  bottom: 12px !important;
+  right: 16px !important;
+  z-index: 18 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  border: 1.5px solid #3b82f6 !important;
+  background: rgba(239, 246, 255, 0.94) !important;
+  color: #1d4ed8 !important;
+  font-family: 'SimSun', 'Songti SC', 'Microsoft YaHei', sans-serif !important;
+  font-size: 16.5px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.16) !important;
+  backdrop-filter: blur(4px);
+  transition: all 0.18s ease !important;
+  user-select: none;
+}
+.canvas-zoom-btn:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #1d4ed8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.28) !important;
+}
+.canvas-zoom-btn svg {
+  width: 17px !important;
+  height: 17px !important;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  fill: none;
+}
+
+/* 当开启画布全屏放大时：隐藏题干与文字推导步骤，保留顶部互动控制条，画布 100% 占满全屏舞台 */
+body.canvas-zoom-mode .slide-head-bar {
+  margin-bottom: 4px !important;
+}
+body.canvas-zoom-mode .screen-page > .screen-stem,
+body.canvas-zoom-mode .screen-page > #plot4TableWrap,
+body.canvas-zoom-mode .screen-page > #plotNeg4TableWrap {
+  display: none !important;
+}
+body.canvas-zoom-mode .screen-lower,
+body.canvas-zoom-mode .screen-lower.layout-b,
+body.canvas-zoom-mode .screen-lower.layout-d {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+body.canvas-zoom-mode .screen-notes {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+body.canvas-zoom-mode .screen-notes > :not(#controls) {
+  display: none !important;
+}
+body.canvas-zoom-mode .screen-notes > #controls {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: #f8fafc !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  padding: 6px 14px !important;
+  margin: 0 !important;
+}
+body.canvas-zoom-mode .screen-notes > #controls > .step-ctrl-bar {
+  margin-bottom: 0 !important;
+  flex: 0 0 auto !important;
+}
+body.canvas-zoom-mode .screen-notes > #controls > .actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  flex: 0 1 auto !important;
+}
+body.canvas-zoom-mode .screen-notes > #controls > .control {
+  flex: 1 1 260px !important;
+  margin: 0 !important;
+}
+body.canvas-zoom-mode .screen-media {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+body.canvas-zoom-mode .screen-lab {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+body.canvas-zoom-mode .screen-lab .visual {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 10px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  border: 2px solid #3b82f6 !important;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08) !important;
+}
+body.canvas-zoom-mode .screen-lab .visual svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+}
+body.canvas-zoom-mode .canvas-zoom-btn {
+  background: linear-gradient(135deg, #0d9488, #0284c7) !important;
+  color: #ffffff !important;
+  border-color: #0f766e !important;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35) !important;
+}
+
+
+.step-ctrl-bar.has-zoom {
+  grid-template-columns: auto 1.3fr auto auto auto !important;
+}
+.step-btn.zoom {
+  background: #f0fdfa !important;
+  color: #0f766e !important;
+  border-color: #5eead4 !important;
+}
+.step-btn.zoom:hover {
+  background: #ccfbf1 !important;
+  border-color: #14b8a6 !important;
+}
+body.canvas-zoom-mode .step-btn.zoom {
+  background: #0d9488 !important;
+  color: #ffffff !important;
+  border-color: #0f766e !important;
+}
+
+/* ================= SVG 配图内字体与公式规范（严禁无衬线体与纯文本分式） ================= */
+.screen-media svg text,
+.screen-lab svg text,
+.visual svg text {
+  font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
+}
+.visual foreignObject svg,
+.screen-lab foreignObject svg {
+  width: auto !important;
+  height: auto !important;
+}
+.svg-fo-card {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background: rgba(248, 250, 252, 0.95);
+  border: 1.5px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.32;
+  color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+.svg-fo-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-family: "Times New Roman", "Songti SC", "SimSun", "STSong", serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #0f172a;
+  text-shadow:
+    -1.5px -1.5px 0 #ffffff,
+     1.5px -1.5px 0 #ffffff,
+    -1.5px  1.5px 0 #ffffff,
+     1.5px  1.5px 0 #ffffff,
+     0px   -2px   0 #ffffff,
+     0px    2px   0 #ffffff,
+    -2px    0px   0 #ffffff,
+     2px    0px   0 #ffffff;
+}
+.svg-fo-card i.m,
+.svg-fo-label i.m {
+  font-family: "Times New Roman", Times, serif !important;
+  font-style: italic !important;
+}
+.svg-fo-card .num,
+.svg-fo-label .num {
+  font-family: "Times New Roman", Times, serif !important;
+  font-style: normal !important;
+}
+.svg-fo-card sub,
+.svg-fo-label sub {
+  font-size: 0.76em !important;
+  vertical-align: -0.22em !important;
+  line-height: 0 !important;
+}
+.svg-fo-card sup,
+.svg-fo-label sup {
+  font-size: 0.74em !important;
+  vertical-align: 0.36em !important;
+  line-height: 0 !important;
+}
+.svg-fo-card .fraction,
+.svg-fo-label .fraction {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  margin: 0 2px !important;
+  line-height: 1.05 !important;
+  font-size: 0.9em !important;
+}
+.svg-fo-card .fraction > span:first-child,
+.svg-fo-label .fraction > span:first-child {
+  border-bottom: 1.5px solid currentColor !important;
+  padding: 0 3px 1px !important;
+  width: 100%;
+  text-align: center;
+}
+.svg-fo-card .fraction > span:last-child,
+.svg-fo-label .fraction > span:last-child {
+  padding: 1px 3px 0 !important;
+  width: 100%;
+  text-align: center;
+}
+
+/* 题干与步骤区标准教材数据表格样式（杜绝全局 th 深蓝底白字与左对齐污染） */
+.screen-stem table,
+.screen-notes table,
+table.stem-data-table {
+  width: 86% !important;
+  max-width: 960px !important;
+  margin: 6px auto 8px !important;
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+  font-size: 20px !important;
+  line-height: 1.35 !important;
+  background: #ffffff !important;
+  border: 1.5px solid #94a3b8 !important;
+}
+.screen-stem table th,
+.screen-stem table td,
+.screen-notes table th,
+.screen-notes table td,
+table.stem-data-table th,
+table.stem-data-table td {
+  border: 1.5px solid #cbd5e1 !important;
+  padding: 5px 10px !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  font-size: 20px !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+}
+.screen-stem table th,
+.screen-notes table th,
+table.stem-data-table th,
+.screen-stem table tr > td:first-child:has(i.m),
+table.stem-data-table tr > th:first-child {
+  background: #eef2ff !important;
+  color: #1e3a8a !important;
+  font-weight: 700 !important;
+  width: 110px !important;
+}
+
 </style></head><body><header><strong>2.3.2 反比例函数的应用（2）</strong><button id="toc">课程目录</button></header><main id="viewport"><div id="stage"><div id="content"></div><canvas id="penLayer" width="1600" height="900" aria-label="课堂批注画布"></canvas></div></main><div class="progress"><i id="progress"></i></div><footer><button id="prev">← 上一页</button><span id="pageCount"></span><button id="next">下一页 →</button><button id="fontScaleBtn" class="font-scale-btn" type="button" title="切换教室大屏字号档位">🔍 字号：大屏标准</button><span id="slideTitle"></span><span class="keyhint">← → 翻页 · F 全屏 · M 目录</span><button id="pen">批注</button><button id="clearPen">清除批注</button><button id="effects">翻页特效</button><button id="remote">翻页笔</button><button id="fullscreen">全屏</button></footer><section id="inkToolbar" aria-label="课堂批注工具" hidden><div class="ink-group"><button data-ink-tool="pen" title="随速度或触控笔压力变化">钢笔</button><button data-ink-tool="marker">签字笔</button><button data-ink-tool="highlight">荧光笔</button><button data-ink-tool="eraser">橡皮擦</button></div><span class="ink-divider"></span><div class="ink-group ink-palette"><button type="button" class="ink-swatch" data-ink-color="#d94040" style="--swatch:#d94040" aria-label="红色" title="红色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#384d8f" style="--swatch:#384d8f" aria-label="靛蓝" title="靛蓝" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#118575" style="--swatch:#118575" aria-label="绿色" title="绿色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#252b37" style="--swatch:#252b37" aria-label="黑色" title="黑色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#e29a19" style="--swatch:#e29a19" aria-label="橙色" title="橙色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#9652ae" style="--swatch:#9652ae" aria-label="紫色" title="紫色" aria-pressed="false"></button><input type="color" id="inkCustomColor" value="#d94040" aria-label="自选笔迹颜色" title="自选颜色"></div><span class="ink-divider"></span><label>粗细<input id="inkSize" type="range" min="2" max="12" step="1" value="5" aria-label="笔迹粗细"><output id="inkSizeValue">5</output></label><div class="ink-group"><button id="inkUndo" title="撤销 Ctrl+Z">撤销</button><button id="inkRedo" title="重做 Ctrl+Shift+Z">重做</button><button id="inkClear">清空本页</button><button id="inkClose">完成</button></div><div id="inkMode" aria-live="polite"></div></section><dialog id="transitionDialog" aria-label="翻页特效设置"><button id="transitionClose">关闭 ×</button><h3>翻页特效</h3><p>选择课堂的翻页方式。主题联动会在进入新教学环节时，用光束揭开下一页。</p><div id="transitionChoices"></div><div class="transition-options"><label>动画节奏<select id="transitionSpeed" aria-label="动画节奏"><option value="420">利落 · 0.42 秒</option><option value="650">标准 · 0.65 秒</option><option value="900">舒展 · 0.9 秒</option></select></label><button id="transitionPreview">预览当前效果</button></div><p id="transitionMotionNote" hidden>系统已设置减少动态效果，课件会直接翻页。</p></dialog><dialog id="remoteDialog" aria-label="翻页笔按键设置"><button id="remoteClose">关闭 ×</button><h3>翻页笔联动</h3><p>连接翻页笔的接收器或蓝牙，让浏览器中的课件保持当前活动窗口。常见的上一页、下一页键可直接使用。</p><div id="remoteRows"></div><p id="remoteStatus" role="status"></p><button id="remoteReset">恢复默认按键</button><p class="remote-note">清空只影响当前页批注，可以撤销。也可用键盘 C 清空、F 或 F5 切换全屏。<br>绑定需要按键向浏览器发送键盘信号；仅控制硬件的激光开关不能绑定。</p></dialog><dialog id="tocDialog"><button id="closeToc">关闭 ×</button><h3>课程目录</h3><p style="font-size:15px;margin-bottom:20px">按学案问题顺序编排 · 点击可直接跳转</p><div id="tocList"></div></dialog><dialog id="imageDialog" aria-label="图片放大查看"><button id="closeImage">关闭 ×</button><img id="largeImage" alt="放大图片"></dialog><div id="toast" role="status"></div><script>
 // ================= 全局基础工具与 SVG 数学公式正斜体规范引擎（前置挂载，供所有分块脚本直接调用） =================
 window.isManualOverride = function(st, key) {
@@ -3431,29 +4352,65 @@ window.defineSlide = function(cfg) {
   const steps = Array.isArray(cfg.steps) ? cfg.steps : [];
   const maxStep = steps.length;
   const simName = cfg.sim || (`autoSim_${window.UNIT1_THEOREM_SLIDES.length + 1}`);
-  const stepsHTML = steps.map((st, idx) => {
-    const num = idx + 1;
-    const badge = String(num).padStart(2, '0');
-    let stTitle = '', bodyPart = '';
-    if (Array.isArray(st)) {
-      stTitle = st[0] || '';
-      bodyPart = st[1] || '';
-    } else if (typeof st === 'object' && st !== null) {
-      stTitle = st.title || '';
-      bodyPart = st.html || st.body || st.text || '';
-    } else {
-      bodyPart = String(st || '');
-    }
-    const fmtTitle = window.formatInlineMathHTML(stTitle);
-    const titlePart = fmtTitle ? `<b>步骤<span class="num">${num}</span>（${fmtTitle}）：</b>` : `<b>步骤<span class="num">${num}</span>：</b>`;
-    return `<div class="step step-locked"><b>${badge}</b><span>${titlePart}${bodyPart}</span></div>`;
-  }).join('\n          ');
+  const noSceneLayouts = ['layout-a', 'layout-e', 'layout-f', 'layout-g', 'layout-h'];
 
-  const mediaBlock = layout === 'layout-a' ? '' : `
+  let stepsHTML = '';
+  if (layout === 'layout-f') {
+    const hasDemo = Boolean(cfg.example && Array.isArray(cfg.example.lines));
+    if (hasDemo) {
+      const ex = cfg.example;
+      const headerHTML = `<div class="layout-f-pair-header">
+        <div class="layout-f-col-head is-rule"><span>📌 ${cfg.ruleHeader || '通法步骤与核心要领'}</span></div>
+        <div></div>
+        <div class="layout-f-col-head is-demo"><span>${ex.title || '💡 同步示例'}</span>${ex.stem ? `<span class="layout-f-ex-stem">${ex.stem}</span>` : ''}</div>
+      </div>`;
+      stepsHTML = `<div class="layout-f-pair-wrap">${headerHTML}<div class="layout-f-pair-list" id="layoutFPairList"></div></div>`;
+    } else {
+      const colsClass = (cfg.cols === 3 || (!cfg.cols && steps.length >= 3 && steps.length !== 4)) ? 'cols-3' : '';
+      stepsHTML = `<div class="layout-f-grid ${colsClass}" id="layoutFGrid"></div>`;
+    }
+  } else if (layout === 'layout-g') {
+    const colsClass = (cfg.cols === 3 || (!cfg.cols && steps.length >= 3)) ? 'cols-3' : '';
+    const summaryHTML = cfg.summary ? `<div class="layout-g-summary" id="layoutGSummary" hidden>${cfg.summary}</div>` : '';
+    stepsHTML = `<div class="layout-g-grid ${colsClass}" id="layoutGGrid"></div>\n        ${summaryHTML}`;
+  } else if (layout === 'layout-h') {
+    const headers = Array.isArray(cfg.headers) && cfg.headers.length ? cfg.headers : ['方法', '依据与范围', '关键步骤'];
+    const gridCols = cfg.colWidths || (headers.length >= 3 ? `0.95fr ${headers.slice(1).map(() => '1.35fr').join(' ')}` : headers.map(() => '1fr').join(' '));
+    const headHTML = `<div class="layout-h-head" style="grid-template-columns:${gridCols};">${headers.map(h => `<div>${window.formatInlineMathHTML(h)}</div>`).join('')}</div>`;
+    const summaryHTML = cfg.summary ? `<div class="layout-h-summary" id="layoutHSummary" hidden>${cfg.summary}</div>` : '';
+    stepsHTML = `<div class="layout-h-wrap"><div class="layout-h-table" id="layoutHTable" data-grid-cols="${gridCols}">${headHTML}<div id="layoutHRows"></div></div>${summaryHTML}</div>`;
+  } else if (layout === 'layout-i') {
+    stepsHTML = '';
+  } else {
+    stepsHTML = steps.map((st, idx) => {
+      const num = idx + 1;
+      const badge = String(num).padStart(2, '0');
+      let stTitle = '', bodyPart = '';
+      if (Array.isArray(st)) {
+        stTitle = st[0] || '';
+        bodyPart = st[1] || '';
+      } else if (typeof st === 'object' && st !== null) {
+        stTitle = st.title || '';
+        bodyPart = st.html || st.body || st.text || '';
+      } else {
+        bodyPart = String(st || '');
+      }
+      const fmtTitle = window.formatInlineMathHTML(stTitle);
+      const stepLabel = `步骤<span class="num">${num}</span>`;
+      const titlePart = fmtTitle ? `<b>${stepLabel}（${fmtTitle}）：</b>` : `<b>${stepLabel}：</b>`;
+      return `<div class="step step-locked"><b>${badge}</b><span>${titlePart}${bodyPart}</span></div>`;
+    }).join('\n          ');
+  }
+
+  const layoutISummary = (layout === 'layout-i' && cfg.summary)
+    ? `<div class="layout-i-summary" id="layoutISummary" hidden>${cfg.summary}</div>`
+    : '';
+  const mediaBlock = noSceneLayouts.includes(layout) ? '' : `
         <div class="screen-media">
           <div class="screen-lab">
             <div id="scene" class="visual" style="padding:8px;align-items:stretch;justify-content:center;"></div>
           </div>
+          ${layoutISummary}
         </div>`;
 
   const slideHTML = `
@@ -3498,16 +4455,236 @@ window.defineSlide = function(cfg) {
       root.stepBar = window.stepBar;
     }
     const step = Number(state.step || 0);
-    const controls = root.querySelector('#controls');
+    const controls = root ? root.querySelector('#controls') : null;
     if (controls) {
       const extraCtrl = typeof cfg.controls === 'function' ? (cfg.controls(step, state, root) || '') : '';
-      controls.innerHTML = stepBar(step, maxStep) + extraCtrl;
+      const barOpts = (layout === 'layout-f' || layout === 'layout-g' || layout === 'layout-h' || layout === 'layout-i')
+        ? {
+            compact: true,
+            label: layout === 'layout-i' ? '🗺️ 导图展开' : (layout === 'layout-g' ? '🎯 对比进度' : (layout === 'layout-h' ? '📋 梳理进度' : '📖 讲解进度')),
+            idleText: layout === 'layout-i' ? '点击导图分支或按空格键逐步展开' : '点击条目或按空格键逐步呈现',
+            doneText: '✓ 全部内容已展开'
+          }
+        : {};
+      controls.innerHTML = stepBar(step, maxStep, barOpts) + extraCtrl;
     }
-    const scene = root.querySelector('#scene');
-    if (scene && typeof cfg.renderScene === 'function') {
-      scene.innerHTML = cfg.renderScene(step, state, root) || '';
+
+    if (layout === 'layout-f' && root) {
+      const pairList = root.querySelector('#layoutFPairList');
+      if (pairList && cfg.example && Array.isArray(cfg.example.lines)) {
+        const lines = cfg.example.lines;
+        pairList.innerHTML = steps.map((st, idx) => {
+          const sNum = idx + 1;
+          const isUnlocked = step >= sNum;
+          const isActive = step === sNum;
+          const cls = isActive ? 'is-active' : (isUnlocked ? 'is-done' : 'is-locked');
+          const stObj = (typeof st === 'object' && st !== null && !Array.isArray(st)) ? st : { title: Array.isArray(st) ? st[0] : `要点${sNum}`, html: Array.isArray(st) ? st[1] : String(st || '') };
+          const fmtTitle = window.formatInlineMathHTML(stObj.title || `步骤${sNum}`);
+          const ln = lines[idx];
+          const demoBody = isUnlocked
+            ? ((typeof ln === 'object' ? ln.html : ln) || '')
+            : '点击或按空格演练此步 ▸';
+          return `<div class="layout-f-pair-row ${cls}" data-step-goto="${sNum}">
+            <div class="layout-f-pair-left">
+              <span class="layout-f-pill">${fmtTitle}</span>
+              <span class="layout-f-rule-txt">${stObj.html || stObj.body || ''}</span>
+            </div>
+            <div class="layout-f-pair-arrow">→</div>
+            <div class="layout-f-pair-right">${demoBody}</div>
+          </div>`;
+        }).join('');
+      }
+      const gridEl = root.querySelector('#layoutFGrid');
+      if (gridEl) {
+        gridEl.innerHTML = steps.map((st, idx) => {
+          const sNum = idx + 1;
+          const isUnlocked = step >= sNum;
+          const isActive = step === sNum;
+          const cls = isActive ? 'is-active' : (isUnlocked ? 'is-done' : 'is-locked');
+          const stObj = (typeof st === 'object' && st !== null && !Array.isArray(st)) ? st : { title: Array.isArray(st) ? st[0] : `要点${sNum}`, html: Array.isArray(st) ? st[1] : String(st || '') };
+          const fmtTitle = window.formatInlineMathHTML(stObj.title || `要点${sNum}`);
+          const exHtml = stObj.example ? `<div class="layout-f-inline-ex"><b>例：</b>${stObj.example}</div>` : '';
+          const bodyHtml = isUnlocked
+            ? `<div class="layout-f-ppt-body">${stObj.html || stObj.body || ''}${exHtml}</div>`
+            : `<div class="layout-f-ppt-body" style="color:#94a3b8;font-weight:700;">点击展开此要点 ▸</div>`;
+          return `<div class="layout-f-ppt-card ${cls}" data-step-goto="${sNum}">
+            <div class="layout-f-ppt-head"><span>${fmtTitle}</span></div>
+            ${bodyHtml}
+          </div>`;
+        }).join('');
+      }
+    }
+
+    if (layout === 'layout-g' && root) {
+      const gGrid = root.querySelector('#layoutGGrid');
+      if (gGrid) {
+        gGrid.innerHTML = steps.map((st, idx) => {
+          const sNum = idx + 1;
+          const isUnlocked = step >= sNum;
+          const isActive = step === sNum;
+          const stObj = (typeof st === 'object' && st !== null && !Array.isArray(st)) ? st : { title: Array.isArray(st) ? st[0] : `方法${sNum}`, html: Array.isArray(st) ? st[1] : String(st || '') };
+          const cardCls = isUnlocked
+            ? (stObj.badgeType === 'ok' ? 'card-ok' : (stObj.badgeType === 'warn' ? 'card-warn' : ''))
+            : '';
+          const activeCls = isActive ? 'is-active' : '';
+          const badgeCls = stObj.badgeType === 'ok' ? 'badge-ok' : (stObj.badgeType === 'warn' ? 'badge-warn' : 'badge-info');
+          const badgeHtml = isUnlocked && stObj.badge
+            ? `<span class="layout-g-badge ${badgeCls}">${stObj.badge}</span>`
+            : `<span class="layout-g-badge" style="background:#f1f5f9;color:#64748b;">点击点评 ▸</span>`;
+          const fmtTitle = window.formatInlineMathHTML(stObj.title || `方法${sNum}`);
+          const bodyHtml = `<div class="layout-g-body">${stObj.html || stObj.body || ''}</div>`;
+          const commentHtml = stObj.comment
+            ? (isUnlocked
+                ? `<div class="layout-g-comment">${stObj.comment}</div>`
+                : `<div class="layout-g-comment-locked">点击点评此解法 ▸</div>`)
+            : '';
+          return `<div class="layout-g-card ${cardCls} ${activeCls}" data-step-goto="${sNum}">
+            <div class="layout-g-head"><span>${fmtTitle}</span>${badgeHtml}</div>
+            ${bodyHtml}
+            ${commentHtml}
+          </div>`;
+        }).join('');
+      }
+      const sumEl = root.querySelector('#layoutGSummary');
+      if (sumEl) sumEl.hidden = (!cfg.alwaysShowSummary && step < maxStep);
+    }
+
+    if (layout === 'layout-h' && root) {
+      const rowsEl = root.querySelector('#layoutHRows');
+      const tableEl = root.querySelector('#layoutHTable');
+      const gridCols = tableEl ? tableEl.dataset.gridCols : '';
+      if (rowsEl) {
+        rowsEl.innerHTML = steps.map((st, idx) => {
+          const sNum = idx + 1;
+          const isUnlocked = step >= sNum;
+          const isActive = step === sNum;
+          const cls = isActive ? 'is-active' : (isUnlocked ? '' : 'is-locked');
+          const stObj = (typeof st === 'object' && st !== null && !Array.isArray(st)) ? st : { cells: Array.isArray(st) ? st : [String(st || '')] };
+          const cells = Array.isArray(stObj.cells) ? stObj.cells : [stObj.title || `项目${sNum}`, stObj.html || stObj.body || ''];
+          const cellsHTML = cells.map((c, ci) => {
+            if (ci === 0) return `<div class="layout-h-cell is-key"><span class="layout-h-key-pill">${c}</span></div>`;
+            return `<div class="layout-h-cell">${c}</div>`;
+          }).join('');
+          return `<div class="layout-h-row ${cls}" style="grid-template-columns:${gridCols};" data-step-goto="${sNum}">${cellsHTML}</div>`;
+        }).join('');
+      }
+      const hSum = root.querySelector('#layoutHSummary');
+      if (hSum) hSum.hidden = (!cfg.alwaysShowSummary && step < maxStep);
+    }
+
+    if (layout === 'layout-i' && root) {
+      const iSum = root.querySelector('#layoutISummary');
+      if (iSum) iSum.hidden = (!cfg.alwaysShowSummary && step < maxStep);
+    }
+
+    const scene = root ? root.querySelector('#scene') : null;
+    if (scene) {
+      if (typeof cfg.renderScene === 'function') {
+        scene.innerHTML = cfg.renderScene(step, state, root) || '';
+      } else if (layout === 'layout-i') {
+        scene.innerHTML = window.renderMindMapScene(step, {
+          width: 1120,
+          height: 470,
+          center: cfg.centerTitle || cfg.title || '课堂小结',
+          branches: steps
+        });
+      }
     }
   };
+};
+
+// ================= 交互式思维导图 / 课堂小结 SVG 渲染器（全屏居中、纯原生 SVG 图元、零嵌套 <svg>） =================
+window.renderMindMapScene = function(step, opts = {}) {
+  const W = opts.width || 1120;
+  const H = opts.height || 470;
+  const branches = Array.isArray(opts.branches) ? opts.branches : [];
+  const centerRaw = String(opts.center || '知识小结').replace(/<[^>]+>/g, '');
+  const palette = ['#2563eb', '#0d9488', '#d97706', '#7c3aed', '#dc2626'];
+  const bgPalette = ['#eff6ff', '#f0fdfa', '#fffbeb', '#f5f3ff', '#fef2f2'];
+
+  const rx = 32, rw = 180, rh = 92, ry = Math.round((H - rh) / 2);
+  const rcx = rx + rw, rcy = ry + rh / 2;
+
+  const splitCenter = centerRaw.length > 7
+    ? [centerRaw.slice(0, Math.ceil(centerRaw.length / 2)), centerRaw.slice(Math.ceil(centerRaw.length / 2))]
+    : [centerRaw];
+  const centerTextSvg = splitCenter.map((line, li) => {
+    const ty = splitCenter.length === 1 ? rcy + 7 : rcy - 8 + li * 26;
+    return `<text x="${rx + rw / 2}" y="${ty}" text-anchor="middle" font-size="21" font-weight="700" fill="#ffffff">${window.svgAutoFormatText(line, 21)}</text>`;
+  }).join('');
+
+  const n = Math.max(1, branches.length);
+  const topPad = 24, botPad = 24;
+  const slotH = (H - topPad - botPad) / n;
+
+  const branchSvgs = branches.map((br, idx) => {
+    const bObj = (typeof br === 'object' && br !== null && !Array.isArray(br)) ? br : { title: Array.isArray(br) ? br[0] : `分支${idx + 1}`, nodes: [] };
+    const color = palette[idx % palette.length];
+    const bg = bgPalette[idx % bgPalette.length];
+    const cy = Math.round(topPad + slotH * (idx + 0.5));
+    const bx = 290, bw = 166, bh = 52, by = cy - bh / 2;
+    const unlocked = step >= idx + 1;
+    const isActive = step === idx + 1;
+    const bTitle = String(bObj.title || `要点${idx + 1}`).replace(/<[^>]+>/g, '');
+
+    const c1x = rcx + 42, c2x = bx - 42;
+    const pathCurve = `<path d="M ${rcx} ${rcy} C ${c1x} ${rcy}, ${c2x} ${cy}, ${bx} ${cy}" fill="none" stroke="${unlocked ? color : '#cbd5e1'}" stroke-width="${isActive ? 3.6 : 2.4}" ${unlocked ? '' : 'stroke-dasharray="6 4"'}/>`;
+
+    const branchBox = `<g data-step-goto="${idx + 1}" style="cursor:pointer;">
+      <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="12" fill="${unlocked ? bg : '#f8fafc'}" stroke="${unlocked ? color : '#cbd5e1'}" stroke-width="${isActive ? 2.8 : 1.8}"/>
+      <text x="${bx + bw / 2}" y="${cy + 6}" text-anchor="middle" font-size="18" font-weight="700" fill="${unlocked ? color : '#64748b'}">${window.svgAutoFormatText(bTitle, 18)}</text>
+    </g>`;
+
+    let subSvg = '';
+    const nodes = Array.isArray(bObj.nodes) && bObj.nodes.length ? bObj.nodes : (bObj.summary ? [bObj.summary] : []);
+    const detailRaw = String(bObj.detail || bObj.html || '').replace(/<[^>]+>/g, '').trim();
+    const hasDetail = Boolean(detailRaw);
+    if (!unlocked) {
+      const sx = 526, sw = 180, sh = 38, sy = cy - sh / 2;
+      subSvg = `<line x1="${bx + bw}" y1="${cy}" x2="${sx}" y2="${cy}" stroke="#cbd5e1" stroke-width="1.8" stroke-dasharray="5 4"/>
+        <g data-step-goto="${idx + 1}" style="cursor:pointer;">
+          <rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" rx="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4" stroke-dasharray="5 4"/>
+          <text x="${sx + sw / 2}" y="${cy + 5.5}" text-anchor="middle" font-size="15.5" font-weight="700" fill="#94a3b8">点击展开此分支 ▸</text>
+        </g>`;
+    } else if (nodes.length) {
+      const subGap = 8;
+      const subH = Math.min(38, Math.floor((slotH - 10 - (nodes.length - 1) * subGap) / nodes.length));
+      const totalSubH = nodes.length * subH + (nodes.length - 1) * subGap;
+      const subStartY = cy - totalSubH / 2;
+      const sx = 526;
+      const sw = hasDetail ? 268 : 540;
+      subSvg = nodes.map((nd, ni) => {
+        const ny = Math.round(subStartY + ni * (subH + subGap));
+        const ncy = ny + subH / 2;
+        const ndTxt = String(nd || '').replace(/<[^>]+>/g, '');
+        return `<path d="M ${bx + bw} ${cy} C ${bx + bw + 28} ${cy}, ${sx - 28} ${ncy}, ${sx} ${ncy}" fill="none" stroke="${color}" stroke-width="2" opacity="0.85"/>
+          <rect x="${sx}" y="${ny}" width="${sw}" height="${subH}" rx="8" fill="#ffffff" stroke="${color}" stroke-width="1.5"/>
+          <text x="${sx + 14}" y="${ncy + 5.5}" text-anchor="start" font-size="15.5" font-weight="600" fill="#1e293b">${window.svgAutoFormatText(ndTxt, 15.5)}</text>`;
+      }).join('');
+      if (hasDetail) {
+        const dx = 824, dw = 266, dh = Math.min(72, Math.max(46, totalSubH));
+        const dy = cy - dh / 2;
+        const splitDet = detailRaw.length > 16
+          ? [detailRaw.slice(0, 16), detailRaw.slice(16, 32) + (detailRaw.length > 32 ? '…' : '')]
+          : [detailRaw];
+        const detTexts = splitDet.map((dl, dli) => {
+          const dty = splitDet.length === 1 ? cy + 5 : cy - 6 + dli * 20;
+          return `<text x="${dx + 14}" y="${dty}" text-anchor="start" font-size="14" font-weight="500" fill="#475569">${window.svgAutoFormatText(dl, 14)}</text>`;
+        }).join('');
+        subSvg += `<line x1="${sx + sw}" y1="${cy}" x2="${dx}" y2="${cy}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.65"/>
+          <rect x="${dx}" y="${dy}" width="${dw}" height="${dh}" rx="9" fill="${bg}" stroke="${color}" stroke-width="1.2" opacity="0.9"/>
+          ${detTexts}`;
+      }
+    }
+    return pathCurve + branchBox + subSvg;
+  }).join('\n');
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%;max-height:100%;display:block;">
+    <rect x="4" y="4" width="${W - 8}" height="${H - 8}" rx="12" fill="#fbfdff" stroke="#e2e8f0" stroke-width="1.2"/>
+    ${branchSvgs}
+    <rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="16" fill="#1e3a8a" stroke="#1e40af" stroke-width="2.4"/>
+    ${centerTextSvg}
+  </svg>`;
 };
 
 // ================= 一题多图（图(1)~图(k)）总览与单图自动放大标准容器（杜绝多图与步骤脱节） =================
@@ -5108,7 +6285,7 @@ function runSimFn(fn, state, isInit) {
   normalizeSvgMathInRoot(activeRoot());
 }
 
-function stepBar(step, maxStep = 3) {
+function stepBar(step, maxStep = 3, opts = {}) {
   const s = Math.min(maxStep, Math.max(0, Number(step || 0)));
   const canReset = s > 0 || hasAnyManual(simState);
   const hasLab = Boolean(activeRoot() && activeRoot().querySelector('.screen-lab'));
@@ -5116,21 +6293,28 @@ function stepBar(step, maxStep = 3) {
   const dots = Array.from({ length: maxStep }, (_, i) => {
     const idx = i + 1;
     const cls = idx === s ? 'current' : (idx < s ? 'done' : '');
-    return `<button type="button" class="step-dot-pill ${cls}" data-jump-step="${idx}" title="点击跳转至步骤 ${idx}">${idx}</button>`;
+    return `<button type="button" class="step-dot-pill ${cls}" data-jump-step="${idx}" title="点击跳转至第 ${idx} 项">${idx}</button>`;
   }).join('');
-  const hintTxt = s >= maxStep ? '✓ 已全部展开（答案已同步填入题干）' : '点击下方步骤卡片或按空格键逐步展开';
+  const labelTxt = opts.label || '💡 推导进度';
+  const doneTxt = opts.doneText || '✓ 已全部展开（答案已同步填入题干）';
+  const idleTxt = opts.idleText || '点击下方步骤卡片或按空格键逐步展开';
+  const hintTxt = s >= maxStep ? doneTxt : idleTxt;
   const zoomBtnHTML = (hasLab && isZoomed)
     ? `<button type="button" class="step-btn zoom" onclick="window.toggleCanvasZoom(event)">🗗 退出全屏</button>`
     : '';
-  return `<div class="step-ctrl-bar ${hasLab ? 'has-zoom' : ''}" data-max-step="${maxStep}">
+  const isBlankBoard = document.body.classList.contains('board-blank-mode');
+  const blankBtnHTML = `<button type="button" class="step-btn blank-board" data-action="toggleBoardBlank" title="隐藏未展开步骤，留出纯净白板空间供手写批注">${isBlankBoard ? '📋 显示步骤' : '✎ 留白板书'}</button>`;
+  const compactCls = opts.compact ? 'is-compact' : '';
+  return `<div class="step-ctrl-bar ${hasLab ? 'has-zoom' : ''} ${compactCls}" data-max-step="${maxStep}">
     <div class="step-progress-group">
-      <span class="step-hint-label">💡 推导进度</span>
+      <span class="step-hint-label">${labelTxt}</span>
       ${dots}
       <span class="step-sub-hint">${hintTxt}</span>
     </div>
     <div class="step-ghost-actions">
       <button type="button" class="step-btn prev" data-action="prevStep" ${s <= 0 ? 'disabled' : ''}>◀ 上一步</button>
       <button type="button" class="step-btn next" data-action="nextStep" ${s >= maxStep ? 'disabled' : ''}>下一步 ▸</button>
+      ${blankBtnHTML}
       <button type="button" class="step-btn all" data-action="completeTable" ${s >= maxStep ? 'disabled' : ''}>全部展开</button>
       <button type="button" class="step-btn rst" data-action="reset" ${!canReset ? 'disabled' : ''}>↺ 重置</button>
       ${zoomBtnHTML}
@@ -5256,10 +6440,10 @@ function syncSlideProgression(state) {
       if (!foundNextLocked) {
         foundNextLocked = true;
         stepEl.classList.add('step-next-up');
-        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开下一步 ▸`;
+        stepEl.dataset.lockMsg = `展开第 ${idx + 1} 步 ▸`;
       } else {
         stepEl.classList.remove('step-next-up');
-        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开 ▸`;
+        stepEl.dataset.lockMsg = `第 ${idx + 1} 步 ▸`;
       }
     }
     stepEl.onclick = e => {
@@ -5738,6 +6922,26 @@ function bindSimControls(type){
     };
   });
 
+  const slideRoot = activeRoot();
+  if (slideRoot) {
+    slideRoot.querySelectorAll('[data-step-goto]').forEach(el => {
+      el.onclick = e => {
+        e.stopPropagation();
+        const targetS = Number(el.getAttribute('data-step-goto') || 0);
+        simState.step = targetS;
+        simState.manualOverrides = {};
+        if (simState.manualNotes) {
+          Object.keys(simState.manualNotes).forEach(k => {
+            if (Number(k) + 1 > targetS) delete simState.manualNotes[k];
+          });
+        }
+        runSimFn(fn, simState, false);
+        syncSlideProgression(simState);
+        bindSimControls(type);
+      };
+    });
+  }
+
   ctrlBox.querySelectorAll('[data-mode-key]').forEach(mBtn => {
     mBtn.onclick = e => {
       e.stopPropagation();
@@ -5764,6 +6968,13 @@ function bindSimControls(type){
       e.stopPropagation();
       const barEl = ctrlBox.querySelector('.step-ctrl-bar');
       const maxStep = barEl ? Number(barEl.dataset.maxStep || 3) : 3;
+      if (act === 'toggleBoardBlank') {
+        document.body.classList.toggle('board-blank-mode');
+        runSimFn(fn, simState, false);
+        syncSlideProgression(simState);
+        bindSimControls(type);
+        return;
+      }
       if (act === 'nextStep') {
         let nextS = Math.min(maxStep, Number(simState.step || 0) + 1);
         while (nextS < maxStep) {

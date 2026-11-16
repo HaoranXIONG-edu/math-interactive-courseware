@@ -195,7 +195,7 @@ function runSimFn(fn, state, isInit) {
   normalizeSvgMathInRoot(activeRoot());
 }
 
-function stepBar(step, maxStep = 3) {
+function stepBar(step, maxStep = 3, opts = {}) {
   const s = Math.min(maxStep, Math.max(0, Number(step || 0)));
   const canReset = s > 0 || hasAnyManual(simState);
   const hasLab = Boolean(activeRoot() && activeRoot().querySelector('.screen-lab'));
@@ -203,21 +203,28 @@ function stepBar(step, maxStep = 3) {
   const dots = Array.from({ length: maxStep }, (_, i) => {
     const idx = i + 1;
     const cls = idx === s ? 'current' : (idx < s ? 'done' : '');
-    return `<button type="button" class="step-dot-pill ${cls}" data-jump-step="${idx}" title="点击跳转至步骤 ${idx}">${idx}</button>`;
+    return `<button type="button" class="step-dot-pill ${cls}" data-jump-step="${idx}" title="点击跳转至第 ${idx} 项">${idx}</button>`;
   }).join('');
-  const hintTxt = s >= maxStep ? '✓ 已全部展开（答案已同步填入题干）' : '点击下方步骤卡片或按空格键逐步展开';
+  const labelTxt = opts.label || '💡 推导进度';
+  const doneTxt = opts.doneText || '✓ 已全部展开（答案已同步填入题干）';
+  const idleTxt = opts.idleText || '点击下方步骤卡片或按空格键逐步展开';
+  const hintTxt = s >= maxStep ? doneTxt : idleTxt;
   const zoomBtnHTML = (hasLab && isZoomed)
     ? `<button type="button" class="step-btn zoom" onclick="window.toggleCanvasZoom(event)">🗗 退出全屏</button>`
     : '';
-  return `<div class="step-ctrl-bar ${hasLab ? 'has-zoom' : ''}" data-max-step="${maxStep}">
+  const isBlankBoard = document.body.classList.contains('board-blank-mode');
+  const blankBtnHTML = `<button type="button" class="step-btn blank-board" data-action="toggleBoardBlank" title="隐藏未展开步骤，留出纯净白板空间供手写批注">${isBlankBoard ? '📋 显示步骤' : '✎ 留白板书'}</button>`;
+  const compactCls = opts.compact ? 'is-compact' : '';
+  return `<div class="step-ctrl-bar ${hasLab ? 'has-zoom' : ''} ${compactCls}" data-max-step="${maxStep}">
     <div class="step-progress-group">
-      <span class="step-hint-label">💡 推导进度</span>
+      <span class="step-hint-label">${labelTxt}</span>
       ${dots}
       <span class="step-sub-hint">${hintTxt}</span>
     </div>
     <div class="step-ghost-actions">
       <button type="button" class="step-btn prev" data-action="prevStep" ${s <= 0 ? 'disabled' : ''}>◀ 上一步</button>
       <button type="button" class="step-btn next" data-action="nextStep" ${s >= maxStep ? 'disabled' : ''}>下一步 ▸</button>
+      ${blankBtnHTML}
       <button type="button" class="step-btn all" data-action="completeTable" ${s >= maxStep ? 'disabled' : ''}>全部展开</button>
       <button type="button" class="step-btn rst" data-action="reset" ${!canReset ? 'disabled' : ''}>↺ 重置</button>
       ${zoomBtnHTML}
@@ -343,10 +350,10 @@ function syncSlideProgression(state) {
       if (!foundNextLocked) {
         foundNextLocked = true;
         stepEl.classList.add('step-next-up');
-        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开下一步 ▸`;
+        stepEl.dataset.lockMsg = `展开第 ${idx + 1} 步 ▸`;
       } else {
         stepEl.classList.remove('step-next-up');
-        stepEl.dataset.lockMsg = `${topicTitle}  ·  点击展开 ▸`;
+        stepEl.dataset.lockMsg = `第 ${idx + 1} 步 ▸`;
       }
     }
     stepEl.onclick = e => {
@@ -825,6 +832,26 @@ function bindSimControls(type){
     };
   });
 
+  const slideRoot = activeRoot();
+  if (slideRoot) {
+    slideRoot.querySelectorAll('[data-step-goto]').forEach(el => {
+      el.onclick = e => {
+        e.stopPropagation();
+        const targetS = Number(el.getAttribute('data-step-goto') || 0);
+        simState.step = targetS;
+        simState.manualOverrides = {};
+        if (simState.manualNotes) {
+          Object.keys(simState.manualNotes).forEach(k => {
+            if (Number(k) + 1 > targetS) delete simState.manualNotes[k];
+          });
+        }
+        runSimFn(fn, simState, false);
+        syncSlideProgression(simState);
+        bindSimControls(type);
+      };
+    });
+  }
+
   ctrlBox.querySelectorAll('[data-mode-key]').forEach(mBtn => {
     mBtn.onclick = e => {
       e.stopPropagation();
@@ -851,6 +878,13 @@ function bindSimControls(type){
       e.stopPropagation();
       const barEl = ctrlBox.querySelector('.step-ctrl-bar');
       const maxStep = barEl ? Number(barEl.dataset.maxStep || 3) : 3;
+      if (act === 'toggleBoardBlank') {
+        document.body.classList.toggle('board-blank-mode');
+        runSimFn(fn, simState, false);
+        syncSlideProgression(simState);
+        bindSimControls(type);
+        return;
+      }
       if (act === 'nextStep') {
         let nextS = Math.min(maxStep, Number(simState.step || 0) + 1);
         while (nextS < maxStep) {
