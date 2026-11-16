@@ -35,8 +35,12 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
 ### 第二阶段：基于用户确认定稿 `.docx` 1:1 极速生成 `.html` 课件
 1. **步骤 2.1（锁定唯一真实数据源 `Single Source of Truth`）**：
    - 若用户发回了微调后的 `.docx` 学案，再次运行 `inspect_docx_worksheet.py` 并用 `read_file` 查看最终配图，提取出**100% 锁定的《课时定稿蓝图》**（包含每一题的定稿题干、每一个填空对应的 `data-step="1..N"` 序号、每一张子图 `图(1)～图(k)` 的真实数学顶点坐标）。
-2. **步骤 2.2（多子智能体 1:1 并发编写课件模块）**：
-   - 在同一轮工具调用中，同时使用 `invoke_subagent` 启动 3 个子智能体并行编写 `chunk1_intro_explore.js`, `chunk2_apply.js`, `chunk3_train_summary.js`：
+2. **步骤 2.2（按课例体量弹性分配 `1～N` 个子智能体并发编写课件模块）**：
+   - 编译器 `--chunks` 支持任意数量（`1～N` 个）顺序分块文件。在同一轮工具调用中，根据页面数与 SVG 图形复杂度弹性启动子智能体并行编写 `chunk1` ～ `chunkN`：
+     - **专题微课 / 单题精讲 / 版式演示（$\le 8$ 页）**：启动 `1～2` 个子智能体（单文件或拆成 2 个 chunk）；
+     - **常规 40 分钟新授课（10～18 页）**：默认启动 `3` 个子智能体，对应 `chunk1_intro_explore.js`, `chunk2_apply.js`, `chunk3_train_summary.js`；
+     - **重度几何压轴 / 复习大课（18+ 页或含大量复杂 SVG 动态图）**：可拆为 `4～6` 个子智能体（每 3～4 页一个 chunk），防止单智能体上下文过长导致图形细节降质；
+     - **唯一硬约束**：第 1 个 chunk 必须声明 `window.COURSEWARE_PHASES` 与 `cover: true` 封面页，且 `--chunks` 传入顺序必须与幻灯片播放顺序一致；
      - 将《课时定稿蓝图》直接内联到各子智能体 Prompt 中，**严禁子智能体擅自增删设问、严禁更改字母或子图顺序、严禁翻阅旧历史课件**；
      - 统一调用壳文件内置的声明式构建器 `window.defineSlide({...})`、数学坐标底座 `window.createCoordCanvas({...})` 以及多子图总览/放大容器 `window.renderMultiPanelScene(step, panels)`。
 3. **步骤 2.3（一键编译 + 1对1步数一致性门禁 + 全页面运行时仿真）**：
