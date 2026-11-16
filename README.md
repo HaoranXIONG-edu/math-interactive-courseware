@@ -87,6 +87,7 @@
 | 序号 | 课题 / 模块名称 | 幻灯片数 | 适用版式与核心特性 | 动态讲解课件（`.html`） | 优化版学生学案（`.docx`） |
 | :---: | :--- | :---: | :--- | :--- | :--- |
 | **00** | **三大核心组件库架构总览与交互演练场** | 组件库全景 | 数学公式与图形库 + 页面 UI 库 + 可拖拽/最小化尺规批注画板 | [component_library_preview.html](docs/component_library_preview.html) | [图示标注规范.md](docs/图示标注规范.md) |
+| **00b** | **九大自适应版式全景图鉴（Layouts A–I）** | 10 页全景 | 标准封面 + A～E 解题讲练 + F 知识对照 / G 多解点评 / H 对比表 / I 思维导图 + 留白板书 | [layouts_showcase.html](docs/layouts_showcase.html) | [LAYOUTS.md](.agents/skills/math-interactive-courseware/LAYOUTS.md) |
 | **01** | **2.2.2 反比例函数的图象（2）** | 15 页 | `Layouts A/B` · 双曲线增减性、跨象限三点比较三法切换 | [2.2.2_动态讲解课件.html](lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_动态讲解课件.html) | [2.2.2_学生学案_优化版.docx](lessons/2.2.2_反比例函数的图象（2）/2.2.2_反比例函数的图象（2）_学生学案_优化版.docx) |
 | **02** | **2.2.3 反比例函数中“k”的几何意义** | 16 页 | `Layouts A/B` · 面积定值模型、同底等高转化、多子图联动 | [2.2.3_动态讲解课件.html](lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html) | [2.2.3_学生学案_优化版.docx](lessons/2.2.3_反比例函数中“k”的几何意义/2.2.3_反比例函数中“k”的几何意义_学生学案_优化版.docx) |
 | **03** | **2.3.1 反比例函数的应用（1）** | 18 页 | `Layouts A/B/D` · 列表描点拟合、压强/杠杆跨学科建模 | [2.3.1_动态讲解课件.html](lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_动态讲解课件.html) | [2.3.1_学生学案_优化版.docx](lessons/2.3.1_反比例函数的应用（1）/2.3.1_反比例函数的应用（1）_学生学案_优化版.docx) |
@@ -205,8 +206,10 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_courseware.py
 │   ├── ui_components.js                        # 【第二库】页面 UI 设计、北师大教材徽章与渐进步骤组件库
 │   ├── annotation_components.js                # 【第三库】课堂黑板批注、可拖拽/最小化工具坞与8种尺规作图库
 │   └── courseware_components.js                # 三大核心组件库聚合运行时（供壳层与外部页面一键引入）
-├── docs/                                       # 组件库预览、技术规范与开发总结文档
+├── docs/                                       # 组件库预览、版式图鉴、技术规范与开发总结文档
 │   ├── component_library_preview.html          # 三大核心组件库架构总览与交互式黑板演练场（可直接打开）
+│   ├── layouts_showcase.html                   # 全九大自适应版式全景图鉴（Layouts A–I 在线交互演示）
+│   ├── build/all_layouts_showcase.js           # 全九大版式全景图鉴源码
 │   ├── 图示标注规范.md                          # 数学公式、函数画板与几何动态标注规范细则
 │   ├── 数学学案优化与动态交互课件开发规范总结.md  # 双阶段研发全流程总结
 │   └── assets/architecture_pipeline.svg        # 双阶段解耦构建架构矢量图
@@ -233,7 +236,8 @@ python3 .agents/skills/math-interactive-courseware/scripts/compile_courseware.py
 │   ├── 2.3.2_反比例函数的应用（2）/
 │   └── 第20题_十字双垂旋转模型/
 ├── scripts/
-│   └── build_all.py                            # 全仓课例一键合并编译与五重门禁校验脚本
+│   ├── build_all.py                            # 全仓课例与版式图鉴一键合并编译与五重门禁校验脚本
+│   └── sync_skill.sh                           # 单一数据源同步脚本（同步 components/ 与全局技能目录）
 ├── workbench_demo/                             # One·ai 讲评工作台动态演示与构建脚本
 │   ├── One·ai_讲评工作台_动态演示.html
 │   ├── build_production_workbench_v4.py

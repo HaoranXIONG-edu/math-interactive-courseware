@@ -97,6 +97,40 @@ var setTimeout = function(){};
 var clearTimeout = function(){};
 var innerWidth = 1600, innerHeight = 900;
 """ + sc_defs + """
+if (typeof window.defineSlide === "function") {
+  var _origDefineSlide = window.defineSlide;
+  window.defineSlide = function(cfg) {
+    if (cfg && !cfg.cover) {
+      var lay = cfg.layout || "layout-b";
+      var stps = Array.isArray(cfg.steps) ? cfg.steps : [];
+      if (lay === "layout-f" && cfg.example && Array.isArray(cfg.example.lines)) {
+        if (cfg.example.lines.length !== stps.length) {
+          throw new Error("layout-f mismatch in '" + (cfg.title || "") + "': example.lines.length (" + cfg.example.lines.length + ") !== steps.length (" + stps.length + ")");
+        }
+      }
+      if (lay === "layout-g") {
+        for (var gi = 0; gi < stps.length; gi++) {
+          var bt = stps[gi] && stps[gi].badgeType;
+          if (bt && bt !== "ok" && bt !== "warn" && bt !== "info") {
+            throw new Error("layout-g invalid badgeType '" + bt + "' in '" + (cfg.title || "") + "' (must be ok|warn|info)");
+          }
+        }
+      }
+      if (lay === "layout-h" && Array.isArray(cfg.headers) && cfg.headers.length > 0) {
+        for (var hi = 0; hi < stps.length; hi++) {
+          var cells = stps[hi] && stps[hi].cells;
+          if (!Array.isArray(cells) || cells.length !== cfg.headers.length) {
+            throw new Error("layout-h mismatch in '" + (cfg.title || "") + "': row " + hi + " cells.length !== headers.length (" + cfg.headers.length + ")");
+          }
+        }
+      }
+      if (lay === "layout-i" && stps.length < 1) {
+        throw new Error("layout-i in '" + (cfg.title || "") + "' must have at least 1 branch in steps");
+      }
+    }
+    return _origDefineSlide(cfg);
+  };
+}
 function cjkLen(s) {
   var plain = String(s || "").replace(/<[^>]+>/g, "");
   var w = 0;
@@ -147,11 +181,16 @@ for (var idx = 0; idx < slides.length; idx++) {
     if (bnum > maxBlankStep) maxBlankStep = bnum;
   }
   var controlsEl = { innerHTML: "", dataset: {} }, sceneEl = { innerHTML: "", dataset: {} };
+  var extraMockEls = {};
   activeRoot = function() {
     return {
       querySelector: function(sel) {
         if (sel === "#controls") return controlsEl;
         if (sel === "#scene" || sel === ".sim-Host" || sel === "#scene, .sim-Host" || sel === ".screen-lab") return sceneEl;
+        if (/^#layout(FPairList|FGrid|GGrid|GSummary|HTable|HRows|HSummary|ISummary)$/.test(sel || "")) {
+          if (!extraMockEls[sel]) extraMockEls[sel] = { innerHTML: "", hidden: false, style: {}, dataset: {} };
+          return extraMockEls[sel];
+        }
         return null;
       },
       querySelectorAll: function() { return []; }

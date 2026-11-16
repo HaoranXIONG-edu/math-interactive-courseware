@@ -55,6 +55,14 @@ LESSONS = [
         "html": "第20题_十字双垂旋转模型_动态讲解课件.html",
         "docx": None,
     },
+    {
+        "id": "Layouts-A-I",
+        "title": "全九大自适应版式全景图鉴（Layouts A–I）",
+        "dir": "docs",
+        "chunks": ["docs/build/all_layouts_showcase.js"],
+        "html": "layouts_showcase.html",
+        "docx": None,
+    },
 ]
 
 
@@ -68,11 +76,14 @@ def main():
 
     for item in LESSONS:
         lesson_dir = os.path.join(ROOT_DIR, item["dir"])
-        chunks = [
-            os.path.join(lesson_dir, "build", "chunk1_intro_explore.js"),
-            os.path.join(lesson_dir, "build", "chunk2_apply.js"),
-            os.path.join(lesson_dir, "build", "chunk3_train_summary.js"),
-        ]
+        if "chunks" in item:
+            chunks = [os.path.join(ROOT_DIR, c) for c in item["chunks"]]
+        else:
+            chunks = [
+                os.path.join(lesson_dir, "build", "chunk1_intro_explore.js"),
+                os.path.join(lesson_dir, "build", "chunk2_apply.js"),
+                os.path.join(lesson_dir, "build", "chunk3_train_summary.js"),
+            ]
         output_html = os.path.join(lesson_dir, item["html"])
 
         print(f"\n▶ [{item['id']}] {item['title']}")
