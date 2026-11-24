@@ -302,6 +302,11 @@ function syncSlideProgression(state) {
   }
 
   // 1. 同步题干中的 .screen-blank 填空与选择题括号答案
+  if (!window.formatBlankAnsHtml) {
+    window.formatBlankAnsHtml = function(raw) {
+      return String(raw || '').replace(/<(?!\/?(?:span|i|b|sub|sup|u|br|strong|em)\b[^>]*>)/gi, '&lt;');
+    };
+  }
   const allBlanks = root.querySelectorAll('.screen-stem .screen-blank[data-ans]');
   const totalBlanks = allBlanks.length;
   allBlanks.forEach((blank, idx) => {
@@ -309,7 +314,7 @@ function syncSlideProgression(state) {
       ? Number(blank.dataset.step)
       : (totalBlanks <= 1 ? maxStep : Math.max(1, Math.ceil((idx + 1) * maxStep / totalBlanks)));
     if (s >= unlockAt) {
-      blank.innerHTML = blank.dataset.ans;
+      blank.innerHTML = window.formatBlankAnsHtml(blank.dataset.ans);
       blank.classList.add('filled');
     } else if (!blank.dataset.manualFill) {
       blank.innerHTML = '';
@@ -422,7 +427,8 @@ document.addEventListener('click', e => {
   if (blank) {
     const isFilled = blank.classList.toggle('filled');
     blank.dataset.manualFill = isFilled ? '1' : '';
-    blank.innerHTML = isFilled ? blank.dataset.ans : '';
+    const safeAns = window.formatBlankAnsHtml ? window.formatBlankAnsHtml(blank.dataset.ans) : blank.dataset.ans;
+    blank.innerHTML = isFilled ? safeAns : '';
     return;
   }
   const chip = e.target.closest('.cond-chip');
