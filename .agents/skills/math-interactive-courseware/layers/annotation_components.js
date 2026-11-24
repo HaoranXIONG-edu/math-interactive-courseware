@@ -722,6 +722,139 @@
     tb.dataset.iconified = '1';
     tb.classList.add('ink-floating', 'ink-simple');
 
+    if (!document.getElementById('annot-compact-eraser-style')) {
+      const st = document.createElement('style');
+      st.id = 'annot-compact-eraser-style';
+      st.textContent = `
+        body #inkToolbar.ink-floating {
+          padding: 7px 11px !important;
+          gap: 8px !important;
+          border-radius: 16px !important;
+          height: auto !important;
+          max-height: 64px !important;
+          width: auto !important;
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.24) !important;
+        }
+        body #inkToolbar.ink-floating #inkDrag {
+          width: 26px !important;
+          height: 44px !important;
+          padding: 0 5px 0 0 !important;
+        }
+        body #inkToolbar.ink-floating #inkDrag .ink-grip {
+          font-size: 24px !important;
+        }
+        body #inkToolbar.ink-floating .ink-group:has([data-ink-tool]) {
+          gap: 7px !important;
+          padding-right: 9px !important;
+        }
+        body #inkToolbar.ink-floating [data-ink-tool],
+        body #inkToolbar.ink-floating #inkUndo,
+        body #inkToolbar.ink-floating #inkRedo,
+        body #inkToolbar.ink-floating #inkClear {
+          width: 46px !important;
+          height: 46px !important;
+          min-height: 46px !important;
+          border-radius: 12px !important;
+        }
+        body #inkToolbar.ink-floating [data-ink-tool="pen"],
+        body #inkToolbar.ink-floating [data-ink-tool="highlight"],
+        body #inkToolbar.ink-floating [data-ink-tool="shape"] {
+          width: 55px !important;
+          padding-right: 11px !important;
+        }
+        body #inkToolbar.ink-floating [data-ink-tool] > svg:first-child,
+        body #inkToolbar.ink-floating #inkUndo svg,
+        body #inkToolbar.ink-floating #inkRedo svg,
+        body #inkToolbar.ink-floating #inkClear svg {
+          width: 24px !important;
+          height: 24px !important;
+        }
+        body #inkToolbar.ink-floating [data-ink-tool] .ink-tool-color-bar {
+          bottom: 4px !important;
+          left: 9px !important;
+          width: 26px !important;
+          height: 3.5px !important;
+        }
+        body #inkToolbar.ink-floating [data-ink-tool] .ink-tool-caret {
+          right: 5px !important;
+          width: 10px !important;
+          height: 10px !important;
+        }
+        body #inkToolbar.ink-floating .ink-shape-btn,
+        body #inkToolbar.ink-floating .ink-stroke-btn {
+          width: 40px !important;
+          height: 40px !important;
+          min-height: 40px !important;
+          border-radius: 10px !important;
+        }
+        body #inkToolbar.ink-floating .ink-shape-btn svg {
+          width: 22px !important;
+          height: 22px !important;
+        }
+        body #inkToolbar.ink-floating .ink-swatch {
+          width: 26px !important;
+          height: 26px !important;
+          min-height: 26px !important;
+        }
+        body #inkToolbar.ink-floating #inkClose {
+          padding: 6px 12px !important;
+          min-height: 38px !important;
+          font-size: 14px !important;
+        }
+        #eraserSizePopover {
+          position: absolute;
+          bottom: calc(100% + 10px);
+          left: 50%;
+          transform: translateX(-50%);
+          display: none;
+          align-items: center;
+          gap: 8px;
+          padding: 7px 12px;
+          border-radius: 14px;
+          background: rgba(24, 34, 52, 0.94);
+          border: 1.5px solid rgba(255, 255, 255, 0.45);
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.28);
+          color: #ffffff;
+          white-space: nowrap;
+          z-index: 20;
+        }
+        #eraserSizePopover.open {
+          display: flex;
+        }
+        #eraserSizePopover .er-lbl {
+          font-size: 13px;
+          font-weight: 700;
+          color: #cbd5e1;
+          margin-right: 2px;
+        }
+        #eraserSizePopover .er-opt {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 4px 10px;
+          border-radius: 9px;
+          border: 1.5px solid rgba(255, 255, 255, 0.25);
+          background: rgba(15, 23, 42, 0.45);
+          color: #e2e8f0;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          min-height: 30px;
+        }
+        #eraserSizePopover .er-opt.selected {
+          background: #0284c7;
+          border-color: #7dd3fc;
+          color: #ffffff;
+        }
+        #eraserSizePopover .er-dot {
+          display: inline-block;
+          border-radius: 50%;
+          background: #ffffff;
+        }
+      `;
+      document.head.appendChild(st);
+    }
+
     // 1) 顶部拖拽柄与折叠/退出按钮
     if (!tb.querySelector('.ink-float-head')) {
       const head = document.createElement('div');
@@ -840,6 +973,23 @@
         }
       });
     }
+
+    if (!tb.querySelector('#eraserSizePopover')) {
+      const inkSizeInp = document.getElementById('inkSize');
+      if (inkSizeInp) inkSizeInp.max = '20';
+      const pop = document.createElement('div');
+      pop.id = 'eraserSizePopover';
+      const presets = [
+        { label: '小', val: 3, dot: 7 },
+        { label: '中', val: 6, dot: 11 },
+        { label: '大', val: 10, dot: 15 },
+        { label: '特大', val: 16, dot: 19 }
+      ];
+      pop.innerHTML = `<span class="er-lbl">橡皮范围</span>` + presets.map(p =>
+        `<button type="button" class="er-opt" data-er-val="${p.val}"><span class="er-dot" style="width:${p.dot}px;height:${p.dot}px;"></span>${p.label}</button>`
+      ).join('');
+      tb.appendChild(pop);
+    }
   }
 
   function setupCoursewareToolbar(opts = {}) {
@@ -902,6 +1052,19 @@
           b.setAttribute('aria-pressed', String(act));
         });
         tb.style.setProperty('--active-ink', inkSettings.color);
+        const erPop = tb.querySelector('#eraserSizePopover');
+        if (erPop) {
+          const isEraser = inkSettings.tool === 'eraser';
+          erPop.classList.toggle('open', isEraser);
+          const cur = Number(inkSettings.size || 6);
+          let bestIdx = 1, bestDiff = 999;
+          const erBtns = Array.from(erPop.querySelectorAll('.er-opt'));
+          erBtns.forEach((b, idx) => {
+            const d = Math.abs(Number(b.dataset.erVal) - cur);
+            if (d < bestDiff) { bestDiff = d; bestIdx = idx; }
+          });
+          erBtns.forEach((b, idx) => b.classList.toggle('selected', idx === bestIdx));
+        }
         if (subMenu && subMenu.classList.contains('palette-open')) {
           const targetBtn = tb.querySelector(`[data-ink-tool="${activeDrawTool}"]`);
           if (targetBtn) {
@@ -960,6 +1123,19 @@
           inkSettings.size = +btn.dataset.inkSize;
           global.inkToolProfiles[inkSettings.tool].size = inkSettings.size;
           document.getElementById('penLayer')?.classList.toggle('enabled', penOn);
+          updateInkTools();
+          global.syncSubMenuDock();
+          return;
+        }
+        if (btn.dataset.erVal) {
+          ev.stopPropagation();
+          const v = Number(btn.dataset.erVal);
+          inkSettings.size = v;
+          const inkSizeInp = document.getElementById('inkSize');
+          if (inkSizeInp) {
+            inkSizeInp.value = String(v);
+            inkSizeInp.dispatchEvent(new Event('input', { bubbles: true }));
+          }
           updateInkTools();
           global.syncSubMenuDock();
           return;
