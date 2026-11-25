@@ -97,6 +97,21 @@ var setTimeout = function(){};
 var clearTimeout = function(){};
 var innerWidth = 1600, innerHeight = 900;
 """ + sc_defs + """
+if (typeof window.createCoordCanvas === "function") {
+  var _origCreateCoordCanvas = window.createCoordCanvas;
+  window.createCoordCanvas = function(a1, a2, a3) {
+    var cv = _origCreateCoordCanvas(a1, a2, a3);
+    var _origToSvg = cv.toSvg;
+    cv.toSvg = function() {
+      var out = _origToSvg.apply(this, arguments);
+      if (Math.abs(cv.scaleX - cv.scaleY) > 0.05 && (/<circle\\b/.test(out) || /<path\\b[^>]*\\bA\\s+[0-9.]+/.test(out))) {
+        throw new Error("NON-EQUAL-ASPECT CIRCLE/ARC: createCoordCanvas has scaleX (" + cv.scaleX.toFixed(2) + ") != scaleY (" + cv.scaleY.toFixed(2) + ")! Pass equalAspect: true.");
+      }
+      return out;
+    };
+    return cv;
+  };
+}
 if (typeof window.defineSlide === "function") {
   var _origDefineSlide = window.defineSlide;
   window.defineSlide = function(cfg) {
@@ -126,6 +141,21 @@ if (typeof window.defineSlide === "function") {
       }
       if (lay === "layout-i" && stps.length < 1) {
         throw new Error("layout-i in '" + (cfg.title || "") + "' must have at least 1 branch in steps");
+      }
+      if (lay === "layout-j") {
+        if (stps.length < 1) {
+          throw new Error("layout-j in '" + (cfg.title || "") + "' must have at least 1 figure card in steps");
+        }
+        for (var ji = 0; ji < stps.length; ji++) {
+          var jst = stps[ji] || {};
+          if (!jst.svg && typeof jst.renderSvg !== "function") {
+            throw new Error("layout-j card " + ji + " in '" + (cfg.title || "") + "' missing svg or renderSvg");
+          }
+          var jbt = jst.badgeType;
+          if (jbt && jbt !== "ok" && jbt !== "no" && jbt !== "warn" && jbt !== "info") {
+            throw new Error("layout-j invalid badgeType '" + jbt + "' in '" + (cfg.title || "") + "' (must be ok|no|warn|info)");
+          }
+        }
       }
     }
     return _origDefineSlide(cfg);
@@ -163,6 +193,12 @@ for (var idx = 0; idx < slides.length; idx++) {
   if (/<\\/?(?:span|div|i|b|sup|sub)\\b|span>|<i class=\\"m\\">span<\\/i>/i.test(plainSlideHtml) || /<i class=\\"m\\">span<\\/i>/.test(String(sl.html || ""))) {
     throw new Error("Slide " + idx + " (" + sl.navTag + ") CORRUPTED HTML TAG LEAK IN TEXT: Found literal 'span>' or '<i class=\\"m\\">span</i>' in rendered slide HTML!");
   }
+  if (/data-ans="[^"]*<[^>]*class="/.test(String(sl.html || ""))) {
+    throw new Error("Slide " + idx + " (" + sl.navTag + ") BROKEN data-ans ATTRIBUTE: Double-quoted HTML inside data-ans=\\"...\\"! Use single quotes data-ans='...' instead.");
+  }
+  if (/⌒[A-Za-z<]/.test(String(sl.html || ""))) {
+    throw new Error("Slide " + idx + " (" + sl.navTag + ") RAW ARC SYMBOL '⌒' DETECTED: Use .arc-over (top arc) in HTML or '弧AB' in SVG text instead of prefix '⌒'!");
+  }
   if (/(?:∽|相似)[^。；！\\n≅≌]{0,28}[（(]\\s*(?:AA|SAS|SSS|ASA|AAS|HL)\\s*[）)]/.test(plainSlideHtml)) {
     throw new Error("Slide " + idx + " (" + sl.navTag + ") FORBIDDEN SIMILARITY PROOF SYMBOL: Triangle similarity (∽ / 相似) must NEVER have (AA)/(SAS)/(SSS) in parentheses (only congruence ≌ uses them)!");
   }
@@ -187,7 +223,7 @@ for (var idx = 0; idx < slides.length; idx++) {
       querySelector: function(sel) {
         if (sel === "#controls") return controlsEl;
         if (sel === "#scene" || sel === ".sim-Host" || sel === "#scene, .sim-Host" || sel === ".screen-lab") return sceneEl;
-        if (/^#layout(FPairList|FGrid|GGrid|GSummary|HTable|HRows|HSummary|ISummary)$/.test(sel || "")) {
+        if (/^#layout(PptStage|FPairList|FGrid|GGrid|GSummary|HTable|HRows|HSummary|ISummary)$/.test(sel || "")) {
           if (!extraMockEls[sel]) extraMockEls[sel] = { innerHTML: "", hidden: false, style: {}, dataset: {} };
           return extraMockEls[sel];
         }
@@ -248,7 +284,8 @@ for (var idx = 0; idx < slides.length; idx++) {
       throw new Error("Slide " + idx + " (" + sl.sim + ") missing stepBar at step " + s);
     }
     if (s <= dotCount) {
-      var svgStr = sceneEl.innerHTML || "";
+      var rawStageStr = sceneEl.innerHTML || (extraMockEls["#layoutPptStage"] && extraMockEls["#layoutPptStage"].innerHTML) || "";
+      var svgStr = rawStageStr.replace(/<svg\s+class=["']ppt-arrow-svg["'][\s\S]*?<\/svg>/gi, "").replace(/<span\s+class=["']cw-cong-wrap["'][\s\S]*?<\/svg><\/span>/gi, "");
       var isLayoutC = sl.html.indexOf("layout-c") >= 0;
       var svgOpenTags = svgStr.match(/<svg\\b/gi) || [];
       if (!isLayoutC && svgOpenTags.length > 1) {
@@ -377,14 +414,15 @@ for (var idx = 0; idx < slides.length; idx++) {
       if (item.syncStep !== undefined) st.step = Math.max(Number(st.step || 0), item.syncStep);
       if (typeof window.setManualOverride === "function") window.setManualOverride(st, item.key);
       if (typeof fn === "function") fn(st, false); else fn.render(st);
-      modeScenes[item.val] = sceneEl.innerHTML;
+      modeScenes[item.val] = sceneEl.innerHTML || (extraMockEls["#layoutPptStage"] && extraMockEls["#layoutPptStage"].innerHTML) || "";
     }
     var firstItem = modeItems[0];
     st[firstItem.key] = (typeof st[firstItem.key] === "number") ? (isNaN(+firstItem.val) ? firstItem.val : +firstItem.val) : firstItem.val;
     if (firstItem.syncStep !== undefined) st.step = Math.max(Number(st.step || 0), firstItem.syncStep);
     if (typeof window.setManualOverride === "function") window.setManualOverride(st, firstItem.key);
     if (typeof fn === "function") fn(st, false); else fn.render(st);
-    if (sceneEl.innerHTML !== modeScenes[firstItem.val]) {
+    var curModeHtml = sceneEl.innerHTML || (extraMockEls["#layoutPptStage"] && extraMockEls["#layoutPptStage"].innerHTML) || "";
+    if (curModeHtml !== modeScenes[firstItem.val]) {
       throw new Error("Slide " + idx + " (" + sl.navTag + ") MODE BUTTON ROUND-TRIP STUCK: Clicking mode '" + firstItem.val + "' after mode '" + modeItems[modeItems.length - 1].val + "' failed to restore scene SVG!");
     }
     if (modeItems.length >= 2 && modeScenes[modeItems[0].val] === modeScenes[modeItems[1].val]) {

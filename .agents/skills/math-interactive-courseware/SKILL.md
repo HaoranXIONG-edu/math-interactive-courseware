@@ -1,19 +1,7 @@
 ---
 name: math-interactive-courseware
-description: Use this skill whenever the user asks to optimize a middle/high school math student worksheet (.docx) and/or generate an interactive HTML dynamic presentation courseware (动态讲解课件.html) for classroom smartboard use. Provides the full-screen Goodnotes interactive HTML shell, 9 adaptive question layouts (Layouts A–I), zero-spoiler step-by-step progression rules, in-place Word XML patching rules, and a parallel Multi-Agent build pipeline.
----
-
-# 数学学案无损优化与交互式 HTML 动态讲解课件（教室大屏版）开发技能
-
-当用户要求“优化某节数学学案（`.docx`）并生成交互式 HTML 动态演示课件”时，必须严格执行本规范。
-
----
-
-## 一、两阶段用户确认制开发流水线（Two-Stage Confirmation SOP，严禁跳步）
-
-为彻底消除“边改学案边猜着写课件”导致的题干不一致、设问错位与返工，必须严格执行**“第一阶段先定稿 `.docx` 学案并交由用户确认 $\to$ 第二阶段以定稿 `.docx` 为唯一基准 1:1 生成 `.html` 动态课件”**的两阶段工作流：
-
-### 第一阶段：学案结构解析与优化版 `.docx` 交付确认（严禁在此阶段提前生成 HTML）
+description: Use this skill whenever the user asks to optimize a middle/high school math student worksheet (.docx) and/or generate an interactive HTML dynamic presentation courseware (动态讲解课件.html) for classroom smartboard use. Provides the full-screen Goodnotes interactive HTML shell, 10 adaptive question layouts (Layouts A–J), zero-spoiler step-by-step progression rules, in-place Word XML patching rules, and a parallel Multi-Agent build pipeline.
+---# 数学学案无损优化与交互式 HTML 动态讲解课件（教室大屏版）开发技能当用户要求“优化某节数学学案（`.docx`）并生成交互式 HTML 动态演示课件”时，必须严格执行本规范。---## 一、两阶段用户确认制开发流水线（Two-Stage Confirmation SOP，严禁跳步）为彻底消除“边改学案边猜着写课件”导致的题干不一致、设问错位与返工，必须严格执行**“第一阶段先定稿 `.docx` 学案并交由用户确认 $\to$ 第二阶段以定稿 `.docx` 为唯一基准 1:1 生成 `.html` 动态课件”**的两阶段工作流：### 第一阶段：学案结构解析与优化版 `.docx` 交付确认（严禁在此阶段提前生成 HTML）
 1. **步骤 1.1（自动化结构解析 + WMF/OMML 公式全自动解码 + 原图视觉核验 `Visual-First Rule`）**：
    - 运行本技能内置的结构解析与审计脚本（v2.0），一次性完成：① 自动解码全部遗留 MathType `<w:object>`（`.wmf`）与原生 `<m:oMath>` 为内联 `$LaTeX$` 公式；② 仅将真正的题目配图（`.png / .jpg / .jpeg`）导出到 `--media-out`（自动过滤掉数十个 `.wmf` 公式碎片）；③ 审计每张配图的像素分辨率、Word 物理宽高（`cm`）及 `<a:srcRect>` 裁剪参数，并对存在大幅裁剪的图片自动生成裁剪后实际可见视图 `*_crop*.png`；④ 审计 `<mc:AlternateContent>` 浮动圆角文本框的 `Choice/Fallback` 双分支同步状态与 `o:gfxdata` 缓存标志，并输出结构化 JSON 蓝图：
      ```bash
@@ -30,9 +18,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
    - 若需重绘配图 $\ge 3$ 张，使用 `invoke_subagent` 并发重绘全部 300 DPI 高清配图（$\ge 2400\text{px}$），并原地无损修补 `word/document.xml`（清零 `<w:object>` 升级为 `12pt` 原生 `<m:oMath>`，修复剧透填空与设问梯度，同步浮动归纳框双分支并清空框下残留段落），输出 `xxx_学生学案_优化版.docx`。
 3. **步骤 1.3（🛑 强制暂停确认门禁 STOP & CONFIRM）**：
    - 将生成的 `xxx_学生学案_优化版.docx` 及《学案优化修改清单》（**必须包含每道改动/重绘题的【几何条件与可解性验算式】及【题干↔配图字母核对结果】**）呈现给用户审阅，询问用户：**“请确认优化后的 Word 学案是否定稿（您也可以直接在 Word 中修改后发回给我），确认后我将严格按定稿学案 1:1 生成 HTML 动态讲解课件。”**
-   - **强制约束**：在用户明确回复“确认”或发回修改后的定稿 `.docx` 之前，**严禁提前编写或生成 HTML 课件**！（若用户一开始直接上传的就是已定稿 `.docx` 并明确只要求直接生成 HTML 课件，则直接进入第二阶段）。
-
-### 第二阶段：基于用户确认定稿 `.docx` 1:1 极速生成 `.html` 课件
+   - **强制约束**：在用户明确回复“确认”或发回修改后的定稿 `.docx` 之前，**严禁提前编写或生成 HTML 课件**！（若用户一开始直接上传的就是已定稿 `.docx` 并明确只要求直接生成 HTML 课件，则直接进入第二阶段）。### 第二阶段：基于用户确认定稿 `.docx` 1:1 极速生成 `.html` 课件
 1. **步骤 2.1（锁定唯一真实数据源 `Single Source of Truth`）**：
    - 若用户发回了微调后的 `.docx` 学案，再次运行 `inspect_docx_worksheet.py` 并用 `read_file` 查看最终配图，提取出**100% 锁定的《课时定稿蓝图》**（包含每一题的定稿题干、每一个填空对应的 `data-step="1..N"` 序号、每一张子图 `图(1)～图(k)` 的真实数学顶点坐标）。
 2. **步骤 2.2（按课例体量弹性分配 `1～N` 个子智能体并发编写课件模块）**：
@@ -50,13 +36,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
        --title "2.2.3 反比例函数中“k”的几何意义" \
        --chunks chunk1_intro_explore.js chunk2_apply.js chunk3_train_summary.js \
        --output "2.2.3_反比例函数中“k”的几何意义_动态讲解课件.html"
-     ```
-
----
-
-## 二、Word 学生学案（`.docx`）原地无损修补规范（统一调用 `docx_inplace_patcher.py` + `audit_figure_script.py`）
-
-1. **严禁手写冗长 XML 拼接或新建无边框表格重排**：
+     ```---## 二、Word 学生学案（`.docx`）原地无损修补规范（统一调用 `docx_inplace_patcher.py` + `audit_figure_script.py`）1. **严禁手写冗长 XML 拼接或新建无边框表格重排**：
    - 必须直接调用本技能内置的 [docx_inplace_patcher.py](./scripts/docx_inplace_patcher.py)（`DocxWorksheetPatcher` 类）原地修改 `word/document.xml`，100% 保留原文档页面边距、学校页眉、四号（`12pt`，`w:sz="24"`）字号、`1.5` 倍行距与圆角浮动归纳框：
      ```python
      from docx_inplace_patcher import DocxWorksheetPatcher
@@ -80,26 +60,17 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
    - `exam_figure_engine.py` 已内置以下防呆规则：
      - `draw_axes` 默认对 $x$ 轴末端标签使用 `anchor="right"`、对 $y$ 轴顶端标签使用 `anchor="left"`（`px_y + 24`），彻底杜绝 `y/°C`、`y/度` 等带单位标签左边缘压住 $y$ 轴顶端箭头；
      - `_tokenize_label` 自动将紧跟斜杠 `/` 或数字后的计量单位（如 `/Pa`, `/m`, `/A`, `/N`, `/min`, `/mg`, `/Ω`, `°C`）渲染为 `Times New Roman` **正体**（中文单位如 `/度` 渲染为`宋体`正体），而将独立的单字母几何顶点或物理变量（如 `A`, `B`, `C`, `O`, `F`, `I`, `R`, `S`, `p`, `x`, `y`）严格渲染为 `Times New Roman` **斜体**；
-     - `DocxWorksheetPatcher.replace_media_and_clear_crop` 在替换高清配图并清空 `<a:srcRect>` 时，会自动读取新图真实像素宽高比并同步更新 `<wp:extent>` 与 `<a:ext>` 的 `cy`，杜绝高清重绘图在 Word 中被旧尺寸拉伸变形。
-
----
-
-## 三、交互式 HTML 动态课件九大自适应版式（Layouts A–I）与零剧透规范
-
-> **版式速查总览**：完整版式矩阵与 `window.defineSlide` 配置模板见同目录 [LAYOUTS.md](./LAYOUTS.md)。
-
-### 1. 九大自适应版式（按教学环节与题型精准匹配）
+     - `DocxWorksheetPatcher.replace_media_and_clear_crop` 在替换高清配图并清空 `<a:srcRect>` 时，会自动读取新图真实像素宽高比并同步更新 `<wp:extent>` 与 `<a:ext>` 的 `cy`，杜绝高清重绘图在 Word 中被旧尺寸拉伸变形。---## 三、交互式 HTML 动态课件十大自适应版式（Layouts A–J）与零剧透规范> **版式速查总览**：完整版式矩阵与 `window.defineSlide` 配置模板见同目录 [LAYOUTS.md](./LAYOUTS.md)。### 1. 十大自适应版式（按教学环节与题型精准匹配）
 - **版式 A (`layout-a`)**：无配图纯文字/代数/概念辨析题。上方 `.screen-stem` 100% 全宽展示题干与选项，下方 `.screen-lower.layout-a` 100% 全宽展示分步解析。**严禁为了凑左右分栏而在左侧捏造假表格！**
 - **版式 B (`layout-b`)**：单配图几何/函数综合题、探究题。上方 `.screen-stem` 100% 全宽展示完整题干（含子问题串、归纳填空框或追问顶部的 `【关联前问总结】` 横幅），下方严格**左解（`.screen-notes`）右图（`.screen-media`）**。
 - **版式 C (`layout-c`)**：含 4 个函数图象选项的选择题。上方全宽展示题干及一行 4 张放大版 SVG 选项图，下方全宽展示分步排除推导。
 - **版式 D (`layout-d`)**：列表—描点—连线作图题。上方全宽展示带两端省略号 `…` 的取点表格（初始用 `?` 遮罩 $x, y$ 数值），左下分步推导，右下交互式坐标纸。
 - **版式 E (`layout-e`)**：多点坐标验算判断卡片题。上方题干，下方全宽并排展示待验算点卡片。
-- **版式 F (`layout-f`)**：**知识归纳与流程对照版式**（彻底摆脱 `.step` 卡片束缚，适配新授课定理归纳与解题通法如 `1.移项 → 2.化积 → 3.转化 → 4.求解`）。当配置 `example: { title, stem, lines: [...] }` 时，自动渲染**顶部例题横幅 + 水平“左流程要领 ↔ 右同步演算”一一对应对照行**；无独立例题时渲染居中 PPT 风格主题顶栏知识卡（支持每卡内置 `example` 示例框）。
+- **版式 F (`layout-f`)**：**知识归纳与流程对照版式**（彻底摆脱 `.step` 卡片束缚，适配新授课定理归纳与解题通法如 `1.移项 → 2.化积 → 3.转化 → 4.求解`）。当配置 `example: { title, stem, lines: [...] }` 时，自动渲染**顶部例题横幅 + 水平“左流程要领 ↔ 右同步演算”一一对应对照行**；无独立例题时渲染居中 PPT 风格主题顶栏知识卡（支持每卡内置 `example` 示例框，且传入可选 `mediaSvg` 时自动切换为“左卡右定理示意图”分栏）。
 - **版式 G (`layout-g`)**：**多解法对比 / 正误辨析并排版式**（一题多解同屏对比、典型错解如“漏根”辨析）。支持 2/3 列自适应高度居中对比卡、`badge`（`✓ 推荐` / `⚠ 易错`）与 `badgeType`（`'ok' | 'warn' | 'info'`）、每卡独立 `comment`（步进点评区，`23px` 高亮呈现），以及末步揭晓的底部 `summary` 总结条。
 - **版式 H (`layout-h`)**：**教研级交互对比表格版式**（方法对比归纳表如 `方法 | 理论依据 | 适用范围 | 关键步骤`、公式汇总表）。通过 `headers`、`colWidths` 与每行 `cells` 渲染（顶对齐排版，首列彩色方法胶囊提示，其余列随步进逐行揭晓），并支持底部 `summary` 选用策略总结条。
 - **版式 I (`layout-i`)**：**全屏居中交互式思维导图 / 课堂小结版式**（课堂小结、章节复习思维导图）。取消左侧冗余步骤卡片，由 `window.renderMindMapScene` 占据全屏宽度渲染高清 SVG 树状思维导图（中心主题 → 彩色分支 → 子节点 → 右侧核心解读框），支持直接点击导图分支展开，并支持底部 `summary` 课堂核心思想总结条。
-
-### 2. 渐进式呈现（Zero-Spoiler）与零冗余规范
+- **版式 J (`layout-j`)**：**多图网格条件辨析版式**（几何概念识别、定理条件判断，如“下列图形是否具备垂径定理条件？”）。以 2/3/4 列网格同屏展示多张独立几何小图（`step = 0` 仅展示原图），支持点击卡片或按空格键逐图揭晓判定角标（`badgeType: 'ok' | 'no' | 'info'`）与判定理由，并支持底部 `summary` 条件提炼总结条。### 2. 渐进式呈现（Zero-Spoiler）与零冗余规范
 0. **第 1 页必为极简正式教学封面页（`cover: true` + `window.renderStandardCover`）**：
    - `chunk1_intro_explore.js` 的第 1 页必须固定为 `cover: true` 的教学封面页，直接调用壳文件内置的 `window.renderStandardCover({ chapter, num, title, caption, goals })`：
      - **严禁在封面页重复堆砌“课堂四环节导览”卡片**（页面顶部 `flowbar` 已有四环节导航）；
@@ -119,15 +90,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
    - 坐标轴刻度数字必须布置在**无双曲线经过的象限侧**（如 $k>0$ 时标在二、四象限侧，$k<0$ 时标在一、三象限侧），且所有刻度与几何字母必须加白色描边光晕（`stroke="#ffffff" stroke-width="3.5" paint-order="stroke"`）防止压线。
 4. **函数图象画布全屏放大展示模式（Canvas Full-Screen Zoom）**：
    - 底座内置 `window.toggleCanvasZoom`（支持画布右下角 `🔍 全屏放大图象` 悬浮按钮、步骤控制栏 `🔍 放大图象` 按钮、双击画布空白处、快捷键 `Z` / `ESC`）；
-   - 开启全屏放大后，自动收起题干与文字推导步骤，仅在顶部保留互动控制条（`#controls`），画布 100% 占满舞台，支持在全屏大图下拖动动点滑块、切换函数模式及使用荧光笔批注。
-
----
-
-## 四、多智能体接口契约与全局 API 规范
-
-为防止多个子智能体并行编写 `chunk1`、`chunk2`、`chunk3` 时出现接口不一致、DOM 容器缺失、步骤与图形错乱或几何坐标算错，所有子智能体必须严格遵守以下契约：
-
-1. **步骤卡片 ↔ 进度圆点 ↔ 题干填空 ↔ 几何子图“四位一体 1 对 1 同步规范”**：
+   - 开启全屏放大后，自动收起题干与文字推导步骤，仅在顶部保留互动控制条（`#controls`），画布 100% 占满舞台，支持在全屏大图下拖动动点滑块、切换函数模式及使用荧光笔批注。---## 四、多智能体接口契约与全局 API 规范为防止多个子智能体并行编写 `chunk1`、`chunk2`、`chunk3` 时出现接口不一致、DOM 容器缺失、步骤与图形错乱或几何坐标算错，所有子智能体必须严格遵守以下契约：1. **步骤卡片 ↔ 进度圆点 ↔ 题干填空 ↔ 几何子图“四位一体 1 对 1 同步规范”**：
    - 每一页的 `.step` 卡片总数 $N$ **必须严格等于** `stepBar(step, N)` 的进度圆点总数 $N$（编译脚本会自动拦截任何不相等的页面）！
    - 当一道题包含多个填空或子图（如图(1)～图(5)）时，**每个填空（`data-step="1"..data-step="N"`）必须独立对应一张 `.step` 卡片（`01 步骤1` ～ `0N 步骤N`）**，严禁把 2 个填空的推导合并塞进同一张 `.step` 卡片导致点一下跳两步、两个空同时蹦出！
    - 右侧 SVG 必须直接由 `step` 驱动切换对应子图（例如 `step = 0` 显示多图总览，`step = 1` 自动放大图(1)，`step = 2` 自动放大图(2)…）。若额外使用了 `modeButtons(key, curVal, items)`，每一项必须传入第 3 个参数 `syncStep`（如 `['1', '方法一', 1]`），使点击模式按钮时同步更新 `state.step`。
@@ -150,6 +113,10 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
    - `window.svgLegendBar(items, opts)`：波利亚式顶部通栏色彩图例条（100% 纯原生 SVG 图元渲染，零 `<foreignObject>`、零嵌套 `<svg>`）。
    - `window.svgNumberedAngle(vertex, pStart, pEnd, numStr, opts)`：数字角（`1, 2, 3, 4, 5`）圆弧与角平分线引线标注器。
    - `window.svgCalloutTag(anchorPt, boxRect, innerHtml, opts)`：带圆点引线的求解目标/结论气泡框（如 `求 BC = ?` / `BC = 4√3`）。
+   - `window.arcHtml(letters)`：生成带顶部标准弧线的斜体弧符号（`<span class="arc-over">...</span>`），严禁裸写前置 `⌒`。
+   - `window.formalProofStep(lines)`：正式几何证明板书对齐组件（接收 `[{ head }, { sym: '∵', text }, { sym: '∴', text }]`，自动合并步骤卡片并纵向对齐 `∵/∴`）。
+   - `window.renderChoices(items, cols)`：标准大字号选择题选项组件（`24px` 字号 + `48px` 间距，`cols=4` 单行或 `cols=2` 双排，严禁手拼小字号 `<div>`）。
+   - `window.draw3DFoldCircle(cv, opts)` / `window.toggle3DFoldAnim()`：交互式 3D 圆形翻折引擎（`foldDeg=0` 自动隐藏中缝防剧透）。
 4. **顶部章节导航栏配置与字数防溢出红线（必须在 `chunk1_intro_explore.js` 开头声明）**：
    - **字数硬门禁（编译脚本自动校验，超长即报错拦截）**：
      - `window.COURSEWARE_BRAND` $\le 15$ 个字符；
@@ -164,15 +131,7 @@ description: Use this skill whenever the user asks to optimize a middle/high sch
      ['③ 新知应用', '第1—5题典例精析'],
      ['④ 分层训练', '训练1—3与课堂小结']
    ];
-   ```
-
----
-
-## 五、JS 分块模块（`chunk*.js`）声明式标准代码模板
-
-推荐使用 `window.defineSlide({...})` 结合 `window.createCoordCanvas({...})` 编写每一页，彻底消除手拼 DOM 外壳与手算像素误差：
-
-```javascript
+   ```---## 五、JS 分块模块（`chunk*.js`）声明式标准代码模板推荐使用 `window.defineSlide({...})` 结合 `window.createCoordCanvas({...})` 编写每一页，彻底消除手拼 DOM 外壳与手算像素误差：```javascript
 // 1. 封面页（仅在 chunk1 第 1 页调用）
 window.defineSlide({
   cover: true,
@@ -184,9 +143,7 @@ window.defineSlide({
     "理解并掌握反比例函数中“<i class='m'>k</i>”的几何意义（<b>重点</b>）；",
     "能灵活运用“<i class='m'>k</i>”的几何意义解决图形面积及求<i class='m'>k</i>值问题（<b>难点</b>）．"
   ]
-});
-
-// 2. 标准互动题目页（自动保障 steps 数量 === stepBar 圆点数量 === 填空与图形 1对1 解锁）
+});// 2. 标准互动题目页（自动保障 steps 数量 === stepBar 圆点数量 === 填空与图形 1对1 解锁）
 window.defineSlide({
   lesson: 1,
   phase: 2, // 0: 情境引入, 1: 新知探究, 2: 新知应用, 3: 分层训练与小结
@@ -229,13 +186,7 @@ window.defineSlide({
     return cv.toSvg();
   }
 });
-```
-
-### 3.6 多问长题拆页精讲规范（控制单页信息密度）
-
-为保障 1600×900 教室教室大屏上的最佳视觉呼吸感（杜绝顶部 `.screen-stem` 过长挤压下方步骤区、杜绝单页塞入过多推导步骤或同屏堆叠多张不同配图），凡遇到**多问综合题或长题干题**，必须将子问题拆分为连续的多个独立页面（如 `问题2(1)(2)` 与 `问题2(3)`、`第5题(1)` 与 `第5题(2)`）进行分页精讲：
-
-1. **强制拆页触发条件（满足任一即拆页）**：
+```### 3.6 多问长题拆页精讲规范（控制单页信息密度）为保障 1600×900 教室教室大屏上的最佳视觉呼吸感（杜绝顶部 `.screen-stem` 过长挤压下方步骤区、杜绝单页塞入过多推导步骤或同屏堆叠多张不同配图），凡遇到**多问综合题或长题干题**，必须将子问题拆分为连续的多个独立页面（如 `问题2(1)(2)` 与 `问题2(3)`、`第5题(1)` 与 `第5题(2)`）进行分页精讲：1. **强制拆页触发条件（满足任一即拆页）**：
    - **子问题数量较多**：单道大题包含 $\ge 3$ 个小问（如 `（1）`、`（2）`、`（3）`、`（4）`）；
    - **含数据表格 + 多问**：题干包含实验数据表格（`<table>`）且含有 $\ge 2$ 个小问（如描点建模 + 几何存在性探究）；
    - **含多张不同原题配图**：不同小问对应不同的几何图或函数图（如 `图1` 用于描点拟合、`图2` 用于几何面积求解）；
@@ -245,13 +196,7 @@ window.defineSlide({
    - **后一页（如第 `(2)` 问或第 `(3)` 问）**：
      - 顶部 `.screen-stem` 首行使用精简的 **`【前问已知】` 提示条**（1 行高度，带浅蓝左边框）概括前页已求出的函数表达式或关键结论，紧接着只列出当前小问的题干与填空；
      - 下方 `.screen-notes` 集中用 **2～3 步** 透彻拆解当前小问的难点（如临界方程求解、割补法面积列式、分类讨论双解），右侧画布 100% 服务于当前小问的几何/图象动态演示。
-   - **单页密度红线**：单页 `.screen-stem` 严禁同时出现“长背景段落 + 数据表格 + 3 个以上小问”；单页 `.step` 步骤卡片数量原则上控制在 **2～3 步**（最多不超过 4 步）。
-
-### 3.7 波利亚级（Polya-Grade）SVG 几何图示清晰标注七大规范（内置全局引擎）
-
-为彻底解决 HTML 课件几何图“标注模糊、只画空角弧不标数字、图内悬浮框遮挡图形、左右图文符号脱节”的问题，所有几何题/综合题 SVG 必须严格执行以下**波利亚解题图级标注规范**（壳文件已内置 `window.svgLegendBar`、`window.svgNumberedAngle`、`window.svgCalloutTag`）：
-
-1. **顶部通栏色彩图例条必配规范（`window.svgLegendBar(items)`）**：
+   - **单页密度红线**：单页 `.screen-stem` 严禁同时出现“长背景段落 + 数据表格 + 3 个以上小问”；单页 `.step` 步骤卡片数量原则上控制在 **2～3 步**（最多不超过 4 步）。### 3.7 波利亚级（Polya-Grade）SVG 几何图示清晰标注七大规范（内置全局引擎）为彻底解决 HTML 课件几何图“标注模糊、只画空角弧不标数字、图内悬浮框遮挡图形、左右图文符号脱节”的问题，所有几何题/综合题 SVG 必须严格执行以下**波利亚解题图级标注规范**（壳文件已内置 `window.svgLegendBar`、`window.svgNumberedAngle`、`window.svgCalloutTag`）：1. **顶部通栏色彩图例条必配规范（`window.svgLegendBar(items)`）**：
    - 凡 `step >= 1` 出现辅助线、数字角或全等/相似三角形色块时，画布顶部（`y = 6..36`）必须调用 `window.svgLegendBar([...])` 渲染一条清爽的浅灰圆角图例条（如 `[angle] ∠1=∠2=∠3 | [angle] ∠4=∠5 | [dash] BF,EF: 构造筝形 | [tri] △FDE∽△BDF`），图例颜色与图内几何元素 1:1 严格对应；
    - **严禁在图形角落放置大面积矩形悬浮卡片遮挡几何边线**，也严禁在图形正下方放置“图2（原题纯享图）”等压住下顶点的文字标题。
 2. **数字角（`1, 2, 3, 4, 5`）图文联动规范（`window.svgNumberedAngle`）**：
@@ -291,15 +236,7 @@ window.defineSlide({
         分子居中在上方、水平分数线居中、分母在下方，自动去除不必要的分子外层括号。
      3. **模型总结与流程图卡片**：在模型全景卡片中的高比、边长比例（如 $\frac{PF}{PE} = \frac{4}{3}n$），同样必须调用 `.fraction` 或 `svgFoCard` 呈现上下叠置分式，严禁在 `<text>` 中写 `PF/PE = (4/3)n`。
    - **编译门禁拦截（`BARE SLASH FRACTION IN SVG TEXT DETECTED`）**：
-     `compile_courseware.py` 自动扫描所有 chunk 中的 SVG `<text>` 标签内容，若检测到纯文本单行斜杠分式（如 `\d+/\d+` 或 `/\d+\(`），立即报错拦截并提示改用 `svgFoLabel` / `.fraction` 渲染。
-
----
-
-## 四、三大解耦组件库与教室黑板批注交互规范（Three-Layer Architecture）
-
-项目组件库已完全解耦为三大独立层级（聚合入口：[courseware_components.js](./layers/courseware_components.js)，总览演练场：[component_library_preview.html](../../../docs/component_library_preview.html)）：
-
-### 4.1 第一库：数学公式与图形组件库（`layers/math_components.js`）
+     `compile_courseware.py` 自动扫描所有 chunk 中的 SVG `<text>` 标签内容，若检测到纯文本单行斜杠分式（如 `\d+/\d+` 或 `/\d+\(`），立即报错拦截并提示改用 `svgFoLabel` / `.fraction` 渲染。---## 四、三大解耦组件库与教室黑板批注交互规范（Three-Layer Architecture）项目组件库已完全解耦为三大独立层级（聚合入口：[courseware_components.js](./layers/courseware_components.js)，总览演练场：[component_library_preview.html](../../../docs/component_library_preview.html)）：### 4.1 第一库：数学公式与图形组件库（`layers/math_components.js`）
 - **HTML 公式编译器（`window.MathFormula.render`）**：
   - 自动执行中西文零空格切分、变量 `Times New Roman` 斜体、数字/单位/函数名（`Rt|sin|cos|tan|cot|min|max`）及**全等判定缩写（`SAS|ASA|AAS|SSS|HL`）**正体排版；
   - `\cong` / `≌` 统一渲染为**矢量北师大教材标准全等号**（上 `∽` 下 `=`，彻底规避西文字体闭环圈乱码）；
@@ -307,12 +244,8 @@ window.defineSlide({
 - **纯原生 SVG 无胶囊直接旁注（`window.MathFormula.svg` / `createGeoCanvas` / `createFuncCanvas`）**：
   - 边旁代数式（`segmentLabel`）、求解目标（`targetCallout`）与函数铅垂高（`drawLeadVertical`）统一采用**白边光晕防压线无背景直标**，严禁使用笨重胶囊框或 `<foreignObject>`；
   - `createFuncCanvas.drawAxes` 的原点 `O` 与轴标 `x, y` 置于顶层 `topOverlays` 并带白色描边光晕，防止被函数曲线穿过；
-  - 数轴组件（`createNumberLine`）严格遵循北师大八下教材，**仅数轴正方向带箭头，不等式解集折线末端不带箭头**；箱线图（`createBoxPlot`）内置防重叠下移避让。
-
-### 4.2 第二库：页面 UI 与教学交互组件库（`layers/ui_components.js`）
-- 统一提供 `UI.bookBadge`（2024北师大教材原生栏目徽章）、`UI.prevContext`（拆页 `【前问已知】` 横幅）、`UI.stemCard` / `UI.blank` / `UI.choices`（零剧透题干与选择题网格）、`UI.stepCard`（波利亚两字动作标签步骤流）、`UI.stepTable`（步进描点表格）及 `UI.summaryGrid`（自适应防单字折行总结卡片）。
-
-### 4.3 第三库：课堂黑板批注与尺规作图组件库（`layers/annotation_components.js`）
+  - 数轴组件（`createNumberLine`）严格遵循北师大八下教材，**仅数轴正方向带箭头，不等式解集折线末端不带箭头**；箱线图（`createBoxPlot`）内置防重叠下移避让。### 4.2 第二库：页面 UI 与教学交互组件库（`layers/ui_components.js`）
+- 统一提供 `UI.bookBadge`（2024北师大教材原生栏目徽章）、`UI.prevContext`（拆页 `【前问已知】` 横幅）、`UI.stemCard` / `UI.blank` / `UI.choices`（零剧透题干与选择题网格）、`UI.stepCard`（波利亚两字动作标签步骤流）、`UI.stepTable`（步进描点表格）及 `UI.summaryGrid`（自适应防单字折行总结卡片）。### 4.3 第三库：课堂黑板批注与尺规作图组件库（`layers/annotation_components.js`）
 - 由编译脚本自动内联至 `shell_suffix.html`，提供双离屏缓冲高帧率笔迹引擎、分页独立撤销/重做栈及 8 种初中数学尺规作图工具（`axes`, `numberline`, `triangle`, `rttriangle`, `circle`, `rect`, `line`, `arrow`）。
 - **坐标系（`axes`）与数轴（`numberline`）交互与渲染硬规范**：
   1. **轻点即放（Tap-to-Stamp）**：单击或拖拽距离 `< 18px`（`axes` `< 20px`）时，由 `normalizeShapePoints` 自动以落笔点为中心生成标准尺寸完整图形（数轴 `360px` 宽、坐标系 `280×220`），不再产生无法使用的微小短线或小十字。
@@ -320,7 +253,15 @@ window.defineSlide({
   3. **坐标系固定格距、准正方形吸附与淡雅单位网格**：坐标系采用固定 `44px` 单位步长；拖拽宽高接近正方形（误差 `< 14%`）时自动吸附为正交方格；内部自动绘制 `0.15` 透明度的单位虚线辅助网格，方便课堂直接在坐标系内描点作图且不遮挡底层题目。
   4. **拖拽实时引导与防压线标注**：拖拽预览态（`isPreview = true`）实时显示淡蓝色原点十字准星/外框或数轴垂直对齐虚线，松手后自动隐藏；所有坐标轴标 `x, y, O` 与刻度数字均通过 `drawHaloText` 附带白色光晕描边，确保在任意底图上清晰可辨。
 
+---
 
+## 五、课堂 PPT 级大字号直观直排板书规范（`layout-ppt`）
 
-
-
+1. **全面废除旧版 `.step` 蓝边编号卡片与外框套娃**：
+   - 所有情境引入、问题探究、定理证明、例题解答、选择题解析与分层训练页面，一律使用 `layout: 'layout-ppt'` 搭配 `window.pptExampleLayout`、`window.pptInferDiagram` 或 `window.pptThreeColTable`；
+   - 底层 `shell_prefix.html` 的 `window.defineSlide` 已将旧版 `layout-a`～`layout-e` 自动兜底转换为 `layout-ppt`，确保全卷零 `.step` / `.prob-step-card` 残留。
+2. **PPT 板书字号与零留白规范**：
+   - 左侧解答/证明板书正文统一使用 **`29px` 加粗红字（`#c81e1e`，`line-height: 1.66`）**，顶部对齐紧贴题干下方起笔；
+   - 顶部 `#controls` 收纳为右上角紧凑悬浮胶囊（`top: 0 !important`、`overflow: visible !important`，严禁沿用旧版 `top: -14px` 导致胶囊顶部被题干边线裁剪）；交互滑块（如 `3D折叠`）与模式切换按钮（如 `情况①`/`情况②`）同行胶囊化排布；
+   - 右侧几何/函数配图画布放大至 `460–510px` 宽，顶点字母 `18px`，无外框直接呈现；
+   - `layout-j` 支持 `cols: 2 / 3 / 4 / 5`，遇 5 图辨析题时用 `cols: 5` 单行并排呈现。

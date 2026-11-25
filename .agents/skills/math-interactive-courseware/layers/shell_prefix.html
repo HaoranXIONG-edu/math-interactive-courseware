@@ -113,7 +113,8 @@ sup span, sup i, sup b,
   line-height: 1 !important;
 }
 .fraction, .frac {
-  display: inline-flex;
+  display: inline-flex !important;
+  flex-direction: column !important;
   vertical-align: middle;
   position: relative;
   top: -0.07em;
@@ -172,7 +173,8 @@ sup span, sup i, sup b,
   clip-path: polygon(2% 58%, 20% 47%, 44% 83%, 91% 0%, 100% 0%, 100% 8.5%, 95% 8.5%, 45% 98%, 36% 98%, 15% 56%, 5% 63%) !important;
 }
 .sqrt > span {
-  display: inline-block !important;
+  display: inline-flex !important;
+  align-items: center !important;
   border-top: 1.6px solid currentColor !important;
   padding: 1px 3px 0 2px !important;
   line-height: 1.02 !important;
@@ -777,7 +779,7 @@ body #inkToolbar.ink-floating #inkExit {
   display: inline-flex !important;
   align-items: center;
 }
-.flow-lectures span,
+.flow-lectures span:not(.flow-brand),
 .flowbar .num,
 .flowbar i.m {
   display: inline !important;
@@ -1153,7 +1155,8 @@ h2 {
   transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   user-select: none;
 }
-.screen-blank.choice-blank {
+.screen-blank.choice-blank,
+.screen-blank.choice-bracket {
   min-width: 64px !important;
   border-bottom: none !important;
   background: rgba(241, 245, 249, 0.65);
@@ -1173,7 +1176,8 @@ h2 {
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-.screen-blank.choice-blank:not(.filled)::after {
+.screen-blank.choice-blank:not(.filled)::after,
+.screen-blank.choice-bracket:not(.filled)::after {
   content: "　";
 }
 @keyframes ansBlankPop {
@@ -1193,7 +1197,8 @@ h2 {
   box-shadow: 0 2px 8px rgba(225, 29, 72, 0.15) !important;
   animation: ansBlankPop 0.22s ease-out;
 }
-.screen-blank.choice-blank.filled {
+.screen-blank.choice-blank.filled,
+.screen-blank.choice-bracket.filled {
   background: #fff1f2 !important;
   border: 1.5px solid #fda4af !important;
   border-bottom: 2.5px solid #e11d48 !important;
@@ -1542,7 +1547,8 @@ body.canvas-zoom-mode .step-btn.next {
   box-shadow: 0 3px 10px rgba(30, 58, 138, 0.22);
 }
 .screen-notes .step {
-  padding: 9px 14px !important;
+  padding: 12px 16px !important;
+  margin-bottom: 8px !important;
   gap: 12px !important;
   border-radius: 10px;
   position: relative;
@@ -1588,9 +1594,9 @@ body.canvas-zoom-mode .step-btn.next {
 .screen-notes .step.step-locked::after {
   content: attr(data-lock-msg);
   font-family: 'Times New Roman', 'SimSun', 'Songti SC', 'Microsoft YaHei', serif;
-  font-size: 17px;
+  font-size: 19.5px;
   font-weight: 700;
-  color: #475569;
+  color: #334155;
   line-height: 1.3;
   white-space: nowrap;
 }
@@ -1602,7 +1608,8 @@ body.board-blank-mode .screen-notes .step.step-locked,
 body.board-blank-mode .layout-f-pair-row.is-locked,
 body.board-blank-mode .layout-f-ppt-card.is-locked,
 body.board-blank-mode .layout-g-card.is-locked,
-body.board-blank-mode .layout-h-row.is-locked {
+body.board-blank-mode .layout-h-row.is-locked,
+body.board-blank-mode .layout-j-reason-locked {
   display: none !important;
 }
 .step-btn.blank-board {
@@ -1623,12 +1630,12 @@ body.board-blank-mode .step-btn.blank-board {
 .screen-notes .step > b {
   font-family: 'Times New Roman', Times, serif !important;
   font-style: normal !important;
-  font-size: 25px !important;
+  font-size: 26.5px !important;
   color: #1e3a8a !important;
 }
 .screen-notes .step > span {
-  font-size: 24px !important;
-  line-height: 1.46 !important;
+  font-size: 26px !important;
+  line-height: 1.56 !important;
 }
 .screen-notes .step > span b {
   font-family: inherit !important;
@@ -2977,6 +2984,39 @@ table.stem-data-table tr > th:first-child {
 .screen-lower.layout-f > .screen-media {
   display: none !important;
 }
+.screen-lower.layout-f.has-media {
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+}
+.screen-lower.layout-f.has-media > .screen-notes {
+  flex: 1 1 58% !important;
+  width: 58% !important;
+  max-width: 58% !important;
+}
+.screen-lower.layout-f.has-media > .screen-media {
+  display: flex !important;
+  flex: 1 1 42% !important;
+  width: 42% !important;
+  min-width: 0 !important;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 10px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  flex-direction: column;
+}
+.screen-lower.layout-f.has-media > .screen-media .screen-lab,
+.screen-lower.layout-f.has-media > .screen-media .visual {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  border: 0 !important;
+}
+.screen-lower.layout-f.has-media > .screen-media .visual > svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
 .screen-lower.layout-f > .screen-notes {
   width: 100% !important;
   max-width: 100% !important;
@@ -3143,6 +3183,9 @@ table.stem-data-table tr > th:first-child {
   gap: 16px 18px;
   width: 100%;
   margin: auto 0;
+}
+.layout-f-grid.cols-1 {
+  grid-template-columns: minmax(0, 1fr);
 }
 .layout-f-grid.cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3541,12 +3584,172 @@ table.stem-data-table tr > th:first-child {
   border: 0 !important;
 }
 .layout-i-summary {
-  padding: 10px 18px;
+  padding: 12px 20px;
   border-radius: 10px;
   background: #eff6ff;
   border: 1.5px solid #93c5fd;
   border-left: 6px solid #1d4ed8;
-  font-size: 22px;
+  font-size: 24px;
+  line-height: 1.45;
+  color: #0f172a;
+}
+
+/* 版式 J：多图网格条件辨析版式（几何概念识别 / 定理条件判断：多张独立小图同屏对比 + 逐卡判定盖章与说理） */
+.screen-lower.layout-j {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.screen-lower.layout-j > .screen-media {
+  display: none !important;
+}
+.screen-lower.layout-j > .screen-notes {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 12px 20px 14px !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px;
+}
+.layout-j-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 16px;
+  width: 100%;
+  flex: 1 1 auto;
+  align-items: stretch;
+}
+.layout-j-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.layout-j-grid.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.layout-j-grid.cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+.layout-j-grid.cols-5 .layout-j-card {
+  padding: 10px 10px;
+}
+.layout-j-grid.cols-5 .layout-j-head {
+  font-size: 20px;
+}
+.layout-j-grid.cols-5 .layout-j-badge {
+  font-size: 16px;
+  padding: 3px 10px;
+}
+.layout-j-grid.cols-5 .layout-j-reason {
+  font-size: 19px;
+  padding: 8px 10px;
+}
+.layout-j-card {
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-top: 5px solid #64748b;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.layout-j-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+.layout-j-card.is-active {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+.layout-j-card.card-ok {
+  border-color: #86efac;
+  border-top-color: #16a34a;
+  background: #f0fdf4;
+}
+.layout-j-card.card-no {
+  border-color: #fecaca;
+  border-top-color: #dc2626;
+  background: #fef2f2;
+}
+.layout-j-card.card-info {
+  border-color: #bfdbfe;
+  border-top-color: #2563eb;
+  background: #eff6ff;
+}
+.layout-j-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 23px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.layout-j-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 13px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.layout-j-badge.badge-ok { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.layout-j-badge.badge-no { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.layout-j-badge.badge-info { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.layout-j-badge.badge-locked { background: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; }
+.layout-j-fig {
+  flex: 1 1 auto;
+  min-height: 150px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  overflow: hidden;
+}
+.layout-j-fig > svg {
+  width: 100%;
+  height: 100%;
+  max-height: 248px;
+  display: block;
+}
+.layout-j-reason {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid #cbd5e1;
+  font-size: 21.5px;
+  font-weight: 600;
+  line-height: 1.48;
+  color: #1e293b;
+}
+.layout-j-card.card-ok .layout-j-reason { border-color: #86efac; color: #14532d; }
+.layout-j-card.card-no .layout-j-reason { border-color: #fca5a5; color: #7f1d1d; }
+.layout-j-reason-locked {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px dashed #cbd5e1;
+  color: #94a3b8;
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+}
+.layout-j-summary {
+  padding: 11px 20px;
+  border-radius: 10px;
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  border-left: 6px solid #1d4ed8;
+  font-size: 23.5px;
   line-height: 1.45;
   color: #0f172a;
 }
@@ -3842,6 +4045,331 @@ table.stem-data-table tr > th:first-child {
   width: 110px !important;
 }
 
+
+.arc-over { position: relative; display: inline-block; padding-top: 5px; line-height: 1.05; margin: 0 2px; }
+.arc-over::before { content: ""; position: absolute; left: 1px; right: 1px; top: 0; height: 5px; border-top: 2px solid currentColor; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+.proof-row { display: flex; align-items: baseline; gap: 6px; line-height: 1.78; margin: 2px 0; font-size: 21px; }
+.proof-sym { flex: 0 0 1.4em; font-weight: 700; text-align: center; }
+.proof-body { flex: 1; }
+.proof-head { font-weight: 700; margin-bottom: 3px; line-height: 1.75; font-size: 21px; }
+.screen-notes:has(.formal-proof) {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 14px 20px !important;
+  box-shadow: 0 4px 14px rgba(15,23,42,0.04);
+}
+.screen-notes:has(.formal-proof) .step:not(.step-locked) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 3px 4px !important;
+  margin: 0 !important;
+}
+.screen-notes:has(.formal-proof) .step > .step-head,
+.screen-notes:has(.formal-proof) .step .step-num,
+.screen-notes:has(.formal-proof) .step .step-title,
+.screen-notes:has(.summary-card) .step > .step-head,
+.screen-notes:has(.summary-card) .step .step-num,
+.screen-notes:has(.summary-card) .step .step-title {
+  display: none !important;
+}
+.summary-tag {
+  display: inline-block;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+.screen-stem > div, .choices-row, .choices-grid {
+  font-size: 27px !important;
+  line-height: 1.52 !important;
+  margin-top: 8px !important;
+  font-weight: 600;
+}
+.choices-row { display: flex; gap: 56px; flex-wrap: wrap; }
+.choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 44px; }
+
+.screen-page:has(.layout-ppt) {
+  gap: 6px !important;
+}
+.screen-page:has(.layout-ppt) > .screen-stem {
+  padding-bottom: 10px !important;
+  border-bottom: 2px solid #dbe4f0 !important;
+}
+.screen-lower.layout-ppt {
+  display: flex !important;
+  flex-direction: column !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 2px 6px 0 !important;
+  box-shadow: none !important;
+}
+.screen-lower.layout-ppt > .screen-media { display: none !important; }
+.screen-lower.layout-ppt > .screen-notes {
+  width: 100% !important; max-width: 100% !important; flex: 1 1 auto !important;
+  padding: 4px 0 0 !important; background: transparent !important; border: none !important; box-shadow: none !important;
+  overflow: visible !important; display: flex !important; flex-direction: column !important;
+}
+.screen-lower.layout-ppt > .screen-notes > .controls {
+  position: relative !important;
+  top: 0 !important;
+  z-index: 6 !important;
+  margin: 0 0 2px 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex: none !important;
+}
+.screen-lower.layout-ppt:has(.ppt-ex-wrap) > .screen-notes > .controls:not(:has(.control, .actions)),
+.screen-lower.layout-ppt:has(.ppt-infer-wrap) > .screen-notes > .controls:not(:has(.control, .actions)) {
+  margin-bottom: -24px !important;
+}
+.screen-lower.layout-ppt > .screen-notes > .controls .control {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 2px 12px !important;
+  margin: 0 !important;
+  height: 32px !important;
+  border-radius: 999px !important;
+  background: #eff6ff !important;
+  border: 1px solid #93c5fd !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #1e3a8a !important;
+  white-space: nowrap !important;
+}
+.screen-lower.layout-ppt > .screen-notes > .controls .control input[type="range"] {
+  width: 108px !important;
+  margin: 0 !important;
+}
+.screen-lower.layout-ppt > .screen-notes > .controls .control output {
+  min-width: 38px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  text-align: right !important;
+}
+.screen-lower.layout-ppt > .screen-notes > .controls .actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 !important;
+}
+.screen-lower.layout-ppt > .screen-notes > .controls .actions button,
+.screen-lower.layout-ppt > .screen-notes > .controls > .step-btn {
+  font-size: 15px !important;
+  padding: 3px 12px !important;
+  height: 32px !important;
+  border-radius: 999px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  font-weight: 700 !important;
+}
+body.board-blank-mode .ppt-ex-lines {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.screen-lower.layout-ppt .step-ctrl-bar {
+  width: auto !important;
+  padding: 2px 12px !important;
+  min-height: 32px !important;
+  border-radius: 999px !important;
+  background: rgba(241, 245, 249, 0.85) !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: none !important;
+  gap: 8px !important;
+}
+.layout-ppt-stage {
+  width: 100%;
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center !important;
+  padding-top: 0 !important;
+  cursor: pointer;
+}
+.ppt-infer-wrap {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 28px;
+  align-items: center;
+  height: 100%;
+  padding: 4px 12px;
+}
+.ppt-infer-flow { display: flex; align-items: center; gap: 22px; justify-content: center; }
+.ppt-infer-col { display: flex; flex-direction: column; gap: 16px; }
+.ppt-infer-head { font-size: 30px; font-weight: 800; color: #dc2626; text-align: center; margin-bottom: 6px; }
+.ppt-infer-item { font-size: 29px; font-weight: 700; color: #0f172a; line-height: 1.68; white-space: nowrap; }
+.ppt-brace { font-size: 132px; font-weight: 200; color: #16a34a; line-height: 0.88; user-select: none; }
+.ppt-arrow-box { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 136px; }
+.ppt-arrow-txt { font-size: 25px; font-weight: 800; color: #0f172a; }
+.ppt-arrow-svg { width: 132px; height: 28px; }
+.ppt-cloud-note {
+  margin: 22px auto 0; padding: 14px 38px; background: #ffffff; border: 2.5px solid #0f172a;
+  border-radius: 42px; font-size: 26px; font-weight: 800; color: #0f172a; text-align: center;
+  box-shadow: 0 6px 16px rgba(15,23,42,0.07); max-width: 540px;
+}
+.ppt-ex-wrap {
+  display: grid;
+  grid-template-columns: 1.42fr 1fr;
+  gap: 18px;
+  align-items: center;
+  height: 100%;
+  flex: 1 1 auto;
+  padding: 0 6px;
+}
+.ppt-ex-wrap.is-full {
+  grid-template-columns: 1fr !important;
+}
+.ppt-ex-lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-self: stretch;
+  padding-top: 22px;
+  gap: 10px;
+  font-size: 29px !important;
+  line-height: 1.66 !important;
+  color: #c81e1e;
+  font-weight: 700;
+}
+.ppt-ex-line { transition: opacity 0.2s ease; }
+.ppt-ex-line.is-hidden { opacity: 0; pointer-events: none; height: 0; overflow: hidden; margin: 0; padding: 0; }
+.ppt-ex-line .proof-head,
+.ppt-ex-line .proof-row {
+  color: #c81e1e !important;
+  font-size: 29px !important;
+  line-height: 1.66 !important;
+  font-weight: 700 !important;
+  margin: 2px 0 !important;
+}
+.ppt-ex-line .proof-sym {
+  color: #c81e1e !important;
+  flex: 0 0 1.35em;
+}
+.ppt-ex-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.ppt-ex-media svg {
+  width: 100% !important;
+  max-width: 510px !important;
+  height: auto !important;
+  max-height: 435px !important;
+}
+.tri-blank {
+  display: inline-block;
+  min-width: 124px;
+  padding: 0 10px 2px;
+  margin: 0 3px;
+  border-bottom: 2.6px solid #64748b;
+  text-align: center;
+  color: transparent;
+  vertical-align: baseline;
+  line-height: 1.35;
+  transition: all 0.22s ease;
+}
+.tri-blank.is-filled {
+  color: #dc2626;
+  font-weight: 800;
+  border-bottom-color: #dc2626;
+  background: rgba(254, 226, 226, 0.36);
+  border-radius: 6px 6px 0 0;
+}
+.tri-blank.is-blue.is-filled {
+  color: #1d4ed8;
+  border-bottom-color: #2563eb;
+  background: rgba(219, 234, 254, 0.42);
+}
+.ppt-tri-card {
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #3b82f6;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(30, 58, 138, 0.08);
+  margin-top: 2px;
+}
+.ppt-tri-head {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr 1.18fr;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  flex: none;
+}
+.ppt-tri-head > div {
+  padding: 15px 20px;
+  text-align: center;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.24);
+}
+.ppt-tri-head > div:last-child { border-right: none; }
+.ppt-tri-body {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr 1.18fr;
+  flex: 1 1 auto;
+  min-height: 395px;
+  align-items: stretch;
+}
+.ppt-tri-cell {
+  padding: 28px 30px;
+  border-right: 1.5px solid #bfdbfe;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.ppt-tri-cell:last-child { border-right: none; }
+.ppt-tri-cell.is-text {
+  font-size: 29.5px;
+  line-height: 1.92;
+  font-weight: 700;
+  color: #0f172a;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+.ppt-tri-cell.is-fig {
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: #ffffff;
+}
+.ppt-tri-cell.is-fig svg {
+  width: 380px !important;
+  height: 335px !important;
+  max-width: 100% !important;
+}
+.ppt-tri-cell.is-sym {
+  font-size: 27px;
+  line-height: 2.0;
+  font-weight: 700;
+  color: #0f172a;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+.ppt-tri-cell.is-sym .proof-row {
+  font-size: 27px !important;
+  line-height: 2.0 !important;
+  font-weight: 700 !important;
+}
 </style></head><body><header><strong>2.2.2 反比例函数的图象（2）</strong><button id="toc">课程目录</button></header><main id="viewport"><div id="stage"><div id="content"></div><canvas id="penLayer" width="1600" height="900" aria-label="课堂批注画布"></canvas></div></main><div class="progress"><i id="progress"></i></div><footer><button id="prev">← 上一页</button><span id="pageCount"></span><button id="next">下一页 →</button><button id="fontScaleBtn" class="font-scale-btn" type="button" title="切换教室大屏字号档位">🔍 字号：大屏标准</button><span id="slideTitle"></span><span class="keyhint">← → 翻页 · F 全屏 · M 目录</span><button id="pen">批注</button><button id="clearPen">清除批注</button><button id="effects">翻页特效</button><button id="remote">翻页笔</button><button id="fullscreen">全屏</button></footer><section id="inkToolbar" aria-label="课堂批注工具" hidden><div class="ink-group"><button data-ink-tool="pen" title="随速度或触控笔压力变化">钢笔</button><button data-ink-tool="marker">签字笔</button><button data-ink-tool="highlight">荧光笔</button><button data-ink-tool="eraser">橡皮擦</button></div><span class="ink-divider"></span><div class="ink-group ink-palette"><button type="button" class="ink-swatch" data-ink-color="#d94040" style="--swatch:#d94040" aria-label="红色" title="红色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#384d8f" style="--swatch:#384d8f" aria-label="靛蓝" title="靛蓝" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#118575" style="--swatch:#118575" aria-label="绿色" title="绿色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#252b37" style="--swatch:#252b37" aria-label="黑色" title="黑色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#e29a19" style="--swatch:#e29a19" aria-label="橙色" title="橙色" aria-pressed="false"></button><button type="button" class="ink-swatch" data-ink-color="#9652ae" style="--swatch:#9652ae" aria-label="紫色" title="紫色" aria-pressed="false"></button><input type="color" id="inkCustomColor" value="#d94040" aria-label="自选笔迹颜色" title="自选颜色"></div><span class="ink-divider"></span><label>粗细<input id="inkSize" type="range" min="2" max="12" step="1" value="5" aria-label="笔迹粗细"><output id="inkSizeValue">5</output></label><div class="ink-group"><button id="inkUndo" title="撤销 Ctrl+Z">撤销</button><button id="inkRedo" title="重做 Ctrl+Shift+Z">重做</button><button id="inkClear">清空本页</button><button id="inkClose">完成</button></div><div id="inkMode" aria-live="polite"></div></section><dialog id="transitionDialog" aria-label="翻页特效设置"><button id="transitionClose">关闭 ×</button><h3>翻页特效</h3><p>选择课堂的翻页方式。主题联动会在进入新教学环节时，用光束揭开下一页。</p><div id="transitionChoices"></div><div class="transition-options"><label>动画节奏<select id="transitionSpeed" aria-label="动画节奏"><option value="420">利落 · 0.42 秒</option><option value="650">标准 · 0.65 秒</option><option value="900">舒展 · 0.9 秒</option></select></label><button id="transitionPreview">预览当前效果</button></div><p id="transitionMotionNote" hidden>系统已设置减少动态效果，课件会直接翻页。</p></dialog><dialog id="remoteDialog" aria-label="翻页笔按键设置"><button id="remoteClose">关闭 ×</button><h3>翻页笔联动</h3><p>连接翻页笔的接收器或蓝牙，让浏览器中的课件保持当前活动窗口。常见的上一页、下一页键可直接使用。</p><div id="remoteRows"></div><p id="remoteStatus" role="status"></p><button id="remoteReset">恢复默认按键</button><p class="remote-note">清空只影响当前页批注，可以撤销。也可用键盘 C 清空、F 或 F5 切换全屏。<br>绑定需要按键向浏览器发送键盘信号；仅控制硬件的激光开关不能绑定。</p></dialog><dialog id="tocDialog"><button id="closeToc">关闭 ×</button><h3>课程目录</h3><p style="font-size:15px;margin-bottom:20px">按学案问题顺序编排 · 点击可直接跳转</p><div id="tocList"></div></dialog><dialog id="imageDialog" aria-label="图片放大查看"><button id="closeImage">关闭 ×</button><img id="largeImage" alt="放大图片"></dialog><div id="toast" role="status"></div><script>
 // ================= 全局基础工具与 SVG 数学公式正斜体规范引擎（前置挂载，供所有分块脚本直接调用） =================
 window.isManualOverride = function(st, key) {
@@ -3979,7 +4507,52 @@ window.svgFoLabel = function(x, y, w, h, innerHtml, extraStyle = '') {
 };
 
 // ================= 章节统一主题徽章插画与标准封面渲染引擎（一章一图，零重复工作量） =================
+window.congHtml = function() {
+  return `<span class="cw-cong-wrap" style="display:inline-flex;align-items:center;vertical-align:-0.08em;margin:0 2px;"><span style="font-size:0;opacity:0;width:0;overflow:hidden;">≌</span><svg viewBox="0 0 16 15" style="width:0.86em;height:0.80em;overflow:visible;display:inline-block;"><path d="M 1.4 4.8 C 3.4 1.2, 6.2 1.2, 8.0 4.6 C 9.8 8.0, 12.6 8.0, 14.6 4.4" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/><line x1="1.5" y1="9.6" x2="14.5" y2="9.6" stroke="currentColor" stroke-width="1.55" stroke-linecap="round"/><line x1="1.5" y1="13.0" x2="14.5" y2="13.0" stroke="currentColor" stroke-width="1.55" stroke-linecap="round"/></svg></span>`;
+};
 window.getChapterCoverEmblem = function(themeKey) {
+  if (themeKey === 'circle') {
+    return `<svg viewBox="0 0 420 420">
+      <circle cx="210" cy="210" r="190" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
+      <circle cx="210" cy="210" r="154" fill="none" stroke="rgba(251,191,36,0.22)" stroke-width="1.2" stroke-dasharray="6,5"/>
+      <line x1="38" y1="210" x2="382" y2="210" stroke="rgba(255,255,255,0.15)" stroke-width="1.1" stroke-dasharray="4,5"/>
+      <!-- 主圆 ⊙O (cx=210, cy=210, R=126) -->
+      <circle cx="210" cy="210" r="126" fill="rgba(56,189,248,0.08)" stroke="#f5b841" stroke-width="3.2"/>
+      <!-- 劣弧 ACB 高亮: y_M = 210 - 58 = 152, dx = sqrt(126^2 - 58^2) = 111.86 => A(98.1,152), B(321.9,152) -->
+      <path d="M 98.1 152.0 A 126 126 0 0 1 321.9 152.0" fill="none" stroke="#5eead4" stroke-width="4.6" stroke-linecap="round"/>
+      <!-- Rt△OAM 与 Rt△OBM 柔和填充 -->
+      <polygon points="210,210 98.1,152.0 210,152.0" fill="rgba(245,184,65,0.20)" stroke="none"/>
+      <polygon points="210,210 321.9,152.0 210,152.0" fill="rgba(94,234,212,0.18)" stroke="none"/>
+      <!-- 半径 OA, OB 虚线 -->
+      <line x1="210" y1="210" x2="98.1" y2="152.0" stroke="#fde68a" stroke-width="2.1" stroke-dasharray="6,4"/>
+      <line x1="210" y1="210" x2="321.9" y2="152.0" stroke="rgba(253,230,138,0.75)" stroke-width="1.9" stroke-dasharray="6,4"/>
+      <!-- 弦 AB -->
+      <line x1="98.1" y1="152.0" x2="321.9" y2="152.0" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round"/>
+      <!-- 垂直直径 CD (对称轴) -->
+      <line x1="210" y1="54" x2="210" y2="366" stroke="#fbbf24" stroke-width="2.6" stroke-dasharray="8,4"/>
+      <line x1="210" y1="84" x2="210" y2="336" stroke="#f5b841" stroke-width="2.8"/>
+      <!-- 垂足直角标 M(210,152) -->
+      <polyline fill="none" stroke="#5eead4" stroke-width="2" points="210,165 223,165 223,152"/>
+      <!-- 等长短杠 AM = BM -->
+      <line x1="154" y1="145" x2="154" y2="159" stroke="#5eead4" stroke-width="2.2"/>
+      <line x1="266" y1="145" x2="266" y2="159" stroke="#5eead4" stroke-width="2.2"/>
+      <!-- 关键点 -->
+      <circle cx="210" cy="210" r="5" fill="#f5b841" stroke="#172a54" stroke-width="2"/>
+      <circle cx="98.1" cy="152.0" r="4.8" fill="#5eead4" stroke="#172a54" stroke-width="1.8"/>
+      <circle cx="321.9" cy="152.0" r="4.8" fill="#5eead4" stroke="#172a54" stroke-width="1.8"/>
+      <circle cx="210" cy="84" r="4.8" fill="#fde68a" stroke="#172a54" stroke-width="1.8"/>
+      <circle cx="210" cy="336" r="4.8" fill="#fde68a" stroke="#172a54" stroke-width="1.8"/>
+      <circle cx="210" cy="152" r="4.2" fill="#ffffff" stroke="#172a54" stroke-width="1.6"/>
+      <!-- 字母标注 -->
+      <text x="190" y="228" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#fde68a">O</text>
+      <text x="74" y="156" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#5eead4">A</text>
+      <text x="331" y="156" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#5eead4">B</text>
+      <text x="220" y="75" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#fde68a">C</text>
+      <text x="220" y="358" font-family="'Times New Roman', serif" font-style="italic" font-size="20" font-weight="700" fill="#fde68a">D</text>
+      <text x="187" y="145" font-family="'Times New Roman', serif" font-style="italic" font-size="18" font-weight="700" fill="#ffffff">M</text>
+      <text x="142" y="196" font-family="'Times New Roman', serif" font-style="italic" font-size="18" font-weight="700" fill="#fde68a">R</text>
+    </svg>`;
+  }
   const ox = 210, oy = 210, sc = 44;
   function hypPts(k, x0, x1) {
     const pts = [];
@@ -4068,6 +4641,192 @@ window.renderStandardCover = function(cfg = {}) {
 };
 
 // ================= 数学真实坐标系 SVG 确定性绘图底座（CoordCanvas，杜绝口算像素与图形画错） =================
+// ================= 内置高频教学组件（弧符号、正式几何证明、选择题排版、3D折叠引擎） =================
+window.pptThreeColTable = function(cfg) {
+  return `<div class="ppt-tri-card">
+    <div class="ppt-tri-head">
+      <div>${cfg.col1Title || "文字语言"}</div>
+      <div>${cfg.col2Title || "图形语言"}</div>
+      <div>${cfg.col3Title || "符号语言"}</div>
+    </div>
+    <div class="ppt-tri-body">
+      <div class="ppt-tri-cell is-text"><div style="width:100%;">${cfg.col1Html || ""}</div></div>
+      <div class="ppt-tri-cell is-fig">${cfg.col2Svg || ""}</div>
+      <div class="ppt-tri-cell is-sym"><div style="width:100%;">${cfg.col3Html || ""}</div></div>
+    </div>
+  </div>`;
+};
+window.pptInferDiagram = function(cfg) {
+  const step = Number(cfg.step || 0);
+  const condHtml = (cfg.conds || []).map(c => `<div class="ppt-infer-item">${c}</div>`).join("");
+  const resHtml = (cfg.results || []).map(r => `<div class="ppt-infer-item">${r}</div>`).join("");
+  const showArrow = step >= 1;
+  const showRes = step >= 2;
+  return `<div class="ppt-infer-wrap">
+    <div style="display:flex;justify-content:center;">${cfg.leftSvg || ""}</div>
+    <div>
+      <div class="ppt-infer-flow">
+        <div class="ppt-infer-col">
+          <div class="ppt-infer-head">${cfg.condTitle || "条件"}</div>
+          ${condHtml}
+        </div>
+        <div class="ppt-brace" style="opacity:${showArrow ? 1 : 0};">}</div>
+        <div class="ppt-arrow-box" style="opacity:${showArrow ? 1 : 0};">
+          <div class="ppt-arrow-txt">${cfg.arrowText || "可推得"}</div>
+          <svg class="ppt-arrow-svg" viewBox="0 0 104 22"><path d="M2 11 H86 L80 4 L100 11 L80 18 L86 11" fill="none" stroke="#dc2626" stroke-width="2.2"/></svg>
+        </div>
+        <div class="ppt-brace" style="opacity:${showRes ? 1 : 0};">{</div>
+        <div class="ppt-infer-col" style="opacity:${showRes ? 1 : 0};">
+          <div class="ppt-infer-head">${cfg.resTitle || "结论"}</div>
+          ${resHtml}
+        </div>
+      </div>
+      ${cfg.cloudNote ? `<div class="ppt-cloud-note" style="opacity:${showArrow ? 1 : 0};">${cfg.cloudNote}</div>` : ""}
+    </div>
+  </div>`;
+};
+
+window.pptSummaryBox = function(cfg) {
+  const step = Number(cfg.step || 0);
+  const badgeChars = (cfg.badge || "归纳总结").split("").map(ch => `<span class="ppt-sum-hex">${ch}</span>`).join("");
+  const symHtml = (cfg.symbolLines || []).map(l => `<div>${l}</div>`).join("");
+  return `<div class="ppt-sum-box">
+    <div class="ppt-sum-badge">${badgeChars}</div>
+    <div class="ppt-sum-top" style="opacity:${step >= 1 ? 1 : 0.12};">${cfg.statement || ""}</div>
+    <div class="ppt-sum-lower">
+      <div class="ppt-sum-sym" style="opacity:${step >= 2 ? 1 : 0.12};">${symHtml}</div>
+      <div style="display:flex;justify-content:center;">${cfg.rightSvg || ""}</div>
+    </div>
+  </div>`;
+};
+
+window.pptExampleLayout = function(cfg) {
+  const step = Number(cfg.step || 0);
+  const linesHtml = (cfg.lines || []).map((ln, idx) => {
+    const reqStep = (typeof ln === "object" && ln.step !== undefined) ? ln.step : (idx + 1);
+    const html = (typeof ln === "object") ? ln.html : ln;
+    const vis = step >= reqStep;
+    return `<div class="ppt-ex-line ${vis ? "" : "is-hidden"}">${html}</div>`;
+  }).join("");
+  const hint = step === 0 ? `<div style="color:#94a3b8;font-size:24px;font-weight:700;padding:16px 0;">点击空白处或按空格键逐步呈现板书过程 ▸</div>` : "";
+  const hasMedia = Boolean(cfg.rightSvg && String(cfg.rightSvg).trim());
+  return `<div class="ppt-ex-wrap${hasMedia ? "" : " is-full"}">
+    <div class="ppt-ex-lines">${hint}${linesHtml}</div>
+    ${hasMedia ? `<div class="ppt-ex-media">${cfg.rightSvg}</div>` : ""}
+  </div>`;
+};
+
+window.arcHtml = function(letters) {
+  const chars = String(letters || "").split("").map(c => `<i class="m">${c}</i>`).join("");
+  return `<span class="arc-over">${chars}</span>`;
+};
+
+window.formalProofStep = function(lines) {
+  if (!Array.isArray(lines)) return "";
+  return lines.map((item, idx) => {
+    const clsExtra = idx === 0 ? " formal-proof" : "";
+    if (item.head) {
+      return `<div class="proof-head${clsExtra}">${item.head}</div>`;
+    }
+    return `<div class="proof-row${clsExtra}"><span class="proof-sym">${item.sym || ""}</span><span class="proof-body">${item.text || ""}</span></div>`;
+  }).join("");
+};
+
+window.renderChoices = function(items, cols) {
+  if (!Array.isArray(items)) return "";
+  if (cols === 2) {
+    return `<div class="choices-grid">${items.map(it => `<div>${it}</div>`).join("")}</div>`;
+  }
+  return `<div class="choices-row">${items.map(it => `<span>${it}</span>`).join("")}</div>`;
+};
+
+window.draw3DFoldCircle = function(cv, opts = {}) {
+  const R = opts.R || 3.5;
+  const axisRad = ((opts.axisDeg !== undefined ? opts.axisDeg : 90) * Math.PI) / 180;
+  const foldDeg = Math.max(0, Math.min(180, Number(opts.foldDeg) || 0));
+  const theta = (foldDeg * Math.PI) / 180;
+  const cosT = Math.cos(theta);
+  const sinT = Math.sin(theta);
+  const evx = Math.cos(axisRad), evy = Math.sin(axisRad);
+  const eux = Math.sin(axisRad), euy = -Math.cos(axisRad);
+  function toWorld(u, v) { return [u * eux + v * evx, u * euy + v * evy]; }
+  function project3D(u, v) {
+    const u3 = u * cosT;
+    const z3 = u * sinT;
+    const persp = 16.5 / (16.5 - z3);
+    return toWorld(u3 * persp, v * persp);
+  }
+  if (foldDeg <= 0.5) {
+    const cx = cv.px(0), cy = cv.py(0), rp = R * cv.scaleX;
+    cv.raw(`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rp.toFixed(1)}" fill="rgba(37,99,235,0.04)" stroke="#1e293b" stroke-width="2.5"/>`);
+    if (opts.chordV !== undefined) {
+      const vC = opts.chordV, uC = Math.sqrt(Math.max(0, R * R - vC * vC));
+      const A = toWorld(-uC, vC), B = toWorld(uC, vC), M = toWorld(0, vC);
+      cv.drawSegment(A, B, { color: "#0f172a", width: 2.6 });
+      cv.drawPoint(A, { label: "A", dx: -16, dy: -6, color: "#0f172a", r: 4.5 });
+      cv.drawPoint(B, { label: "B", dx: 12, dy: -6, color: "#0f172a", r: 4.5 });
+      if (opts.showM) cv.drawPoint(M, { label: "M", dx: -16, dy: 18, color: "#0f172a", r: 4 });
+    }
+    return;
+  }
+  const N = 48, fixedPts = [], foldPts = [];
+  for (let i = 0; i <= N; i++) {
+    const phi1 = (Math.PI / 2) + (Math.PI * i) / N;
+    fixedPts.push(toWorld(R * Math.cos(phi1), R * Math.sin(phi1)));
+    const phi2 = (-Math.PI / 2) + (Math.PI * i) / N;
+    foldPts.push(project3D(R * Math.cos(phi2), R * Math.sin(phi2)));
+  }
+  cv.drawPolygon(fixedPts, { fill: "#f8fafc", stroke: "#1e293b", width: 2.5 });
+  if (foldDeg > 2 && foldDeg < 178) {
+    const shadowPts = [];
+    for (let i = 0; i <= 36; i++) {
+      const phi = (Math.PI / 2) + (Math.PI * i) / 36;
+      shadowPts.push(toWorld(R * Math.cos(phi) * Math.min(1, 0.35 + 0.65 * sinT), R * Math.sin(phi)));
+    }
+    cv.drawPolygon(shadowPts, { fill: `rgba(15,23,42,${(0.16 * sinT).toFixed(3)})`, stroke: "none", width: 0 });
+  }
+  const isBack = foldDeg > 90;
+  cv.drawPolygon(foldPts, {
+    fill: isBack ? "rgba(59,130,246,0.22)" : "rgba(191,219,254,0.45)",
+    stroke: isBack ? "#2563eb" : "#1d4ed8",
+    width: 2.5
+  });
+  if (opts.chordV !== undefined) {
+    const vC = opts.chordV, uC = Math.sqrt(Math.max(0, R * R - vC * vC));
+    const A = toWorld(-uC, vC), M = toWorld(0, vC), B3d = project3D(uC, vC);
+    cv.drawSegment(A, M, { color: "#0f172a", width: 2.6 });
+    cv.drawSegment(M, B3d, { color: "#dc2626", width: 2.6 });
+    cv.drawPoint(A, { label: "A", dx: -16, dy: -6, color: "#0f172a", r: 4.5 });
+    cv.drawPoint(B3d, foldDeg < 174 ? { label: "B", dx: 12, dy: -6, color: "#dc2626", r: 4.5 } : { label: "B(与A重合)", dx: 12, dy: -14, color: "#dc2626", r: 4.8 });
+    if (opts.showM) cv.drawPoint(M, { label: "M", dx: -16, dy: 18, color: "#0f172a", r: 4 });
+  }
+};
+
+(function() {
+  let _foldRaf = null;
+  window.toggle3DFoldAnim = function() {
+    if (_foldRaf) { cancelAnimationFrame(_foldRaf); _foldRaf = null; }
+    const rng = document.querySelector('#controls input[type="range"][data-key="foldDeg"]')
+      || Array.from(document.querySelectorAll('#controls input[type="range"]')).find(el => {
+        const lbl = el.closest("label, .ctrl-group, .slider-wrap");
+        return lbl && lbl.textContent.indexOf("折叠") >= 0;
+      });
+    if (!rng) return;
+    const startVal = Number(rng.value || 0), targetVal = startVal >= 175 ? 0 : 180, dur = 1100, t0 = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      const ease = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      const cur = Math.round((startVal + (targetVal - startVal) * ease) / 5) * 5;
+      if (Number(rng.value) !== cur) {
+        rng.value = String(cur);
+        rng.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      _foldRaf = p < 1 ? requestAnimationFrame(tick) : null;
+    }
+    _foldRaf = requestAnimationFrame(tick);
+  };
+})();
+
 window.createCoordCanvas = function(arg1 = {}, arg2, arg3) {
   const opts = (typeof arg1 === 'number')
     ? Object.assign({ width: arg1, height: arg2 }, arg3 || {})
@@ -4086,7 +4845,7 @@ window.createCoordCanvas = function(arg1 = {}, arg2, arg3) {
   const spanRatio = (xMax - xMin) / Math.max(1e-6, yMax - yMin);
   const equalAspect = opts.equalAspect !== undefined
     ? Boolean(opts.equalAspect)
-    : (!opts.xStep && !opts.yStep && opts.xMin === undefined && spanRatio >= 0.85 && spanRatio <= 1.45 && (xMax - xMin) <= 16);
+    : (!opts.xStep && !opts.yStep);
   const scaleX = equalAspect ? Math.min(rawScaleX, rawScaleY) : rawScaleX;
   const scaleY = equalAspect ? Math.min(rawScaleX, rawScaleY) : rawScaleY;
   const ox = pad.left + (-xMin) * scaleX + (equalAspect ? (plotW - (xMax - xMin) * scaleX) / 2 : 0);
@@ -4348,11 +5107,15 @@ window.defineSlide = function(cfg) {
     });
     return;
   }
-  const layout = cfg.layout || 'layout-b';
+  const rawLayout = cfg.layout || 'layout-ppt';
+  const isAutoPpt = ['layout-a', 'layout-b', 'layout-c', 'layout-d', 'layout-e'].includes(rawLayout);
+  const layout = isAutoPpt ? 'layout-ppt' : rawLayout;
   const steps = Array.isArray(cfg.steps) ? cfg.steps : [];
   const maxStep = steps.length;
   const simName = cfg.sim || (`autoSim_${window.UNIT1_THEOREM_SLIDES.length + 1}`);
-  const noSceneLayouts = ['layout-a', 'layout-e', 'layout-f', 'layout-g', 'layout-h'];
+  const hasFMedia = layout === 'layout-f' && (Boolean(cfg.mediaSvg) || typeof cfg.renderScene === 'function');
+  const noSceneLayouts = ['layout-a', 'layout-e', 'layout-g', 'layout-h', 'layout-j', 'layout-ppt'];
+  if (layout === 'layout-f' && !hasFMedia) noSceneLayouts.push('layout-f');
 
   let stepsHTML = '';
   if (layout === 'layout-f') {
@@ -4366,7 +5129,11 @@ window.defineSlide = function(cfg) {
       </div>`;
       stepsHTML = `<div class="layout-f-pair-wrap">${headerHTML}<div class="layout-f-pair-list" id="layoutFPairList"></div></div>`;
     } else {
-      const colsClass = (cfg.cols === 3 || (!cfg.cols && steps.length >= 3 && steps.length !== 4)) ? 'cols-3' : '';
+      const colsClass = cfg.cols === 1
+        ? 'cols-1'
+        : (cfg.cols === 3
+          ? 'cols-3'
+          : (hasFMedia && !cfg.cols ? 'cols-1' : ((!cfg.cols && steps.length >= 3 && steps.length !== 4) ? 'cols-3' : '')));
       stepsHTML = `<div class="layout-f-grid ${colsClass}" id="layoutFGrid"></div>`;
     }
   } else if (layout === 'layout-g') {
@@ -4381,25 +5148,12 @@ window.defineSlide = function(cfg) {
     stepsHTML = `<div class="layout-h-wrap"><div class="layout-h-table" id="layoutHTable" data-grid-cols="${gridCols}">${headHTML}<div id="layoutHRows"></div></div>${summaryHTML}</div>`;
   } else if (layout === 'layout-i') {
     stepsHTML = '';
-  } else {
-    stepsHTML = steps.map((st, idx) => {
-      const num = idx + 1;
-      const badge = String(num).padStart(2, '0');
-      let stTitle = '', bodyPart = '';
-      if (Array.isArray(st)) {
-        stTitle = st[0] || '';
-        bodyPart = st[1] || '';
-      } else if (typeof st === 'object' && st !== null) {
-        stTitle = st.title || '';
-        bodyPart = st.html || st.body || st.text || '';
-      } else {
-        bodyPart = String(st || '');
-      }
-      const fmtTitle = window.formatInlineMathHTML(stTitle);
-      const stepLabel = `步骤<span class="num">${num}</span>`;
-      const titlePart = fmtTitle ? `<b>${stepLabel}（${fmtTitle}）：</b>` : `<b>${stepLabel}：</b>`;
-      return `<div class="step step-locked"><b>${badge}</b><span>${titlePart}${bodyPart}</span></div>`;
-    }).join('\n          ');
+  } else if (layout === 'layout-ppt') {
+    stepsHTML = `<div class="layout-ppt-stage" id="layoutPptStage"></div>`;
+  } else if (layout === 'layout-j') {
+    const colsClass = cfg.cols === 2 ? 'cols-2' : (cfg.cols === 4 ? 'cols-4' : (cfg.cols === 5 ? 'cols-5' : (steps.length === 2 || steps.length === 4 ? 'cols-2' : '')));
+    const summaryHTML = cfg.summary ? `<div class="layout-j-summary" id="layoutJSummary" hidden>${cfg.summary}</div>` : '';
+    stepsHTML = `<div class="layout-j-grid ${colsClass}" id="layoutJGrid"></div>\n        ${summaryHTML}`;
   }
 
   const layoutISummary = (layout === 'layout-i' && cfg.summary)
@@ -4418,7 +5172,7 @@ window.defineSlide = function(cfg) {
       <div class="screen-stem">
         ${cfg.stem || ''}
       </div>
-      <div class="screen-lower ${layout}">
+      <div class="screen-lower ${layout}${hasFMedia ? ' has-media' : ''}">
         <div class="screen-notes">
           <div id="controls" class="controls"></div>
           ${stepsHTML}
@@ -4458,17 +5212,36 @@ window.defineSlide = function(cfg) {
     const controls = root ? root.querySelector('#controls') : null;
     if (controls) {
       const extraCtrl = typeof cfg.controls === 'function' ? (cfg.controls(step, state, root) || '') : '';
-      const barOpts = (layout === 'layout-f' || layout === 'layout-g' || layout === 'layout-h' || layout === 'layout-i')
+      const barOpts = (layout === 'layout-f' || layout === 'layout-g' || layout === 'layout-h' || layout === 'layout-i' || layout === 'layout-j' || layout === 'layout-ppt')
         ? {
             compact: true,
-            label: layout === 'layout-i' ? '🗺️ 导图展开' : (layout === 'layout-g' ? '🎯 对比进度' : (layout === 'layout-h' ? '📋 梳理进度' : '📖 讲解进度')),
-            idleText: layout === 'layout-i' ? '点击导图分支或按空格键逐步展开' : '点击条目或按空格键逐步呈现',
-            doneText: '✓ 全部内容已展开'
+            label: layout === 'layout-i' ? '🗺️ 导图展开' : (layout === 'layout-j' ? '🔍 辨析进度' : (layout === 'layout-g' ? '🎯 对比进度' : (layout === 'layout-h' ? '📋 梳理进度' : '📖 讲解进度'))),
+            idleText: layout === 'layout-i' ? '点击导图分支或按空格键逐步展开' : (layout === 'layout-j' ? '点击图形卡片或按空格键逐图判定' : '点击条目或按空格键逐步呈现'),
+            doneText: layout === 'layout-j' ? '✓ 全部图形辨析完成' : '✓ 全部内容已展开'
           }
         : {};
       controls.innerHTML = stepBar(step, maxStep, barOpts) + extraCtrl;
     }
 
+    if (layout === 'layout-ppt' && root) {
+      const stg = root.querySelector('#layoutPptStage');
+      if (stg) {
+        if (typeof cfg.renderBody === 'function') {
+          stg.innerHTML = cfg.renderBody(step, state, root) || '';
+        } else {
+          const autoLines = steps.map((st, idx) => ({
+            step: idx + 1,
+            html: Array.isArray(st) ? (st[1] || st[0] || '') : ((typeof st === 'object' && st !== null) ? (st.html || st.body || st.text || '') : String(st || ''))
+          }));
+          const autoSvg = typeof cfg.renderScene === 'function' ? (cfg.renderScene(step, state, root) || '') : '';
+          stg.innerHTML = window.pptExampleLayout({ step, lines: autoLines, rightSvg: autoSvg });
+        }
+        stg.onclick = function(ev) {
+          if (ev && ev.target && ev.target.closest('button, input, select, label, a')) return;
+          if (step < maxStep) window.advanceSimStep(step + 1);
+        };
+      }
+    }
     if (layout === 'layout-f' && root) {
       const pairList = root.querySelector('#layoutFPairList');
       if (pairList && cfg.example && Array.isArray(cfg.example.lines)) {
@@ -4577,10 +5350,49 @@ window.defineSlide = function(cfg) {
       if (iSum) iSum.hidden = (!cfg.alwaysShowSummary && step < maxStep);
     }
 
+    if (layout === 'layout-j' && root) {
+      const jGrid = root.querySelector('#layoutJGrid');
+      if (jGrid) {
+        jGrid.innerHTML = steps.map((st, idx) => {
+          const sNum = idx + 1;
+          const isUnlocked = step >= sNum;
+          const isActive = step === sNum;
+          const stObj = (typeof st === 'object' && st !== null && !Array.isArray(st)) ? st : { title: `图(${sNum})`, html: String(st || '') };
+          const bt = stObj.badgeType || '';
+          const cardCls = isUnlocked
+            ? (bt === 'ok' ? 'card-ok' : ((bt === 'no' || bt === 'warn') ? 'card-no' : (bt === 'info' ? 'card-info' : '')))
+            : '';
+          const activeCls = isActive ? 'is-active' : '';
+          const badgeCls = bt === 'ok' ? 'badge-ok' : ((bt === 'no' || bt === 'warn') ? 'badge-no' : 'badge-info');
+          const defaultBadge = bt === 'ok' ? '✓ 具备' : ((bt === 'no' || bt === 'warn') ? '✕ 不具备' : '● 判定');
+          const badgeHtml = isUnlocked
+            ? `<span class="layout-j-badge ${badgeCls}">${stObj.badge || defaultBadge}</span>`
+            : `<span class="layout-j-badge badge-locked">点击判定 ▸</span>`;
+          const fmtTitle = window.formatInlineMathHTML(stObj.title || `图(${sNum})`);
+          const figHtml = typeof stObj.renderSvg === 'function'
+            ? (stObj.renderSvg(isUnlocked, isActive, state) || '')
+            : (stObj.svg || '');
+          const reasonContent = stObj.html || stObj.reason || stObj.body || '';
+          const reasonHtml = isUnlocked
+            ? (reasonContent ? `<div class="layout-j-reason">${reasonContent}</div>` : '')
+            : `<div class="layout-j-reason-locked">点击揭晓判定与理由 ▸</div>`;
+          return `<div class="layout-j-card ${cardCls} ${activeCls}" data-step-goto="${sNum}">
+            <div class="layout-j-head"><span>${fmtTitle}</span>${badgeHtml}</div>
+            <div class="layout-j-fig">${figHtml}</div>
+            ${reasonHtml}
+          </div>`;
+        }).join('');
+      }
+      const jSum = root.querySelector('#layoutJSummary');
+      if (jSum) jSum.hidden = (!cfg.alwaysShowSummary && step < maxStep);
+    }
+
     const scene = root ? root.querySelector('#scene') : null;
     if (scene) {
       if (typeof cfg.renderScene === 'function') {
         scene.innerHTML = cfg.renderScene(step, state, root) || '';
+      } else if (layout === 'layout-f' && cfg.mediaSvg) {
+        scene.innerHTML = typeof cfg.mediaSvg === 'function' ? (cfg.mediaSvg(step, state, root) || '') : cfg.mediaSvg;
       } else if (layout === 'layout-i') {
         scene.innerHTML = window.renderMindMapScene(step, {
           width: 1120,
@@ -4602,7 +5414,7 @@ window.renderMindMapScene = function(step, opts = {}) {
   const palette = ['#2563eb', '#0d9488', '#d97706', '#7c3aed', '#dc2626'];
   const bgPalette = ['#eff6ff', '#f0fdfa', '#fffbeb', '#f5f3ff', '#fef2f2'];
 
-  const rx = 32, rw = 180, rh = 92, ry = Math.round((H - rh) / 2);
+  const rx = 26, rw = 196, rh = 104, ry = Math.round((H - rh) / 2);
   const rcx = rx + rw, rcy = ry + rh / 2;
 
   const splitCenter = centerRaw.length > 7
@@ -4610,7 +5422,7 @@ window.renderMindMapScene = function(step, opts = {}) {
     : [centerRaw];
   const centerTextSvg = splitCenter.map((line, li) => {
     const ty = splitCenter.length === 1 ? rcy + 7 : rcy - 8 + li * 26;
-    return `<text x="${rx + rw / 2}" y="${ty}" text-anchor="middle" font-size="21" font-weight="700" fill="#ffffff">${window.svgAutoFormatText(line, 21)}</text>`;
+    return `<text x="${rx + rw / 2}" y="${ty}" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">${window.svgAutoFormatText(line, 24)}</text>`;
   }).join('');
 
   const n = Math.max(1, branches.length);
@@ -4622,7 +5434,7 @@ window.renderMindMapScene = function(step, opts = {}) {
     const color = palette[idx % palette.length];
     const bg = bgPalette[idx % bgPalette.length];
     const cy = Math.round(topPad + slotH * (idx + 0.5));
-    const bx = 290, bw = 166, bh = 52, by = cy - bh / 2;
+    const bx = 286, bw = 186, bh = 58, by = cy - bh / 2;
     const unlocked = step >= idx + 1;
     const isActive = step === idx + 1;
     const bTitle = String(bObj.title || `要点${idx + 1}`).replace(/<[^>]+>/g, '');
@@ -4632,7 +5444,7 @@ window.renderMindMapScene = function(step, opts = {}) {
 
     const branchBox = `<g data-step-goto="${idx + 1}" style="cursor:pointer;">
       <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="12" fill="${unlocked ? bg : '#f8fafc'}" stroke="${unlocked ? color : '#cbd5e1'}" stroke-width="${isActive ? 2.8 : 1.8}"/>
-      <text x="${bx + bw / 2}" y="${cy + 6}" text-anchor="middle" font-size="18" font-weight="700" fill="${unlocked ? color : '#64748b'}">${window.svgAutoFormatText(bTitle, 18)}</text>
+      <text x="${bx + bw / 2}" y="${cy + 6}" text-anchor="middle" font-size="20.5" font-weight="800" fill="${unlocked ? color : '#64748b'}">${window.svgAutoFormatText(bTitle, 20.5)}</text>
     </g>`;
 
     let subSvg = '';
@@ -4648,18 +5460,18 @@ window.renderMindMapScene = function(step, opts = {}) {
         </g>`;
     } else if (nodes.length) {
       const subGap = 8;
-      const subH = Math.min(38, Math.floor((slotH - 10 - (nodes.length - 1) * subGap) / nodes.length));
+      const subH = Math.min(44, Math.floor((slotH - 8 - (nodes.length - 1) * subGap) / nodes.length));
       const totalSubH = nodes.length * subH + (nodes.length - 1) * subGap;
       const subStartY = cy - totalSubH / 2;
-      const sx = 526;
-      const sw = hasDetail ? 268 : 540;
+      const sx = 532;
+      const sw = hasDetail ? 268 : 562;
       subSvg = nodes.map((nd, ni) => {
         const ny = Math.round(subStartY + ni * (subH + subGap));
         const ncy = ny + subH / 2;
         const ndTxt = String(nd || '').replace(/<[^>]+>/g, '');
         return `<path d="M ${bx + bw} ${cy} C ${bx + bw + 28} ${cy}, ${sx - 28} ${ncy}, ${sx} ${ncy}" fill="none" stroke="${color}" stroke-width="2" opacity="0.85"/>
           <rect x="${sx}" y="${ny}" width="${sw}" height="${subH}" rx="8" fill="#ffffff" stroke="${color}" stroke-width="1.5"/>
-          <text x="${sx + 14}" y="${ncy + 5.5}" text-anchor="start" font-size="15.5" font-weight="600" fill="#1e293b">${window.svgAutoFormatText(ndTxt, 15.5)}</text>`;
+          <text x="${sx + 14}" y="${ncy + 5.5}" text-anchor="start" font-size="18.5" font-weight="700" fill="#0f172a">${window.svgAutoFormatText(ndTxt, 18.5)}</text>`;
       }).join('');
       if (hasDetail) {
         const dx = 824, dw = 266, dh = Math.min(72, Math.max(46, totalSubH));
@@ -4752,7 +5564,8 @@ window.svgLegendBar = function(items, opts = {}) {
     let tw = 0;
     const s = String(str || '');
     for (let i = 0; i < s.length; i++) {
-      tw += fs * (s.charCodeAt(i) > 127 ? 0.92 : 0.54);
+      const cc = s.charCodeAt(i);
+      tw += fs * (cc > 127 ? 0.95 : ((cc >= 65 && cc <= 90) ? 0.70 : 0.56));
     }
     return tw;
   }
@@ -4765,7 +5578,7 @@ window.svgLegendBar = function(items, opts = {}) {
     return { it, type, iconW, rawTxt, tw, totalW: iconW + 4 + tw };
   });
 
-  const gap = 16;
+  const gap = 22;
   const sumW = measured.reduce((acc, m) => acc + m.totalW, 0) + gap * (measured.length - 1);
   let curX = x + Math.max(8, (w - sumW) / 2);
 
